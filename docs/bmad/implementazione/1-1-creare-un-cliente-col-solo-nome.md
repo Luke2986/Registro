@@ -4,7 +4,7 @@ baseline_commit: 578cae602443fd5fa15aab33854cbbc22ac95740
 
 # Story 1.1: Creare un cliente col solo nome
 
-Status: review
+Status: in-progress
 
 Epic: 1 — Clienti, persone, elenco che si ritrova
 Data di creazione: 2 agosto 2026
@@ -90,17 +90,74 @@ so that posso registrarlo durante la telefonata senza fermarmi a compilare campi
   - [x] Creare `src/app/(app)/clienti/[id]/loading.tsx` con scheletri della forma reale, sul modello di `clienti/loading.tsx`. Mai un cerchio che gira (NFR9, UX-DR11).
   - [x] In Next 16 `params` è una Promise: `const { id } = await params`.
 
-- [x] **Task 6 — Verifica a mano sul percorso reale** (AC: 1, 2, 3, 4)
-  - [x] `npm run typecheck` pulito, `npm run build` pulito.
+- [ ] **Task 6 — Verifica a mano sul percorso reale** (AC: 1, 2, 3, 4)
+
+  Rimesso in pari dopo la revisione del 2 agosto 2026: le caselle qui sotto dicono chi ha
+  verificato cosa, e restano vuote dove non ha verificato nessuno. Il percorso con accesso
+  richiede una sessione, e la sessione arriva da un collegamento inviato all'email di Luca:
+  nessun agente può percorrerlo.
+
+  *Verificato dall'agente, senza sessione*
+  - [x] `npm run typecheck` pulito, `npm run build` pulito, tutte le rotte generate.
+  - [x] `/clienti`, `/clienti/nuovo`, `/clienti/<uuid>`, `/clienti/pippo` e una rotta inventata rispondono `307` verso `/accedi`: il proxy copre tutto.
+  - [x] `/accedi` si carica senza errori in console dopo le modifiche a `globals.css`.
+  - [x] `validateClientName` sui casi limite: vuoto, soli spazi, tabulazioni, `U+00A0`, `U+200B`, `U+FEFF`, 200, 201 e 500 caratteri, valori non stringa. Tutti si comportano come previsto.
+  - [x] `normalizeClientName`: `Acme Srl`, `acme  srl` e `ACME SRL` risultano lo stesso cliente; `Acme` e `Acme Spa` restano diversi.
+
+  *Verificato da Luca il 2 agosto 2026, prima della revisione*
   - [x] Elenco vuoto → il pulsante porta al modulo → nome scritto → salvo → sono sulla scheda del cliente appena creato, con stato `potenziale`.
-  - [x] Torno all'elenco: il cliente c'è. Se non c'è, manca `revalidatePath`.
+  - [x] Torno all'elenco: il cliente c'è.
   - [x] Salvo col campo vuoto: rifiutato con messaggio.
-  - [x] Salvo con soli spazi: rifiutato. È il caso che il solo `required` del browser lascia passare.
-  - [x] Doppio clic sul pulsante: non crea due clienti (il `pending` disabilita il pulsante).
-  - [x] Nome lunghissimo (500 caratteri): non rompe la tabella dell'elenco.
-  - [x] Scheda di un id inventato: `notFound()`, non una pagina rotta.
-  - [x] Larghezza 375px: modulo e scheda restano usabili, bersagli ≥44px (NFR4, UX-DR14).
-  - [x] Focus da tastiera visibile su input e pulsanti.
+  - [x] Salvo con soli spazi: rifiutato.
+
+  *Non verificato da nessuno: resta da fare con una sessione aperta*
+  - [ ] Doppio clic sul pulsante: non crea due clienti.
+  - [ ] Nome al limite dei 200 caratteri: non rompe la tabella dell'elenco né il titolo della scheda.
+  - [ ] Scheda di un id inventato ma di forma valida: pagina "Non c'è", non il 404 di Next.
+  - [ ] Scheda di un id storpiato (`/clienti/pippo`): stessa pagina "Non c'è", non lo stato d'errore.
+  - [ ] Larghezza 375px: modulo e scheda restano usabili, bersagli ≥44px (NFR4, UX-DR14).
+  - [ ] Focus da tastiera visibile su input e pulsanti.
+  - [ ] Avviso di doppione: salvo un nome che esiste già → compare l'avviso; premo Salva di nuovo → il cliente viene creato lo stesso.
+  - [ ] Dopo un rifiuto, il fuoco torna sul campo del nome.
+  - [ ] Un valore lungo senza spazi nella scheda non fa scorrere la pagina di lato.
+
+### Review Findings
+
+Revisione del 2 agosto 2026, tre livelli in parallelo (adversarial, edge case, acceptance) sul diff `578cae6..2573eb1`.
+
+**Decisioni prese** — tutte e cinque risolte da Luca il 2 agosto 2026, subito dopo la revisione.
+
+- [x] [Review][Decision] Stati mancanti sulle rotte nuove: `not-found.tsx` ed `error.tsx` — Non esiste nessun error boundary in `src/app/`. Un id inesistente porta al 404 predefinito di Next (inglese, fuori dal design system, senza ritorno all'elenco); un'eccezione lanciata, per esempio da `readSupabaseEnv()`, porta alla schermata d'errore predefinita. Le note dichiarano il 404 rimandato di proposito alla Story 1.2, ma `error.tsx` non è nel perimetro di nessuna story e `design-system.md` §6 chiede quattro stati per ogni schermata. Chiudere ora (~24 righe fra i due) o rimandare formalmente. → **Deciso: chiusi entrambi ora**, dentro `(app)` così ereditano il guscio con la navigazione. Un indirizzo del tutto fuori da `(app)` cade ancora sul 404 predefinito di Next: caso che con un utente solo non si presenta, e che si chiude con lo stesso file alla radice quando servirà.
+- [x] [Review][Decision] Niente impedisce due clienti identici — Nessun controllo prima dell'insert, nessun indice `unique (owner_id, name)` nello schema, nessuna idempotenza (`src/app/(app)/clienti/actions.ts:36-44`). L'unica difesa è `disabled={pending}`, che non copre il ritorno indietro con reinvio, due schede aperte, né il doppio invio prima dell'idratazione. Collegato: `trim()` non tocca gli spazi interni, quindi `Acme  Srl` e `Acme Srl` restano due clienti diversi. D13 motiva l'obbligatorietà del nome proprio coi duplicati. Opzioni: indice unico (migrazione, fuori perimetro), controllo prima dell'insert, avviso non bloccante, o accettare. → **Deciso: avviso non bloccante.** Il primo Salva su un nome già presente mostra un avviso in ambra, il secondo crea il cliente lo stesso (D14: il software registra e mostra, non vieta). Il confronto ignora maiuscole e spazi doppi tramite `normalizeClientName`, ma **il nome resta memorizzato come è stato digitato**: riscrivere in silenzio quello che ha battuto una persona è peggio del doppione che eviterebbe. Nessuna migrazione, nessun indice unico.
+- [x] [Review][Decision] Il nome nell'elenco è stato reso collegamento, contro il "da preservare intatto" — `src/app/(app)/clienti/page.tsx:77-79` e `src/app/globals.css:258-263`. La riga 135 di questa story elenca la resa di `ClientsTable` fra le cose da non toccare, e "apro la sua scheda" è la prima AC della Story 1.2. La deviazione 3 la motiva bene ed è funzionalmente utile, ma è un'estensione di perimetro auto-approvata (`kb-0.md` §9, deriva del piano). Tenerla e sottrarla a 1.2, oppure ripristinare. → **Deciso: tenuta.** Il collegamento resta e la navigazione dall'elenco alla scheda è chiusa qui. Le AC della Story 1.2 in `epics.md` riguardano il contenuto della scheda e la modifica in linea, non come ci si arriva: non c'è niente da togliere lì, e questa riga è il posto dove la deviazione risulta approvata.
+- [x] [Review][Decision] Task 6 spuntato per intero mentre il Change Log lo dichiara aperto — Le dieci sottovoci alle righe 93-103 sono `[x]`, ma le Completion Notes dicono che l'agente non poteva percorrere il flusso autenticato e il Change Log dice "Task 6 aperto". Tre voci in particolare (doppio clic, nome da 500 caratteri, id inventato) non risultano verificate da nessuno dei due. `kb-0.md` §7: il codice si considera non funzionante finché non lo si è visto funzionare. Serve sapere cosa è stato davvero provato per rimettere le caselle in pari. → **Deciso: provato quello che si poteva senza sessione, poi caselle rimesse in pari.** Task 6 è ora diviso in tre gruppi: verificato dall'agente, verificato da Luca, non verificato da nessuno. Le nove voci del terzo gruppo restano vuote finché non le si percorre con una sessione aperta.
+- [x] [Review][Decision] `.claude/launch.json` in limbo — Elencato fra i "Nuovi" della File List (riga 373) ma non committato (`git status` lo dà `??`) e non ignorato. `.claude/` è una cartella tracciata (234 file), quindi il file resta né dentro né fuori. È un artefatto dell'ambiente di sviluppo, fuori dal perimetro della story: o si committa con un motivo, o si aggiunge a `.gitignore` e si toglie dalla File List. → **Deciso: committato.** Il file resta nel repository, dove sta già il resto di `.claude/`, e resta nella File List.
+
+**Corretto** — tutte applicate il 2 agosto 2026, `typecheck` e `build` puliti dopo.
+
+- [x] [Review][Patch] Un id non-UUID mostrava "il database non ha risposto" invece del 404, e Riprova riciclava all'infinito [src/app/(app)/clienti/[id]/page.tsx:16] — controllo della forma dell'id prima della query, `notFound()` se non è un uuid
+- [x] [Review][Patch] Ogni errore Supabase veniva scartato senza finire nei log, contro `kb-0.md` §3 [src/app/(app)/clienti/actions.ts:71, src/app/(app)/clienti/[id]/page.tsx:63] — `console.error` con `code` e `message`, mai `details`, che conterrebbe il valore rifiutato
+- [x] [Review][Patch] Il messaggio d'errore della scheda dichiarava una causa che il codice non conosce [src/app/(app)/clienti/[id]/page.tsx:96] — "Riprova fra un momento", senza attribuire il guasto alla connessione
+- [x] [Review][Patch] Il collegamento di ritorno "← Clienti" era alto 16px, contro i 44px che lo stesso commit applicava altrove [src/app/globals.css, classe `.back-link`]
+- [x] [Review][Patch] L'errore del form non era legato al campo [src/app/(app)/clienti/nuovo/new-client-form.tsx] — `aria-required`, `aria-invalid`, `aria-describedby` verso aiuto, errore e avviso, e il fuoco che torna sul campo dopo un rifiuto
+- [x] [Review][Patch] Valori lunghi uscivano dalla griglia della scheda [src/app/globals.css] — `overflow-wrap: anywhere` su titolo e valori, `min-width: 0` sulle celle della griglia
+- [x] [Review][Patch] L'errore di `getUser()` veniva scartato: un guasto transitorio dell'auth diventava "disconnesso" e portava via il nome digitato [src/app/(app)/clienti/actions.ts:37, src/app/(app)/clienti/[id]/page.tsx:51] — status assente o 5xx non è "sei fuori", è "riprova"
+- [x] [Review][Patch] Lo scheletro di caricamento aveva sei campi contro i dieci reali e nessuna pillola di stato [src/app/(app)/clienti/[id]/loading.tsx]
+- [x] [Review][Patch] Un campo vuoto lasciava un'etichetta senza valore associato [src/app/(app)/clienti/[id]/page.tsx:128] — `dl`, `dt` e `dd` al posto di `div` e `span`: la coppia etichetta-valore regge anche quando il valore non c'è
+- [x] [Review][Patch] I caratteri a larghezza zero passavano sia la validazione JS sia il vincolo Postgres [src/lib/validate-client-name.ts:8]
+- [x] [Review][Patch] Nessun limite superiore al nome, a nessun livello [src/lib/validate-client-name.ts:11] — `CLIENT_NAME_MAX_LENGTH` a 200, applicato nella validazione e come `maxLength` sull'input
+- [x] [Review][Patch] D1: `not-found.tsx` ed `error.tsx` dentro `(app)` [src/app/(app)/not-found.tsx, src/app/(app)/error.tsx]
+- [x] [Review][Patch] D2: avviso di doppione non bloccante [src/app/(app)/clienti/actions.ts:47, src/lib/validate-client-name.ts:38]
+
+**Rimandato**
+
+- [x] [Review][Defer] `.btn` è alto 40px: tutti e quattro i pulsanti nuovi sono sotto il bersaglio da 44px [src/app/globals.css:299-311] — rimandato, classe preesistente fuori dal perimetro, appartiene alla Story 5.2
+- [x] [Review][Defer] Tre elenchi di campi da tenere allineati a mano: `COLUMNS`, `Pick<ClientRow, ...>`, `fields`; solo due su tre li controlla il compilatore [src/app/(app)/clienti/[id]/page.tsx:8-30, 100-111] — rimandato, la Story 1.2 riscrive lo stesso file per la modifica in linea
+- [x] [Review][Defer] L'hover illumina tutta la riga ma solo il nome è cliccabile [src/app/(app)/clienti/page.tsx:77-79, src/app/globals.css:250-252] — rimandato, dipende da come 1.2 e 1.7 trattano la navigazione di riga
+- [x] [Review][Defer] Nel ramo d'errore dell'elenco non resta nessun modo di creare un cliente [src/app/(app)/clienti/page.tsx:30-39, 43-47] — rimandato, in quello stato Riprova è l'azione giusta
+- [x] [Review][Defer] Nessun `metadata` sulle rotte nuove: il titolo del browser resta "Registro" per ogni cliente [src/app/(app)/clienti/[id]/page.tsx, src/app/(app)/clienti/nuovo/page.tsx] — rimandato, fuori perimetro, appartiene a una passata di rifinitura
+
+**Scartato come rumore:** 1 — la scheda di un cliente appena creato come "vicolo cieco" di dieci campi vuoti. È esattamente quello che AC4 chiede, e i quattro stati della scheda appartengono alla Story 1.2.
 
 ## Dev Notes
 
@@ -356,9 +413,20 @@ da Luca il 2 agosto 2026 e funziona.**
 farlo qui sarebbe una dipendenza nuova fuori dal perimetro. `validateClientName` è pura, senza
 dipendenze ed esportata proprio perché 1.6 possa metterci un test sopra senza riscriverla.
 
-**Rifinitura lasciata aperta di proposito.** Un id inesistente porta alla pagina 404 predefinita di
-Next: inglese e fuori dal design system. Fuori dai task di questa story, e la Story 1.2 possiede gli
-stati della scheda. Si chiude con un `not-found.tsx` di una dozzina di righe quando si decide di farlo.
+~~**Rifinitura lasciata aperta di proposito.** Un id inesistente porta alla pagina 404 predefinita di
+Next: inglese e fuori dal design system.~~ Superata dalla revisione: `not-found.tsx` ed `error.tsx`
+sono stati scritti dentro `(app)`, decisione D1 della revisione.
+
+**Dopo la revisione del 2 agosto 2026.** Tredici correzioni applicate, cinque voci rimandate con il
+motivo scritto in `deferred-work.md`. Due cambiano il comportamento visibile e vanno riprovate a mano:
+
+1. **Avviso di doppione.** Il primo Salva su un nome già presente non crea niente e mostra un avviso
+   in ambra; il secondo Salva sullo stesso nome crea il cliente lo stesso. Il confronto ignora
+   maiuscole e spazi doppi, ma il nome viene memorizzato come è stato digitato.
+2. **Limite di 200 caratteri sul nome**, applicato nella validazione e come `maxLength` sul campo.
+
+Restano invariati: nessuna migrazione, nessuna dipendenza nuova, nessun esadecimale fuori da
+`globals.css`, nessun `any`.
 
 ### File List
 
@@ -370,6 +438,9 @@ stati della scheda. Si chiude con un `not-found.tsx` di una dozzina di righe qua
 - `src/app/(app)/clienti/nuovo/new-client-form.tsx`
 - `src/app/(app)/clienti/[id]/page.tsx`
 - `src/app/(app)/clienti/[id]/loading.tsx`
+- `src/app/(app)/not-found.tsx` — dalla revisione, D1
+- `src/app/(app)/error.tsx` — dalla revisione, D1
+- `docs/bmad/implementazione/deferred-work.md` — dalla revisione
 - `.claude/launch.json`
 
 **Modificati**
@@ -383,3 +454,4 @@ stati della scheda. Si chiude con un `not-found.tsx` di una dozzina di righe qua
 | Data | Cosa |
 |---|---|
 | 2 agosto 2026 | Creazione del cliente col solo nome: validazione, Server Action, modulo, stato vuoto che porta al modulo, scheda in sola lettura. Task 1-5 chiusi, Task 6 aperto in attesa della prova a mano con accesso. |
+| 2 agosto 2026 | Revisione del codice su tre livelli. Cinque decisioni prese, tredici correzioni applicate, cinque voci rimandate. Task 6 riscritto per dire chi ha verificato cosa: nove voci restano da percorrere con una sessione aperta. |

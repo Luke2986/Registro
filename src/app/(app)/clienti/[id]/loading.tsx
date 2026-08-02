@@ -1,4 +1,5 @@
-const FIELDS = [1, 2, 3, 4, 5, 6]
+/** Dieci come i campi resi da page.tsx: uno scheletro più corto fa saltare il contenuto quando arriva. */
+const FIELDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 /**
  * Scheletri della forma reale del contenuto, mai un cerchio che gira al centro
@@ -12,7 +13,10 @@ export default function ClientLoading() {
       </header>
 
       <div className="card">
-        <div className="skeleton" style={{ width: 280, height: 38, marginBottom: 24 }} />
+        <div className="detail-identity">
+          <div className="skeleton" style={{ width: 280, height: 38 }} />
+          <div className="skeleton" style={{ width: 88, height: 22, borderRadius: 'var(--r-full)' }} />
+        </div>
         <div className="detail-grid">
           {FIELDS.map((field) => (
             <div className="field" key={field}>

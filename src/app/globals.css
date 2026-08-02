@@ -199,6 +199,8 @@ a {
   font-weight: 600;
   letter-spacing: -0.02em;
   margin: 0;
+  /* Un nome senza spazi, a 32px, uscirebbe dalla card e farebbe scorrere la pagina di lato. */
+  overflow-wrap: anywhere;
 }
 
 .card {
@@ -258,6 +260,14 @@ a {
 /* Bersaglio di almeno 44px anche su tocco, senza alzare la riga (design-system.md §8). */
 .table__name a {
   display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* Stessa regola: il ritorno all'elenco è l'unica uscita dalla scheda, e a 12px sarebbe
+   un bersaglio da 16px (design-system.md §8). */
+.back-link {
+  display: inline-flex;
   align-items: center;
   min-height: 44px;
 }
@@ -389,6 +399,13 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px 24px;
+  margin: 0;
+}
+
+/* Senza min-width, una cella di griglia non scende sotto il proprio contenuto: un indirizzo
+   web lungo allargherebbe la colonna oltre 1fr e porterebbe la pagina a scorrere di lato. */
+.detail-grid > * {
+  min-width: 0;
 }
 
 /* Un campo non compilato resta visibilmente vuoto e tiene il suo spazio: non si mostra
@@ -396,6 +413,7 @@ a {
 .detail__value {
   margin: 0;
   min-height: 24px;
+  overflow-wrap: anywhere;
 }
 
 /* i quattro stati di ogni schermata */
@@ -417,6 +435,15 @@ a {
   flex-direction: column;
   gap: 12px;
   align-items: flex-start;
+}
+
+/* Avviso, non errore: dice una cosa che vale la pena sapere e non impedisce niente (D14).
+   Ambra e non rosso, perché il rosso qui significherebbe che qualcosa è andato storto. */
+.warn-box {
+  background: var(--warn-tint);
+  color: var(--warn);
+  border-radius: var(--r-lg);
+  padding: 16px 20px;
 }
 
 .skeleton {
