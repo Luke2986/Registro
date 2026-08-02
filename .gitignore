@@ -1,0 +1,22 @@
+# dipendenze
+/node_modules
+
+# build
+/.next
+/out
+next-env.d.ts
+*.tsbuildinfo
+
+# ambiente: i valori non entrano mai nel repository
+.env
+.env.local
+.env*.local
+
+# piattaforma
+.vercel
+
+# sistema
+.DS_Store
+
+# materiale di partenza, non fa parte del progetto
+files.zip
