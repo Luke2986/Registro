@@ -6,6 +6,7 @@ Non è un prodotto in vendita e non è un CRM. È il posto dove vive un metodo d
 
 **Stato:** in costruzione, prima versione.
 **Utenti:** uno.
+**In rete:** https://registro-luke2986s-projects.vercel.app
 
 ---
 

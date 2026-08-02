@@ -2,7 +2,7 @@
 
 **Owner:** Luca Versilia
 **Aperto il:** 2 agosto 2026
-**Ultimo aggiornamento:** 2 agosto 2026, D19
+**Ultimo aggiornamento:** 2 agosto 2026, D20
 
 Questo file è la memoria del progetto. Va portato in ogni nuova chat o strumento per ricostruire il contesto senza ripartire da zero. Si aggiorna solo quando una decisione è confermata, non quando è ipotizzata.
 
@@ -183,6 +183,17 @@ Venti domande in sette blocchi, più tre condizionali sopra le 50 persone o quan
 Sotto ogni domanda c'è solo cosa serve capire, mai un segnale d'allarme o un suggerimento di esito.
 
 Chiuso il debito aperto dall'inizio: le domande non sono più una prima stesura non rivista, ma la versione da usare. Restano modificabili dall'interfaccia, quindi cambiarle non richiede un rilascio.
+
+### D20. Piattaforma: Next.js, Supabase, Vercel
+*2 agosto 2026*
+
+Chiusa la scelta lasciata aperta da D8. Codice Next.js con App Router e TypeScript, dati e accesso su Supabase in `eu-west-1`, rilascio su Vercel a partire da un repository GitHub privato.
+
+Il motivo che decide fra le tre alternative è uno solo: qui la protezione delle righe sta nel database, come policy, non nel codice applicativo. È la variante A della sezione 6 di `database.md`, e con dati di clienti reali è la differenza fra una dimenticanza che non ha conseguenze e una che espone tutto. Le altre due strade restano descritte in `docs/` come storia, non come opzioni.
+
+**Accesso:** collegamento inviato per email, senza password. Non c'è nessuna password da custodire, e con un utente solo il costo dell'attesa dell'email è trascurabile.
+
+**Protezione di Vercel:** attiva sulle anteprime, tolta dalla produzione. In produzione l'app ha già il proprio accesso e la sicurezza a livello di riga; tenerci sopra anche l'autenticazione di Vercel voleva dire due accessi in fila e un collegamento email che sul telefono non si apre.
 
 ---
 
