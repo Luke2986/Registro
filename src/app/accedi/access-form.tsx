@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react'
 
+import { authErrorMessage } from '@/lib/auth-error-message'
 import { createClient } from '@/lib/supabase/client'
 
 type Phase = 'compilazione' | 'invio' | 'inviato'
@@ -22,8 +23,14 @@ export function AccessForm({ initialError }: { initialError?: string }) {
     })
 
     if (authError) {
+      // Codice e stato, non il messaggio inglese di Supabase: serve a capire cosa è successo
+      // la prossima volta, senza portare fuori niente di personale (kb-0.md §3).
+      console.error('accesso: collegamento non inviato', {
+        status: authError.status,
+        code: authError.code,
+      })
       setPhase('compilazione')
-      setError('Il collegamento non è partito. Controlla l’indirizzo e riprova.')
+      setError(authErrorMessage(authError))
       return
     }
 
