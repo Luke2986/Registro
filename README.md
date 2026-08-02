@@ -53,6 +53,8 @@ Le domande della prequalifica sono **dati**, non codice: si modificano dall'inte
 ├── AGENTS.md              stesse regole per agenti diversi da Claude Code
 ├── README.md              questo file
 ├── docs/                  tutta la documentazione elencata sopra
+├── docs/bmad/             epic e story generate con BMAD, più gli artefatti di sprint
+├── _bmad/                 modulo BMAD e sua configurazione
 ├── supabase/
 │   ├── migrations/        file numerati, l'unico modo di cambiare lo schema
 │   └── seed.sql           questionario iniziale
