@@ -1,0 +1,89 @@
+# generated: 02-08-2026 18:53
+# last_updated: 02-08-2026 18:53
+# project: Registro
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: docs/bmad/implementazione
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog -> in-progress: Automatically when first story is created (via create-story)
+#   - in-progress -> done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; sprint-status surfaces open ones
+
+generated: 02-08-2026 18:53
+last_updated: 02-08-2026 18:53
+project: Registro
+project_key: NOKEY
+tracking_system: file-system
+story_location: "docs/bmad/implementazione"
+
+development_status:
+  epic-1: backlog
+  1-1-creare-un-cliente-col-solo-nome: backlog
+  1-2-vedere-e-modificare-la-scheda-del-cliente: backlog
+  1-3-cambiare-lo-stato-del-cliente: backlog
+  1-4-marcare-i-clienti-con-tag-riusabili: backlog
+  1-5-registrare-le-persone-e-chi-decide: backlog
+  1-6-ordinare-l-elenco-per-ultima-attivita-vera: backlog
+  1-7-cercare-e-filtrare-l-elenco: backlog
+  1-8-poter-tornare-indietro-da-una-modifica-di-schema: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-vedere-il-questionario-com-e-oggi: backlog
+  2-2-aggiungere-e-rinominare-un-blocco: backlog
+  2-3-aggiungere-una-domanda-scegliendo-il-tipo-di-risposta: backlog
+  2-4-riscrivere-una-domanda: backlog
+  2-5-riordinare-blocchi-e-domande: backlog
+  2-6-disattivare-una-domanda-invece-di-cancellarla: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-aprire-una-scheda-di-prequalifica-su-un-cliente: backlog
+  3-2-compilare-le-risposte-durante-la-call: backlog
+  3-3-non-pensare-mai-al-salvataggio: backlog
+  3-4-riprendere-una-scheda-interrotta: backlog
+  3-5-scrivere-il-verdetto: backlog
+  3-6-lasciare-in-bozza-o-chiudere: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-vedere-a-che-punto-e-ogni-scheda: backlog
+  4-2-vedere-l-esito-nell-elenco-clienti: backlog
+  4-3-esportare-una-scheda-in-markdown: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-navigazione-laterale-richiudibile: backlog
+  5-2-passata-di-accessibilita-verificata: backlog
+  epic-5-retrospective: optional
