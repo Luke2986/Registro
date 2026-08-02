@@ -1,5 +1,5 @@
 # generated: 02-08-2026 18:53
-# last_updated: 02-08-2026 21:05
+# last_updated: 02-08-2026 21:35
 # project: Registro
 # project_key: NOKEY
 # tracking_system: file-system
@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 02-08-2026 18:53
-last_updated: 02-08-2026 21:05
+last_updated: 02-08-2026 21:35
 project: Registro
 project_key: NOKEY
 tracking_system: file-system
@@ -49,7 +49,7 @@ story_location: "docs/bmad/implementazione"
 
 development_status:
   epic-1: in-progress
-  1-1-creare-un-cliente-col-solo-nome: in-progress
+  1-1-creare-un-cliente-col-solo-nome: done
   1-2-vedere-e-modificare-la-scheda-del-cliente: backlog
   1-3-cambiare-lo-stato-del-cliente: backlog
   1-4-marcare-i-clienti-con-tag-riusabili: backlog

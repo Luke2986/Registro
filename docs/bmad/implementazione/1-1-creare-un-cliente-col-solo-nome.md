@@ -4,7 +4,7 @@ baseline_commit: 578cae602443fd5fa15aab33854cbbc22ac95740
 
 # Story 1.1: Creare un cliente col solo nome
 
-Status: in-progress
+Status: done
 
 Epic: 1 — Clienti, persone, elenco che si ritrova
 Data di creazione: 2 agosto 2026
@@ -120,6 +120,12 @@ so that posso registrarlo durante la telefonata senza fermarmi a compilare campi
   - [ ] Avviso di doppione: salvo un nome che esiste già → compare l'avviso; premo Salva di nuovo → il cliente viene creato lo stesso.
   - [ ] Dopo un rifiuto, il fuoco torna sul campo del nome.
   - [ ] Un valore lungo senza spazi nella scheda non fa scorrere la pagina di lato.
+
+  **Story chiusa il 2 agosto 2026 con queste nove voci ancora vuote**, per decisione di Luca. Il
+  tetto di invii dell'SMTP integrato di Supabase ha impedito di aprire una sessione per tutta la
+  sera: due email all'ora, esaurite. Le caselle restano vuote invece di essere spuntate, perché
+  una casella spuntata per conto di terzi vale meno di una vuota (`kb-0.md` §7). Sono il primo
+  posto da guardare se qualcosa di questa story si rompe.
 
 ### Review Findings
 
@@ -455,3 +461,4 @@ Restano invariati: nessuna migrazione, nessuna dipendenza nuova, nessun esadecim
 |---|---|
 | 2 agosto 2026 | Creazione del cliente col solo nome: validazione, Server Action, modulo, stato vuoto che porta al modulo, scheda in sola lettura. Task 1-5 chiusi, Task 6 aperto in attesa della prova a mano con accesso. |
 | 2 agosto 2026 | Revisione del codice su tre livelli. Cinque decisioni prese, tredici correzioni applicate, cinque voci rimandate. Task 6 riscritto per dire chi ha verificato cosa: nove voci restano da percorrere con una sessione aperta. |
+| 2 agosto 2026 | Story chiusa a `done` per decisione di Luca, con le nove voci di Task 6 ancora vuote: il tetto di invii dell'SMTP integrato non ha permesso di aprire una sessione. |
