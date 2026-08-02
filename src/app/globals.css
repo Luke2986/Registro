@@ -186,6 +186,21 @@ a {
   margin: 0;
 }
 
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* nome del cliente nella sua scheda */
+.display-title {
+  font-size: 32px;
+  line-height: 38px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
 .card {
   background: var(--surface);
   border-radius: var(--r-xl);
@@ -238,6 +253,13 @@ a {
 
 .table__name {
   font-weight: 500;
+}
+
+/* Bersaglio di almeno 44px anche su tocco, senza alzare la riga (design-system.md §8). */
+.table__name a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 /* pillole di stato */
@@ -338,6 +360,42 @@ a {
   outline: none;
   border-color: var(--sec-prequalifica);
   box-shadow: 0 0 0 3px var(--sec-prequalifica-tint);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 480px;
+}
+
+.form__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* scheda cliente in sola lettura */
+
+.detail-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px 24px;
+}
+
+/* Un campo non compilato resta visibilmente vuoto e tiene il suo spazio: non si mostra
+   come zero e non fa saltare l'allineamento delle righe accanto (D13). */
+.detail__value {
+  margin: 0;
+  min-height: 24px;
 }
 
 /* i quattro stati di ogni schermata */

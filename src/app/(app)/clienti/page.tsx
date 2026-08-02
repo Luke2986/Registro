@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { ErrorState } from '@/components/error-state'
@@ -27,9 +28,14 @@ export default async function ClientsPage() {
       <header className="page-header">
         <h1 className="page-title">Clienti</h1>
         {data && data.length > 0 ? (
-          <p className="data" style={{ color: 'var(--ink-muted)' }}>
-            {data.length}
-          </p>
+          <div className="page-header__actions">
+            <p className="data" style={{ color: 'var(--ink-muted)', margin: 0 }}>
+              {data.length}
+            </p>
+            <Link href="/clienti/nuovo" className="btn btn--primary">
+              Nuovo cliente
+            </Link>
+          </div>
         ) : null}
       </header>
 
@@ -44,9 +50,9 @@ export default async function ClientsPage() {
         ) : (
           <div className="empty">
             <p style={{ margin: 0 }}>Nessun cliente ancora.</p>
-            <p className="meta">
-              La schermata che crea un cliente arriva con il prossimo pezzo di lavoro.
-            </p>
+            <Link href="/clienti/nuovo" className="btn btn--primary">
+              Crea il primo cliente
+            </Link>
           </div>
         )}
       </div>
@@ -68,7 +74,9 @@ function ClientsTable({ rows }: { rows: ClientListRow[] }) {
       <tbody>
         {rows.map((row) => (
           <tr key={row.id}>
-            <td className="table__name">{row.name}</td>
+            <td className="table__name">
+              <Link href={`/clienti/${row.id}`}>{row.name}</Link>
+            </td>
             <td>
               <StatusPill status={row.status} />
             </td>
