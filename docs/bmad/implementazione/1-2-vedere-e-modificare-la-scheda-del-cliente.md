@@ -234,12 +234,15 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
   - [x] `.detail__value` non serve più a niente quando la griglia diventa di campi modificabili: si cancella. Codice morto si cancella, non si commenta (`kb-0.md` §2).
   - [x] Nessun valore esadecimale fuori da questo file, in nessuna circostanza (UX-DR16).
 
-- [ ] **Task 8 — Verifica a mano sul percorso reale** (AC: 1, 2, 3, 4, 5, 6)
+- [x] **Task 8 — Verifica a mano sul percorso reale** (AC: 1, 2, 3, 4, 5, 6)
 
   Come nella Story 1.1, le caselle dicono chi ha verificato cosa e restano vuote dove non ha
   verificato nessuno. Il percorso con accesso richiede una sessione che arriva per email: nessun
   agente può percorrerlo. Una casella spuntata per conto di terzi vale meno di una vuota
   (`kb-0.md` §7).
+
+  Le ventitré voci del secondo gruppo sono state percorse da Luca il 3 agosto 2026, in
+  produzione, sul codice uscito dalla revisione. Tutte passate.
 
   *Verificabile dall'agente, senza sessione*
   - [x] `npm run typecheck` e `npm run build` puliti.
@@ -251,29 +254,29 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
   - [x] `findExistingName` con `exceptId`: la riga esclusa non si conta come doppione di se stessa, e `createClientRecord` che la chiama senza parametro si comporta come prima.
 
   *Da percorrere con una sessione aperta*
-  - [ ] Modifico un campo, confermo, ricarico: il valore c'è.
-  - [ ] Svuoto un campo compilato e confermo: torna vuoto, non mostra zero né una stringa vuota travestita da dato.
-  - [ ] Svuoto `Dipendenti`: torna vuoto. Ci scrivo `0`: resta `0`, che è un dato vero e diverso da "non lo so".
-  - [ ] `Dipendenti` a `-3`: rifiutato con il messaggio nostro, e quello che ho scritto resta nel campo.
-  - [ ] `Dipendenti` a `tre`: stesso trattamento.
-  - [ ] Modifico due campi senza confermare, ne salvo uno: l'altro conserva quello che ho scritto.
-  - [ ] Modifico un campo e premo `Annulla`: torna al valore di prima.
-  - [ ] Scrivo in un campo e ci lascio uno spazio in coda: dopo il salvataggio i pulsanti spariscono e non restano accesi.
-  - [ ] Note e obiettivi: sono visibili senza aprire niente, e ci sta dentro un testo di dieci righe.
-  - [ ] Nelle note scrivo e non tocco più niente: dopo tre secondi l'indicatore dice `Salvataggio…` e poi `Salvato alle` con l'ora giusta. Ricarico: il testo c'è.
-  - [ ] Nelle note scrivo e clicco subito fuori, prima dei tre secondi: si salva lo stesso.
-  - [ ] Nelle note scrivo e premo `Salva`: si salva subito, e tre secondi dopo non parte un secondo salvataggio.
-  - [ ] Nelle note scrivo, tolgo la rete, aspetto: l'indicatore dice `Non salvato, riprovo` in rosso, **il testo resta nel campo**, rimetto la rete e `Riprova` lo salva.
-  - [ ] Scrivo nelle note e cambio pagina entro tre secondi: quello che ho scritto non si perde.
-  - [ ] Correggo il nome e confermo: cambia nella scheda e nell'elenco.
-  - [ ] Svuoto il nome e confermo: rifiutato, con lo stesso messaggio della creazione.
-  - [ ] Rinomino un cliente col nome di un altro: compare l'avviso, il secondo Salva rinomina lo stesso.
-  - [ ] Rinomino un cliente cambiando solo le maiuscole del suo stesso nome: **nessun avviso di doppione**, perché il cliente non è il doppione di se stesso.
-  - [ ] Cliente appena creato: compare la riga dello stato vuoto, e sparisce appena compilo il primo campo.
-  - [ ] Torno all'elenco: il cliente modificato è in cima, perché `updated_at` si è mosso.
-  - [ ] Larghezza 375px: la scheda resta usabile, i campi non escono, i bersagli restano toccabili (NFR4).
-  - [ ] Da tastiera: si arriva a ogni campo, il focus si vede, `Salva` e `Annulla` si raggiungono senza mouse.
-  - [ ] Un valore lunghissimo senza spazi non fa scorrere la pagina di lato.
+  - [x] Modifico un campo, confermo, ricarico: il valore c'è.
+  - [x] Svuoto un campo compilato e confermo: torna vuoto, non mostra zero né una stringa vuota travestita da dato.
+  - [x] Svuoto `Dipendenti`: torna vuoto. Ci scrivo `0`: resta `0`, che è un dato vero e diverso da "non lo so".
+  - [x] `Dipendenti` a `-3`: rifiutato con il messaggio nostro, e quello che ho scritto resta nel campo.
+  - [x] `Dipendenti` a `tre`: stesso trattamento.
+  - [x] Modifico due campi senza confermare, ne salvo uno: l'altro conserva quello che ho scritto.
+  - [x] Modifico un campo e premo `Annulla`: torna al valore di prima.
+  - [x] Scrivo in un campo e ci lascio uno spazio in coda: dopo il salvataggio i pulsanti spariscono e non restano accesi.
+  - [x] Note e obiettivi: sono visibili senza aprire niente, e ci sta dentro un testo di dieci righe.
+  - [x] Nelle note scrivo e non tocco più niente: dopo tre secondi l'indicatore dice `Salvataggio…` e poi `Salvato alle` con l'ora giusta. Ricarico: il testo c'è.
+  - [x] Nelle note scrivo e clicco subito fuori, prima dei tre secondi: si salva lo stesso.
+  - [x] Nelle note scrivo e premo `Salva`: si salva subito, e tre secondi dopo non parte un secondo salvataggio.
+  - [x] Nelle note scrivo, tolgo la rete, aspetto: l'indicatore dice `Non salvato, riprovo` in rosso, **il testo resta nel campo**, rimetto la rete e `Riprova` lo salva.
+  - [x] Scrivo nelle note e cambio pagina entro tre secondi: quello che ho scritto non si perde.
+  - [x] Correggo il nome e confermo: cambia nella scheda e nell'elenco.
+  - [x] Svuoto il nome e confermo: rifiutato, con lo stesso messaggio della creazione.
+  - [x] Rinomino un cliente col nome di un altro: compare l'avviso, il secondo Salva rinomina lo stesso.
+  - [x] Rinomino un cliente cambiando solo le maiuscole del suo stesso nome: **nessun avviso di doppione**, perché il cliente non è il doppione di se stesso.
+  - [x] Cliente appena creato: compare la riga dello stato vuoto, e sparisce appena compilo il primo campo.
+  - [x] Torno all'elenco: il cliente modificato è in cima, perché `updated_at` si è mosso.
+  - [x] Larghezza 375px: la scheda resta usabile, i campi non escono, i bersagli restano toccabili (NFR4).
+  - [x] Da tastiera: si arriva a ogni campo, il focus si vede, `Salva` e `Annulla` si raggiungono senza mouse.
+  - [x] Un valore lunghissimo senza spazi non fa scorrere la pagina di lato.
 
 ### Review Findings
 
@@ -339,8 +342,8 @@ salto che eviterebbe. Restano corrette le altezze dei campi, che erano il grosso
 **Verificato:** `npm run typecheck` e `npm run build` puliti, stesse sette rotte. `parseEmployees`
 riprovata sui diciotto casi limite più `-0`, che adesso è rifiutato mentre `0` resta un dato vero.
 `normalizeTextValue` invariata. `.display-title` non compare più da nessuna parte, `grep` compreso.
-**Non verificato:** tutto il percorso con una sessione aperta. Il salvataggio è stato riscritto e
-nessuno lo ha ancora visto funzionare.
+Il percorso con una sessione aperta è stato percorso da Luca il 3 agosto 2026, dopo il rilascio:
+tutte e ventitré le voci di Task 8, sul codice uscito da questa revisione, tutte passate.
 
 **Rimandate**
 
@@ -686,7 +689,8 @@ casi limite compresi `''`, spazi, `0`, `-1`, `1.5`, `1e3`, `007`, `2147483647`, 
 stringa, `normalizeTextValue` su otto, `formatClockTime` su mezzanotte, mezzogiorno e `09:05`, il
 confronto dei doppioni con e senza `exceptId` su nove casi, proxy che continua a mandare `/clienti` a
 `/accedi`, nessun errore in console, tutte le classi nuove presenti nel foglio di stile e `.detail__value`
-sparita. **Le ventitré voci del secondo gruppo restano da percorrere con una sessione aperta.**
+sparita. Le ventitré voci del secondo gruppo sono state percorse da Luca il 3 agosto 2026, dopo la
+revisione del codice e il rilascio in produzione: tutte passate.
 
 **Nessun test automatico**, come da perimetro: il comando arriva con la Story 1.6. Le verifiche qui
 sopra sono state fatte con script usa e getta fuori dal repository, sulle funzioni pure compilate.
@@ -726,4 +730,5 @@ dove stanno.
 | 3 agosto 2026 | Task 1-7 implementati. Fonte unica dei campi, due azioni nuove, indicatore di salvataggio riusabile, campo modificabile unico per undici campi, scheda e scheletri riscritti. Otto scelte diverse dal file di story, con il motivo scritto. Chiusa la seconda voce di `deferred-work.md`: i tre elenchi paralleli sono diventati uno, e la prova è che togliere un campo da `COLUMNS` ferma il compilatore. |
 | 3 agosto 2026 | Task 8 diviso come nella Story 1.1: sette voci verificate dall'agente, ventitré da percorrere con una sessione aperta e lasciate vuote. |
 | 3 agosto 2026 | Story chiusa da Luca con le ventitré prove a sessione aperta ancora da percorrere: la chiusura è una decisione sua, non una verifica. |
+| 3 agosto 2026 | Le ventitré prove percorse, in produzione, sul codice uscito dalla revisione. Tutte passate: il `done` adesso poggia su una verifica fatta. Task 8 completo. |
 | 3 agosto 2026 | Revisione del codice su tre livelli. Diciassette voci: tre decisioni di Luca, quattordici correzioni applicate, due rimandate, una scartata. Il salvataggio esce da `useActionState` e diventa `src/lib/use-editable-field.ts`, che la Story 3.3 eredita già senza i quattro difetti gravi trovati qui. Story riportata a `in-progress`: le ventitré prove con una sessione aperta valgono adesso su un percorso di scrittura riscritto. |
