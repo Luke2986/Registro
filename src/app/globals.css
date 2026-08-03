@@ -192,15 +192,12 @@ a {
   gap: 16px;
 }
 
-/* nome del cliente nella sua scheda */
-.display-title {
+/* nome del cliente nella sua scheda, che è un campo e non un titolo */
+.input--display {
   font-size: 32px;
   line-height: 38px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  margin: 0;
-  /* Un nome senza spazi, a 32px, uscirebbe dalla card e farebbe scorrere la pagina di lato. */
-  overflow-wrap: anywhere;
 }
 
 .card {
@@ -362,6 +359,15 @@ a {
   min-height: 44px;
 }
 
+/* Tre righe di partenza, e cresce a mano se il testo è più lungo. Le note e gli obiettivi
+   sono i due posti dove un testo lungo è legittimo, e devono restare visibili senza aprire
+   niente. */
+.input--long {
+  min-height: 98px;
+  line-height: 24px;
+  resize: vertical;
+}
+
 .input:hover {
   border-color: var(--line-strong);
 }
@@ -385,14 +391,73 @@ a {
   gap: 12px;
 }
 
-/* scheda cliente in sola lettura */
+/* Compaiono solo quando il campo è cambiato: a riposo la scheda si legge, non si compila. */
+.field__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Una riga sotto il campo, non il riquadro di una schermata intera. */
+.field__error {
+  color: var(--bad);
+  font-size: 12px;
+  line-height: 16px;
+  margin: 0;
+}
+
+/* indicatore di salvataggio */
+
+/* La riga c'è sempre, anche vuota, così quando l'indicatore compare il campo sotto non salta.
+   Alta quanto il suo pulsante Riprova, altrimenti lo spazio riservato varrebbe per due stati su
+   tre e al fallimento tutto quello che sta sotto scenderebbe di colpo.
+   Il tono è quello di un orologio: sta lì, lo si guarda quando serve (design-system.md §5). */
+.save-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  color: var(--ink-faint);
+}
+
+.save-indicator--saving {
+  color: var(--ink-muted);
+}
+
+.save-indicator--failed {
+  color: var(--bad);
+}
+
+/* Non un pulsante pieno: la riga resta discreta. Il bersaglio però resta toccabile, perché
+   è l'azione che rimette a posto un salvataggio fallito (design-system.md §8). */
+.save-indicator__retry {
+  background: none;
+  border: none;
+  padding: 0 8px;
+  min-height: 44px;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* scheda cliente */
 
 .detail-identity {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 32px;
+}
+
+/* Il campo del nome prende la riga, la pillola resta accanto alla sua etichetta. */
+.detail-identity > *:first-child {
+  flex: 1;
+  min-width: 0;
 }
 
 .detail-grid {
@@ -408,12 +473,10 @@ a {
   min-width: 0;
 }
 
-/* Un campo non compilato resta visibilmente vuoto e tiene il suo spazio: non si mostra
-   come zero e non fa saltare l'allineamento delle righe accanto (D13). */
-.detail__value {
-  margin: 0;
-  min-height: 24px;
-  overflow-wrap: anywhere;
+/* Obiettivi e note prendono tutta la larghezza: una textarea di tre righe dentro una colonna
+   da 220px non è "visibile", è nascosta di fatto. */
+.field--wide {
+  grid-column: 1 / -1;
 }
 
 /* i quattro stati di ogni schermata */

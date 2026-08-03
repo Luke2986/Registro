@@ -3,8 +3,11 @@ import { notFound, redirect } from 'next/navigation'
 
 import { ErrorState } from '@/components/error-state'
 import { StatusPill } from '@/components/status-pill'
+import { CLIENT_FIELDS, NAME_FIELD, type ClientFieldKey } from '@/lib/client-fields'
 import { createClient } from '@/lib/supabase/server'
 import type { ClientRow } from '@/lib/types'
+
+import { ClientFieldForm } from './client-field-form'
 
 const COLUMNS =
   'id, name, status, sector, website, city, province, address, source_channel, revenue, employees, business_goals, notes'
@@ -16,24 +19,12 @@ const COLUMNS =
  */
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
-type ClientDetail = Pick<
-  ClientRow,
-  | 'id'
-  | 'name'
-  | 'status'
-  | 'sector'
-  | 'website'
-  | 'city'
-  | 'province'
-  | 'address'
-  | 'source_channel'
-  | 'revenue'
-  | 'employees'
-  | 'business_goals'
-  | 'notes'
->
-
-type Field = { label: string; value: string | null }
+/**
+ * L'elenco dei campi sta in un posto solo, CLIENT_FIELDS, e da lì si derivano sia questo tipo
+ * sia la griglia. Se un campo entra nell'elenco senza entrare in COLUMNS, la riga tornata dalla
+ * query non soddisfa più ClientDetail e il controllo dei tipi si ferma.
+ */
+type ClientDetail = Pick<ClientRow, 'id' | 'name' | 'status' | ClientFieldKey>
 
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -102,40 +93,44 @@ function ClientError({ id }: { id: string }) {
   )
 }
 
+/**
+ * Il nome è un campo come gli altri, con la sua etichetta vera: resta grande e leggibile come
+ * un titolo, ma è modificabile e lo dichiara. La pillola resta in sola lettura: il selettore
+ * dei cinque stati è un'altra story.
+ */
 function ClientIdentity({ client }: { client: ClientDetail }) {
   return (
     <div className="detail-identity">
-      <h1 className="display-title">{client.name}</h1>
+      <ClientFieldForm clientId={client.id} field={NAME_FIELD} value={client.name} />
       <StatusPill status={client.status} />
     </div>
   )
 }
 
 function ClientFields({ client }: { client: ClientDetail }) {
-  // employees a null resta vuoto, ma uno zero dichiarato resta zero: sono due cose diverse.
-  const fields: Field[] = [
-    { label: 'Settore', value: client.sector },
-    { label: 'Sito web', value: client.website },
-    { label: 'Città', value: client.city },
-    { label: 'Provincia', value: client.province },
-    { label: 'Indirizzo', value: client.address },
-    { label: 'Come è arrivato', value: client.source_channel },
-    { label: 'Fatturato', value: client.revenue },
-    { label: 'Dipendenti', value: client.employees === null ? null : String(client.employees) },
-    { label: 'Obiettivi', value: client.business_goals },
-    { label: 'Note', value: client.notes },
-  ]
+  // Nessun pulsante nello stato vuoto: i campi sono già lì e sono già l'azione.
+  const untouched = CLIENT_FIELDS.every((field) => client[field.key] === null)
 
-  // dl, dt e dd invece di div e span: un campo vuoto resta legato alla sua etichetta anche per
-  // chi legge con uno screen reader, che altrimenti sentirebbe dieci etichette senza valore.
   return (
-    <dl className="detail-grid">
-      {fields.map((field) => (
-        <div className="field" key={field.label}>
-          <dt className="label">{field.label}</dt>
-          <dd className="detail__value">{field.value}</dd>
-        </div>
-      ))}
-    </dl>
+    <>
+      {untouched ? (
+        <p className="meta" style={{ marginBottom: 20 }}>
+          Di questo cliente sai solo il nome. I campi si compilano quando li scopri.
+        </p>
+      ) : null}
+
+      <div className="detail-grid">
+        {CLIENT_FIELDS.map((field) => (
+          <ClientFieldForm key={field.key} clientId={client.id} field={field} value={readValue(client, field.key)} />
+        ))}
+      </div>
+    </>
   )
+}
+
+/** employees a null resta vuoto, ma uno zero dichiarato resta zero: sono due cose diverse (D13). */
+function readValue(client: ClientDetail, key: ClientFieldKey): string | null {
+  const value = client[key]
+
+  return value === null ? null : String(value)
 }

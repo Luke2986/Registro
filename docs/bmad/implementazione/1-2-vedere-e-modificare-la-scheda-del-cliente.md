@@ -4,7 +4,7 @@ baseline_commit: b3693f584a6c2f8f0690ff890e8f3f679ed28aae
 
 # Story 1.2: Vedere e modificare la scheda del cliente
 
-Status: ready-for-dev
+Status: done
 
 Epic: 1 — Clienti, persone, elenco che si ritrova
 Data di creazione: 2 agosto 2026
@@ -59,9 +59,9 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — Fonte unica dei campi del cliente** (AC: 1, 2, 3)
-  - [ ] Creare `src/lib/client-fields.ts`: funzioni e dati puri, nessun import di React né di Supabase, tutto esportato perché la Story 1.6 possa metterci un test sopra senza riscrivere niente.
-  - [ ] Esportare `CLIENT_FIELDS` come `const ... as const`: un elemento per campo modificabile, nell'ordine in cui compare nella scheda, con `key` (nome della colonna), `label` (etichetta italiana già usata oggi) e `kind` (`'short' | 'long' | 'integer'`).
+- [x] **Task 1 — Fonte unica dei campi del cliente** (AC: 1, 2, 3)
+  - [x] Creare `src/lib/client-fields.ts`: funzioni e dati puri, nessun import di React né di Supabase, tutto esportato perché la Story 1.6 possa metterci un test sopra senza riscrivere niente.
+  - [x] Esportare `CLIENT_FIELDS` come `const ... as const`: un elemento per campo modificabile, nell'ordine in cui compare nella scheda, con `key` (nome della colonna), `label` (etichetta italiana già usata oggi) e `kind` (`'short' | 'long' | 'integer'`).
 
     | key | label | kind |
     |---|---|---|
@@ -76,22 +76,22 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
     | `business_goals` | Obiettivi | long |
     | `notes` | Note | long |
 
-  - [ ] Esportare i tipi derivati: `type ClientFieldKey = (typeof CLIENT_FIELDS)[number]['key']` e `type ClientField = (typeof CLIENT_FIELDS)[number]`. Da qui in poi **nessun elenco di campi si riscrive a mano da nessuna parte**: è il debito che la revisione della Story 1.1 ha rimandato qui (`deferred-work.md`, seconda voce).
-  - [ ] **`name` non entra in `CLIENT_FIELDS`, e non è una dimenticanza.** Ha una validazione sua che esiste già (`validateClientName`: limite di 200 caratteri, caratteri invisibili tolti, avviso di doppione). Se entrasse nell'elenco passerebbe da `normalizeTextValue` e quelle tre regole sparirebbero senza che nessun compilatore se ne accorga. La rinomina è Task 3.
-  - [ ] Esportare `isClientFieldKey(value: unknown): value is ClientFieldKey`: serve al server per rifiutare una chiave che non è nell'elenco. Senza questo controllo l'azione diventa una scrittura arbitraria su qualsiasi colonna, `owner_id`, `status` e `name` compresi.
-  - [ ] Esportare `normalizeTextValue(raw: unknown): string | null`: `trim()`, e stringa vuota → `null`. Mai `''` nel database: AC2 chiede che un valore cancellato torni vuoto, e `''` è un dato che si mostra come dato.
-  - [ ] Esportare `parseEmployees(raw: unknown): { ok: true; value: number | null } | { ok: false; message: string }`. Regole, in quest'ordine:
+  - [x] Esportare i tipi derivati: `type ClientFieldKey = (typeof CLIENT_FIELDS)[number]['key']` e `type ClientField = (typeof CLIENT_FIELDS)[number]`. Da qui in poi **nessun elenco di campi si riscrive a mano da nessuna parte**: è il debito che la revisione della Story 1.1 ha rimandato qui (`deferred-work.md`, seconda voce).
+  - [x] **`name` non entra in `CLIENT_FIELDS`, e non è una dimenticanza.** Ha una validazione sua che esiste già (`validateClientName`: limite di 200 caratteri, caratteri invisibili tolti, avviso di doppione). Se entrasse nell'elenco passerebbe da `normalizeTextValue` e quelle tre regole sparirebbero senza che nessun compilatore se ne accorga. La rinomina è Task 3.
+  - [x] Esportare `isClientFieldKey(value: unknown): value is ClientFieldKey`: serve al server per rifiutare una chiave che non è nell'elenco. Senza questo controllo l'azione diventa una scrittura arbitraria su qualsiasi colonna, `owner_id`, `status` e `name` compresi.
+  - [x] Esportare `normalizeTextValue(raw: unknown): string | null`: `trim()`, e stringa vuota → `null`. Mai `''` nel database: AC2 chiede che un valore cancellato torni vuoto, e `''` è un dato che si mostra come dato.
+  - [x] Esportare `parseEmployees(raw: unknown): { ok: true; value: number | null } | { ok: false; message: string }`. Regole, in quest'ordine:
     1. non stringa → trattala come vuota;
     2. `trim()` vuoto → `{ ok: true, value: null }`, cioè il campo si può svuotare;
     3. non corrisponde a `/^-?\d+$/` → `{ ok: false, message: 'Scrivi il numero di dipendenti in cifre, senza altri caratteri.' }`;
     4. negativo → `{ ok: false, message: 'Il numero di dipendenti non può essere negativo. Lascia il campo vuoto se non lo sai.' }`;
     5. sopra `2147483647` → `{ ok: false, message: 'Il numero è troppo grande.' }` — è il massimo di un `integer` di Postgres, e senza questo controllo l'errore arriva dal database in inglese;
     6. altrimenti `{ ok: true, value: Number(trimmed) }`.
-  - [ ] Nessuna libreria di validazione: sono trenta righe, quindi si fanno trenta righe (`kb-0.md` §2).
+  - [x] Nessuna libreria di validazione: sono trenta righe, quindi si fanno trenta righe (`kb-0.md` §2).
 
-- [ ] **Task 2 — Server Action di aggiornamento** (AC: 2, 3)
-  - [ ] Aggiungere `updateClientField` in `src/app/(app)/clienti/actions.ts`, **il file che esiste già**. Non creare un file di azioni per story: la Story 1.1 lo ha creato apposta condiviso, e 1.3 e 1.4 aggiungeranno le loro lì.
-  - [ ] Firma per `useActionState`: `(previous: UpdateClientFieldState, formData: FormData) => Promise<UpdateClientFieldState>`, con
+- [x] **Task 2 — Server Action di aggiornamento** (AC: 2, 3)
+  - [x] Aggiungere `updateClientField` in `src/app/(app)/clienti/actions.ts`, **il file che esiste già**. Non creare un file di azioni per story: la Story 1.1 lo ha creato apposta condiviso, e 1.3 e 1.4 aggiungeranno le loro lì.
+  - [x] Firma per `useActionState`: `(previous: UpdateClientFieldState, formData: FormData) => Promise<UpdateClientFieldState>`, con
 
     ```ts
     export type UpdateClientFieldState = {
@@ -101,7 +101,7 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
     }
     ```
 
-  - [ ] Sequenza obbligata, la stessa di `createClientRecord` per le prime due voci:
+  - [x] Sequenza obbligata, la stessa di `createClientRecord` per le prime due voci:
     1. `const supabase = await createClient()`;
     2. `getUser()`, con la distinzione già scritta in `actions.ts:38`: `authError` con `status` assente o ≥ 500 non vuol dire "sei fuori", vuol dire "riprova" — e mandare a `/accedi` porterebbe via quello che l'utente ha appena scritto;
     3. leggere `client_id` e `field` dal `formData`; se `client_id` non è un uuid o `isClientFieldKey(field)` è falso → ritornare un errore generico e **scrivere nei log solo la chiave rifiutata, mai il valore**;
@@ -109,9 +109,9 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
     5. `update` sulla riga, chiedendo indietro la conferma;
     6. `revalidatePath(\`/clienti/${clientId}\`)` **e** `revalidatePath('/clienti')` — la seconda perché la modifica sposta `updated_at`, che è l'ordinamento dell'elenco;
     7. ritornare `{ saved }`.
-  - [ ] **Nessun `redirect()` in questa azione.** La modifica in linea non porta da nessuna parte: si resta sulla scheda. È l'unica azione del progetto che non finisce con un redirect, ed è giusto così.
-  - [ ] **Mai scrivere `updated_at`.** Ci pensa il trigger `clients_set_updated_at` (`0006_triggers.sql:15`), che è `before update`. Scriverlo a mano vorrebbe dire tenere due posti allineati a mano e AC2 chiede esplicitamente il trigger.
-  - [ ] **Mai costruire la modifica riversando il `formData`.** Un solo campo per chiamata, la chiave passata dal controllo di Task 1. La forma corretta, senza `as`:
+  - [x] **Nessun `redirect()` in questa azione.** La modifica in linea non porta da nessuna parte: si resta sulla scheda. È l'unica azione del progetto che non finisce con un redirect, ed è giusto così.
+  - [x] **Mai scrivere `updated_at`.** Ci pensa il trigger `clients_set_updated_at` (`0006_triggers.sql:15`), che è `before update`. Scriverlo a mano vorrebbe dire tenere due posti allineati a mano e AC2 chiede esplicitamente il trigger.
+  - [x] **Mai costruire la modifica riversando il `formData`.** Un solo campo per chiamata, la chiave passata dal controllo di Task 1. La forma corretta, senza `as`:
 
     ```ts
     type ClientPatch = Partial<Pick<ClientRow, ClientFieldKey>>
@@ -121,7 +121,7 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
     ```
 
     `employees` va isolato perché è l'unico non testuale: separandolo, il resto della union ha tutto lo stesso tipo `string | null` e l'assegnazione con chiave variabile compila senza forzature.
-  - [ ] L'update chiede indietro la riga per distinguere "salvato" da "nessuna riga toccata":
+  - [x] L'update chiede indietro la riga per distinguere "salvato" da "nessuna riga toccata":
 
     ```ts
     const { data, error } = await supabase
@@ -133,23 +133,23 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
     ```
 
     `maybeSingle` e non `single`: con la sicurezza a livello di riga attiva, la scheda di un altro proprietario e una scheda cancellata arrivano identiche, cioè zero righe, e con `single` diventerebbero un errore invece di un messaggio comprensibile.
-  - [ ] `data` nullo senza errore → `{ error: 'Questa scheda non è più disponibile. Torna all\'elenco.' }`.
-  - [ ] `error` → `console.error` con **solo** `code` e `message`; mai `details`, che conterrebbe il valore rifiutato, cioè un dato del cliente (`kb-0.md` §3, NFR15). All'utente va `'Il campo non è stato salvato. Riprova fra un momento.'`
-  - [ ] **Eccezione, ed è AC3:** se `error.code` è `23514` il vincolo `employees >= 0` ha rifiutato la scrittura. È la difesa ultima e non dovrebbe mai scattare, perché Task 1 rifiuta prima; se scatta, il messaggio resta quello nostro sui dipendenti, mai il testo di Postgres.
-  - [ ] Non aggiungere `.eq('owner_id', user.id)`: la riga la filtra la policy `clients_owner_all` (`0007_rls.sql:17`). Un filtro a mano è ridondante e fa credere che sia lui a proteggere (D20, `database.md` §6 variante A).
+  - [x] `data` nullo senza errore → `{ error: 'Questa scheda non è più disponibile. Torna all\'elenco.' }`.
+  - [x] `error` → `console.error` con **solo** `code` e `message`; mai `details`, che conterrebbe il valore rifiutato, cioè un dato del cliente (`kb-0.md` §3, NFR15). All'utente va `'Il campo non è stato salvato. Riprova fra un momento.'`
+  - [x] **Eccezione, ed è AC3:** se `error.code` è `23514` il vincolo `employees >= 0` ha rifiutato la scrittura. È la difesa ultima e non dovrebbe mai scattare, perché Task 1 rifiuta prima; se scatta, il messaggio resta quello nostro sui dipendenti, mai il testo di Postgres.
+  - [x] Non aggiungere `.eq('owner_id', user.id)`: la riga la filtra la policy `clients_owner_all` (`0007_rls.sql:17`). Un filtro a mano è ridondante e fa credere che sia lui a proteggere (D20, `database.md` §6 variante A).
 
-- [ ] **Task 3 — Rinomina del cliente** (AC: 5)
-  - [ ] Aggiungere `renameClient` in `src/app/(app)/clienti/actions.ts`. **Azione separata da `updateClientField`, non un undicesimo campo.** Il nome ha tre regole che gli altri non hanno: limite di 200 caratteri, caratteri invisibili tolti, avviso di doppione. Farlo passare dall'allow-list vorrebbe dire perderle tutte e tre.
-  - [ ] Riusare `validateClientName` da `@/lib/validate-client-name`. **Non riscriverla, non copiarne le regole:** è già pura, esportata e passata da una revisione.
-  - [ ] Riusare `findExistingName` e il giro dell'avviso già scritto in `createClientRecord:49-62`: campo nascosto `duplicate_of`, primo Salva che avvisa, secondo Salva che scrive lo stesso (D14, il software registra e mostra, non vieta).
-  - [ ] **`findExistingName` va estesa, ed è l'unica modifica a codice già revisionato:** oggi legge `select('name')` e confronterebbe il cliente con se stesso, quindi rinominare `acme` in `Acme` avviserebbe di un doppione che è il cliente stesso. Passa a `select('id, name')` e aggiungi un parametro `exceptId?: string` che salta quella riga. `createClientRecord` la chiama senza il parametro e non cambia comportamento.
-  - [ ] `revalidatePath` sulla scheda **e** su `/clienti`: il nome è la prima colonna dell'elenco.
-  - [ ] Stesso trattamento degli errori di `updateClientField`: `code` e `message` nei log, mai `details`; messaggio all'utente che dice cosa fare.
-  - [ ] **Il nome non si salva da solo.** Ha l'avviso di doppione, che richiede una seconda conferma consapevole: un salvataggio automatico creerebbe il doppione mentre Luca sta ancora scrivendo il nome nuovo.
+- [x] **Task 3 — Rinomina del cliente** (AC: 5)
+  - [x] Aggiungere `renameClient` in `src/app/(app)/clienti/actions.ts`. **Azione separata da `updateClientField`, non un undicesimo campo.** Il nome ha tre regole che gli altri non hanno: limite di 200 caratteri, caratteri invisibili tolti, avviso di doppione. Farlo passare dall'allow-list vorrebbe dire perderle tutte e tre.
+  - [x] Riusare `validateClientName` da `@/lib/validate-client-name`. **Non riscriverla, non copiarne le regole:** è già pura, esportata e passata da una revisione.
+  - [x] Riusare `findExistingName` e il giro dell'avviso già scritto in `createClientRecord:49-62`: campo nascosto `duplicate_of`, primo Salva che avvisa, secondo Salva che scrive lo stesso (D14, il software registra e mostra, non vieta).
+  - [x] **`findExistingName` va estesa, ed è l'unica modifica a codice già revisionato:** oggi legge `select('name')` e confronterebbe il cliente con se stesso, quindi rinominare `acme` in `Acme` avviserebbe di un doppione che è il cliente stesso. Passa a `select('id, name')` e aggiungi un parametro `exceptId?: string` che salta quella riga. `createClientRecord` la chiama senza il parametro e non cambia comportamento.
+  - [x] `revalidatePath` sulla scheda **e** su `/clienti`: il nome è la prima colonna dell'elenco.
+  - [x] Stesso trattamento degli errori di `updateClientField`: `code` e `message` nei log, mai `details`; messaggio all'utente che dice cosa fare.
+  - [x] **Il nome non si salva da solo.** Ha l'avviso di doppione, che richiede una seconda conferma consapevole: un salvataggio automatico creerebbe il doppione mentre Luca sta ancora scrivendo il nome nuovo.
 
-- [ ] **Task 4 — Indicatore di salvataggio riusabile** (AC: 6)
-  - [ ] Creare `src/components/save-indicator.tsx`: componente di sola presentazione, nessuna chiamata, nessun timer dentro. Chi lo usa gli passa lo stato.
-  - [ ] **Si costruisce qui una volta sola, con i tre stati esatti di UX-DR8, perché la Story 3.3 lo riuserà ancorato in fondo alla schermata di compilazione.** Costruirne qui una versione provvisoria e una vera dopo è la duplicazione silenziosa che `kb-0.md` §9 chiede di fermare. Cambia dove sta e chi lo pilota, non come è fatto.
+- [x] **Task 4 — Indicatore di salvataggio riusabile** (AC: 6)
+  - [x] Creare `src/components/save-indicator.tsx`: componente di sola presentazione, nessuna chiamata, nessun timer dentro. Chi lo usa gli passa lo stato.
+  - [x] **Si costruisce qui una volta sola, con i tre stati esatti di UX-DR8, perché la Story 3.3 lo riuserà ancorato in fondo alla schermata di compilazione.** Costruirne qui una versione provvisoria e una vera dopo è la duplicazione silenziosa che `kb-0.md` §9 chiede di fermare. Cambia dove sta e chi lo pilota, non come è fatto.
 
     | stato | testo | colore |
     |---|---|---|
@@ -157,9 +157,9 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
     | in corso | `Salvataggio…` | `--ink-muted` |
     | fallito | `Non salvato, riprovo` + pulsante `Riprova` | `--bad` |
 
-  - [ ] Prima del primo salvataggio non mostra niente: non c'è un'ora da dire.
-  - [ ] Monospaziato a `--t-data`, cioè la classe `.data` che esiste già. Nessuna spunta, nessuna animazione, nessun avviso a comparsa (UX-DR8). Il tono è quello di un orologio.
-  - [ ] Proprietà come union discriminata, mai tre booleani che possono essere veri insieme:
+  - [x] Prima del primo salvataggio non mostra niente: non c'è un'ora da dire.
+  - [x] Monospaziato a `--t-data`, cioè la classe `.data` che esiste già. Nessuna spunta, nessuna animazione, nessun avviso a comparsa (UX-DR8). Il tono è quello di un orologio.
+  - [x] Proprietà come union discriminata, mai tre booleani che possono essere veri insieme:
 
     ```ts
     export type SaveState =
@@ -169,13 +169,13 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
       | { kind: 'failed' }
     ```
 
-  - [ ] Aggiungere `formatClockTime(date: Date): string` a `src/lib/format-date.ts`, dove sta già `formatLastActivity`: la formattazione delle date vive in un file solo, ed è pura, quindi la Story 1.6 può metterci un test sopra. Forma `14:32`, `it-IT`, ore a due cifre.
-  - [ ] **Mai calcolare l'ora durante la resa sul server.** L'ora nasce nel browser al momento del salvataggio riuscito, altrimenti server e client rendono due orari diversi e l'idratazione si lamenta.
+  - [x] Aggiungere `formatClockTime(date: Date): string` a `src/lib/format-date.ts`, dove sta già `formatLastActivity`: la formattazione delle date vive in un file solo, ed è pura, quindi la Story 1.6 può metterci un test sopra. Forma `14:32`, `it-IT`, ore a due cifre.
+  - [x] **Mai calcolare l'ora durante la resa sul server.** L'ora nasce nel browser al momento del salvataggio riuscito, altrimenti server e client rendono due orari diversi e l'idratazione si lamenta.
 
-- [ ] **Task 5 — Il campo modificabile** (AC: 2, 3, 4, 5, 6)
-  - [ ] Creare `src/app/(app)/clienti/[id]/client-field-form.tsx` con `'use client'`: **un solo componente**, usato undici volte con parametri diversi — dieci campi più il nome. Non undici componenti, non un componente per tipo.
-  - [ ] Proprietà: `clientId: string`, `field: ClientField`, `value: string | null`. Il nome si passa con un descrittore suo, di forma identica, con `kind: 'name'`: il componente sa già distinguere i `kind`, e un secondo componente quasi uguale sarebbe la duplicazione che questa story esiste per togliere.
-  - [ ] `kind` decide tre cose e nient'altro: che controllo si rende, quale azione si chiama, se il campo si salva da solo.
+- [x] **Task 5 — Il campo modificabile** (AC: 2, 3, 4, 5, 6)
+  - [x] Creare `src/app/(app)/clienti/[id]/client-field-form.tsx` con `'use client'`: **un solo componente**, usato undici volte con parametri diversi — dieci campi più il nome. Non undici componenti, non un componente per tipo.
+  - [x] Proprietà: `clientId: string`, `field: ClientField`, `value: string | null`. Il nome si passa con un descrittore suo, di forma identica, con `kind: 'name'`: il componente sa già distinguere i `kind`, e un secondo componente quasi uguale sarebbe la duplicazione che questa story esiste per togliere.
+  - [x] `kind` decide tre cose e nient'altro: che controllo si rende, quale azione si chiama, se il campo si salva da solo.
 
     | kind | controllo | azione | salvataggio automatico |
     |---|---|---|---|
@@ -184,55 +184,55 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
     | `integer` | `input` `inputMode="numeric"` | `updateClientField` | no |
     | `long` | `textarea` 3 righe | `updateClientField` | **sì** |
 
-  - [ ] Ogni campo è un `<form>` a sé, con la sua `useActionState`: un salvataggio che fallisce riguarda un campo solo e non porta via quello che c'è scritto negli altri (`kb-0.md` §6, NFR1). Gli undici form sono fratelli dentro la card, mai annidati: un form dentro un form non è HTML valido.
-  - [ ] `useActionState` importato da **`react`**, non `useFormState` da `react-dom`: è il nome vecchio (React 19.2).
-  - [ ] Campo controllato con `useState`, inizializzato da `value ?? ''`. È la stessa scelta di `new-client-form.tsx:20` e per lo stesso motivo: con un form action React ripulisce i campi non controllati a fine invio, e un valore rifiutato sparirebbe insieme all'errore.
-  - [ ] `<label className="label" htmlFor={...}>` con `id` costruito dalla chiave del campo, per esempio `campo-sector`: undici campi nella stessa pagina, gli identificatori devono essere unici. Etichetta vera, mai un segnaposto al suo posto (UX-DR14).
-  - [ ] Resa secondo `kind`: `short` e `integer` → `<input className="input">`, `long` → `<textarea className="input input--long">` con `rows={3}`, `name` → `<input className="input input--display">`.
-  - [ ] **`integer` si rende con `type="text"` e `inputMode="numeric"`, non con `type="number"`.** Con `type="number"` il browser restituisce stringa vuota quando il contenuto non è un numero: quello che l'utente ha battuto sparirebbe prima di arrivare al server, e AC3 chiede un messaggio su quello che ha scritto. `inputMode="numeric"` dà comunque il tastierino sul tablet (NFR4).
-  - [ ] Campi nascosti `client_id` e `field`, come `new-client-form.tsx:37` fa già con `duplicate_of`. Il server li ricontrolla comunque: quello che arriva dal browser non è attendibile (`kb-0.md` §3).
-  - [ ] `Salva` e `Annulla` compaiono **solo quando il campo è cambiato**: `const dirty = value !== (props.value ?? '')`. A riposo la scheda si legge, non si compila.
-  - [ ] `Annulla` riporta il campo al valore della proprietà. È reversibile, quindi nessuna conferma (`kb-0.md` §6).
-  - [ ] Dopo un salvataggio riuscito, allineare il campo a `state.saved`: il server salva il valore ripulito, e senza questo allineamento uno spazio in coda lascerebbe `Salva` acceso per sempre su un campo già salvato.
-  - [ ] Errore del campo: `<p className="field__error" role="alert" id={...}>` sotto il campo, legato con `aria-describedby`, più `aria-invalid` sul controllo. Non riusare `.error-box`: è il riquadro di una schermata intera, qui basta una riga.
-  - [ ] Sui campi `short`, `integer` e `name` la conferma del salvataggio è che i pulsanti spariscono. Nessun indicatore, nessuna spunta: chi ha appena premuto `Salva` non ha bisogno che glielo si dica.
+  - [x] Ogni campo è un `<form>` a sé, con la sua `useActionState`: un salvataggio che fallisce riguarda un campo solo e non porta via quello che c'è scritto negli altri (`kb-0.md` §6, NFR1). Gli undici form sono fratelli dentro la card, mai annidati: un form dentro un form non è HTML valido.
+  - [x] `useActionState` importato da **`react`**, non `useFormState` da `react-dom`: è il nome vecchio (React 19.2).
+  - [x] Campo controllato con `useState`, inizializzato da `value ?? ''`. È la stessa scelta di `new-client-form.tsx:20` e per lo stesso motivo: con un form action React ripulisce i campi non controllati a fine invio, e un valore rifiutato sparirebbe insieme all'errore.
+  - [x] `<label className="label" htmlFor={...}>` con `id` costruito dalla chiave del campo, per esempio `campo-sector`: undici campi nella stessa pagina, gli identificatori devono essere unici. Etichetta vera, mai un segnaposto al suo posto (UX-DR14).
+  - [x] Resa secondo `kind`: `short` e `integer` → `<input className="input">`, `long` → `<textarea className="input input--long">` con `rows={3}`, `name` → `<input className="input input--display">`.
+  - [x] **`integer` si rende con `type="text"` e `inputMode="numeric"`, non con `type="number"`.** Con `type="number"` il browser restituisce stringa vuota quando il contenuto non è un numero: quello che l'utente ha battuto sparirebbe prima di arrivare al server, e AC3 chiede un messaggio su quello che ha scritto. `inputMode="numeric"` dà comunque il tastierino sul tablet (NFR4).
+  - [x] Campi nascosti `client_id` e `field`, come `new-client-form.tsx:37` fa già con `duplicate_of`. Il server li ricontrolla comunque: quello che arriva dal browser non è attendibile (`kb-0.md` §3).
+  - [x] `Salva` e `Annulla` compaiono **solo quando il campo è cambiato**: `const dirty = value !== (props.value ?? '')`. A riposo la scheda si legge, non si compila.
+  - [x] `Annulla` riporta il campo al valore della proprietà. È reversibile, quindi nessuna conferma (`kb-0.md` §6).
+  - [x] Dopo un salvataggio riuscito, allineare il campo a `state.saved`: il server salva il valore ripulito, e senza questo allineamento uno spazio in coda lascerebbe `Salva` acceso per sempre su un campo già salvato.
+  - [x] Errore del campo: `<p className="field__error" role="alert" id={...}>` sotto il campo, legato con `aria-describedby`, più `aria-invalid` sul controllo. Non riusare `.error-box`: è il riquadro di una schermata intera, qui basta una riga.
+  - [x] Sui campi `short`, `integer` e `name` la conferma del salvataggio è che i pulsanti spariscono. Nessun indicatore, nessuna spunta: chi ha appena premuto `Salva` non ha bisogno che glielo si dica.
 
   **Salvataggio automatico, solo sui campi `long` (AC6)**
 
-  - [ ] Tre secondi dopo l'ultima digitazione il contenuto si salva da solo. Stesso intervallo che FR19 fissa per la compilazione: lo strumento si comporta allo stesso modo dovunque, e un secondo numero da ricordare non serve a nessuno.
-  - [ ] **Si salva anche all'uscita dal campo**, se il contenuto è cambiato. Senza questo, chi scrive e clicca via entro tre secondi perde quello che ha scritto — cioè esattamente l'unica promessa non negoziabile del prodotto (NFR1).
-  - [ ] `Salva` resta e salva subito, annullando il timer in attesa. Il salvataggio a mano è un requisito, non una comodità: AC6 lo chiede.
-  - [ ] Un solo percorso di scrittura per entrambi i modi: si costruisce il `FormData` e si chiama la stessa azione di `useActionState`. Due percorsi vorrebbero dire due comportamenti da tenere allineati, e il secondo si scopre rotto mesi dopo.
-  - [ ] Il timer parte da `setTimeout`, quindi non da un gestore di evento: la chiamata all'azione va dentro `startTransition` importato da `react`, altrimenti React avvisa e il `pending` non si comporta.
-  - [ ] Il timer si azzera a ogni battuta e **si cancella allo smontaggio del componente**: senza la pulizia, un salvataggio parte su un componente che non c'è più.
-  - [ ] Niente salvataggio automatico se il contenuto non è cambiato, e niente mentre un salvataggio è in corso: in quel caso il timer si riarma.
-  - [ ] `<SaveIndicator>` sotto il campo, pilotato così: `pending` → `saving`; azione riuscita → `saved` con l'ora presa in quel momento; azione fallita → `failed`, e `Riprova` rilancia la stessa azione col contenuto che è nel campo adesso.
-  - [ ] **In caso di fallimento il testo resta nel campo, sempre.** Non si svuota, non si ripristina, non si sostituisce con quello del server: è scritto in AC6 ed è la ragione per cui il campo è controllato.
+  - [x] Tre secondi dopo l'ultima digitazione il contenuto si salva da solo. Stesso intervallo che FR19 fissa per la compilazione: lo strumento si comporta allo stesso modo dovunque, e un secondo numero da ricordare non serve a nessuno.
+  - [x] **Si salva anche all'uscita dal campo**, se il contenuto è cambiato. Senza questo, chi scrive e clicca via entro tre secondi perde quello che ha scritto — cioè esattamente l'unica promessa non negoziabile del prodotto (NFR1).
+  - [x] `Salva` resta e salva subito, annullando il timer in attesa. Il salvataggio a mano è un requisito, non una comodità: AC6 lo chiede.
+  - [x] Un solo percorso di scrittura per entrambi i modi: si costruisce il `FormData` e si chiama la stessa azione di `useActionState`. Due percorsi vorrebbero dire due comportamenti da tenere allineati, e il secondo si scopre rotto mesi dopo.
+  - [x] Il timer parte da `setTimeout`, quindi non da un gestore di evento: la chiamata all'azione va dentro `startTransition` importato da `react`, altrimenti React avvisa e il `pending` non si comporta.
+  - [x] Il timer si azzera a ogni battuta e **si cancella allo smontaggio del componente**: senza la pulizia, un salvataggio parte su un componente che non c'è più.
+  - [x] Niente salvataggio automatico se il contenuto non è cambiato, e niente mentre un salvataggio è in corso: in quel caso il timer si riarma.
+  - [x] `<SaveIndicator>` sotto il campo, pilotato così: `pending` → `saving`; azione riuscita → `saved` con l'ora presa in quel momento; azione fallita → `failed`, e `Riprova` rilancia la stessa azione col contenuto che è nel campo adesso.
+  - [x] **In caso di fallimento il testo resta nel campo, sempre.** Non si svuota, non si ripristina, non si sostituisce con quello del server: è scritto in AC6 ed è la ragione per cui il campo è controllato.
 
-- [ ] **Task 6 — Scheda riscritta sulla fonte unica** (AC: 1, 2, 4, 5)
-  - [ ] Riscrivere `src/app/(app)/clienti/[id]/page.tsx` intorno a `CLIENT_FIELDS`. Resta un Server Component: il controllo dell'uuid, `getUser()`, la query, `notFound()` e lo stato d'errore **restano com'erano**, sono già passati da una revisione.
-  - [ ] L'identità in cima alla card diventa: una riga con l'etichetta `Nome del cliente` a sinistra e la pillola di stato a destra, e sotto il campo del nome a `--t-display`. La pillola resta in sola lettura, riusando `<StatusPill />`: il selettore dei cinque stati è la Story 1.3.
-  - [ ] Il campo del nome è un `<ClientFieldForm>` come gli altri, col suo descrittore `kind: 'name'`. L'etichetta è vera e visibile, non un segnaposto dentro un titolo (UX-DR14): il nome resta grande e leggibile come titolo, ma è un campo e lo dichiara.
-  - [ ] `COLUMNS` resta una stringa letterale, ma il tipo della scheda si deriva:
+- [x] **Task 6 — Scheda riscritta sulla fonte unica** (AC: 1, 2, 4, 5)
+  - [x] Riscrivere `src/app/(app)/clienti/[id]/page.tsx` intorno a `CLIENT_FIELDS`. Resta un Server Component: il controllo dell'uuid, `getUser()`, la query, `notFound()` e lo stato d'errore **restano com'erano**, sono già passati da una revisione.
+  - [x] L'identità in cima alla card diventa: una riga con l'etichetta `Nome del cliente` a sinistra e la pillola di stato a destra, e sotto il campo del nome a `--t-display`. La pillola resta in sola lettura, riusando `<StatusPill />`: il selettore dei cinque stati è la Story 1.3.
+  - [x] Il campo del nome è un `<ClientFieldForm>` come gli altri, col suo descrittore `kind: 'name'`. L'etichetta è vera e visibile, non un segnaposto dentro un titolo (UX-DR14): il nome resta grande e leggibile come titolo, ma è un campo e lo dichiara.
+  - [x] `COLUMNS` resta una stringa letterale, ma il tipo della scheda si deriva:
 
     ```ts
     type ClientDetail = Pick<ClientRow, 'id' | 'name' | 'status' | ClientFieldKey>
     ```
 
     Così i tre elenchi diventano due, e il secondo lo controlla il compilatore: se un campo entra in `CLIENT_FIELDS` senza entrare in `COLUMNS`, la riga tornata dalla query non soddisfa più `ClientDetail` e `npm run typecheck` si ferma. È esattamente quello che oggi non succede.
-  - [ ] La griglia si genera con `CLIENT_FIELDS.map(...)`, un `<ClientFieldForm>` per elemento. Nessun array `fields` scritto a mano nel file.
-  - [ ] `dl`, `dt` e `dd` **spariscono, e non è un passo indietro**: la revisione della Story 1.1 li aveva introdotti perché un campo vuoto in sola lettura lasciava un'etichetta senza valore associato. Con un controllo di modulo vero il legame lo fa `<label htmlFor>`, che è più forte e non ha bisogno della lista di definizione.
-  - [ ] I due campi `long` prendono tutta la larghezza: classe `field--wide` sulla loro cella. Le note sono uno dei due, e AC4 chiede che restino visibili senza aprire niente: una `textarea` a tre righe dentro una colonna da 220px non è "visibile", è nascosta di fatto.
-  - [ ] **Stato vuoto (AC1):** se tutti e dieci i campi sono `null`, sopra la griglia compare una riga in `.meta`: `Di questo cliente sai solo il nome. I campi si compilano quando li scopri.` Nessun pulsante: i campi sono già lì e sono già l'azione, e un pulsante primario in più violerebbe UX-DR10. È la deviazione consapevole da UX-DR11, che chiede "il pulsante che lo crea".
-  - [ ] Aggiornare `src/app/(app)/clienti/[id]/loading.tsx` alla forma nuova: lo scheletro del nome in cima, poi uno scheletro per elemento di `CLIENT_FIELDS`, con i due `long` a tutta larghezza e più alti. Anche qui l'elenco si deriva, non si conta a mano: oggi il file tiene un array `[1..10]` scritto a mano, ed è lo stesso genere di disallineamento che Task 1 esiste per chiudere. Uno scheletro che non ha la forma del contenuto fa saltare la pagina quando il contenuto arriva, ed è già stato corretto una volta nella revisione della Story 1.1.
-  - [ ] Se `page.tsx` supera le 200 righe, estrarre la griglia in `client-fields-grid.tsx`: oltre quella soglia un file quasi sempre contiene due cose (`kb-0.md` §2).
+  - [x] La griglia si genera con `CLIENT_FIELDS.map(...)`, un `<ClientFieldForm>` per elemento. Nessun array `fields` scritto a mano nel file.
+  - [x] `dl`, `dt` e `dd` **spariscono, e non è un passo indietro**: la revisione della Story 1.1 li aveva introdotti perché un campo vuoto in sola lettura lasciava un'etichetta senza valore associato. Con un controllo di modulo vero il legame lo fa `<label htmlFor>`, che è più forte e non ha bisogno della lista di definizione.
+  - [x] I due campi `long` prendono tutta la larghezza: classe `field--wide` sulla loro cella. Le note sono uno dei due, e AC4 chiede che restino visibili senza aprire niente: una `textarea` a tre righe dentro una colonna da 220px non è "visibile", è nascosta di fatto.
+  - [x] **Stato vuoto (AC1):** se tutti e dieci i campi sono `null`, sopra la griglia compare una riga in `.meta`: `Di questo cliente sai solo il nome. I campi si compilano quando li scopri.` Nessun pulsante: i campi sono già lì e sono già l'azione, e un pulsante primario in più violerebbe UX-DR10. È la deviazione consapevole da UX-DR11, che chiede "il pulsante che lo crea".
+  - [x] Aggiornare `src/app/(app)/clienti/[id]/loading.tsx` alla forma nuova: lo scheletro del nome in cima, poi uno scheletro per elemento di `CLIENT_FIELDS`, con i due `long` a tutta larghezza e più alti. Anche qui l'elenco si deriva, non si conta a mano: oggi il file tiene un array `[1..10]` scritto a mano, ed è lo stesso genere di disallineamento che Task 1 esiste per chiudere. Uno scheletro che non ha la forma del contenuto fa saltare la pagina quando il contenuto arriva, ed è già stato corretto una volta nella revisione della Story 1.1.
+  - [x] Se `page.tsx` supera le 200 righe, estrarre la griglia in `client-fields-grid.tsx`: oltre quella soglia un file quasi sempre contiene due cose (`kb-0.md` §2).
 
-- [ ] **Task 7 — Le classi che mancano, e solo quelle** (AC: 1, 4, 5, 6)
-  - [ ] In `src/app/globals.css`, aggiungere: `.input--long` (`min-height` da tre righe, `resize: vertical`, `font-family: inherit`), `.input--display` (la tipografia di `.display-title`: 32/38, peso 600, spaziatura -0.02em), `.field--wide` (`grid-column: 1 / -1`), `.field__actions` (flex, `gap: 8px`), `.field__error` (`--bad`, dimensione di `.meta`, `margin: 0`), `.save-indicator--failed` (`--bad`) e `.save-indicator--saving` (`--ink-muted`); il colore a riposo è `--ink-faint`.
-  - [ ] `.display-title` resta: la usa `loading.tsx` per lo scheletro e resterà la misura di riferimento. `.input--display` ne riprende la tipografia, non la sostituisce.
-  - [ ] Prima di aggiungere qualsiasi altra cosa, verificare che non ci sia già: `.card`, `.page-header`, `.page-title`, `.field`, `.label`, `.input`, `.btn`, `.btn--primary`, `.btn--secondary`, `.empty`, `.error-box`, `.warn-box`, `.skeleton`, `.pill`, `.meta`, `.data`, `.display-title`, `.detail-identity`, `.detail-grid`, `.back-link` esistono tutte.
-  - [ ] `.detail__value` non serve più a niente quando la griglia diventa di campi modificabili: si cancella. Codice morto si cancella, non si commenta (`kb-0.md` §2).
-  - [ ] Nessun valore esadecimale fuori da questo file, in nessuna circostanza (UX-DR16).
+- [x] **Task 7 — Le classi che mancano, e solo quelle** (AC: 1, 4, 5, 6)
+  - [x] In `src/app/globals.css`, aggiungere: `.input--long` (`min-height` da tre righe, `resize: vertical`, `font-family: inherit`), `.input--display` (la tipografia di `.display-title`: 32/38, peso 600, spaziatura -0.02em), `.field--wide` (`grid-column: 1 / -1`), `.field__actions` (flex, `gap: 8px`), `.field__error` (`--bad`, dimensione di `.meta`, `margin: 0`), `.save-indicator--failed` (`--bad`) e `.save-indicator--saving` (`--ink-muted`); il colore a riposo è `--ink-faint`.
+  - [x] `.display-title` resta: la usa `loading.tsx` per lo scheletro e resterà la misura di riferimento. `.input--display` ne riprende la tipografia, non la sostituisce.
+  - [x] Prima di aggiungere qualsiasi altra cosa, verificare che non ci sia già: `.card`, `.page-header`, `.page-title`, `.field`, `.label`, `.input`, `.btn`, `.btn--primary`, `.btn--secondary`, `.empty`, `.error-box`, `.warn-box`, `.skeleton`, `.pill`, `.meta`, `.data`, `.display-title`, `.detail-identity`, `.detail-grid`, `.back-link` esistono tutte.
+  - [x] `.detail__value` non serve più a niente quando la griglia diventa di campi modificabili: si cancella. Codice morto si cancella, non si commenta (`kb-0.md` §2).
+  - [x] Nessun valore esadecimale fuori da questo file, in nessuna circostanza (UX-DR16).
 
 - [ ] **Task 8 — Verifica a mano sul percorso reale** (AC: 1, 2, 3, 4, 5, 6)
 
@@ -242,13 +242,13 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
   (`kb-0.md` §7).
 
   *Verificabile dall'agente, senza sessione*
-  - [ ] `npm run typecheck` e `npm run build` puliti.
-  - [ ] Prova che il tipo della query non sia degradato ad `any`: introdurre di proposito un campo inesistente sulla riga letta, verificare che `tsc` lo rifiuti, poi ripristinare. È il controllo che la Story 1.1 ha dovuto inventarsi, e vale ancora.
-  - [ ] Prova che la fonte unica tenga: togliere un campo da `COLUMNS` lasciandolo in `CLIENT_FIELDS`, verificare che `typecheck` si fermi, poi ripristinare. Se non si ferma, Task 6 non ha chiuso il debito che doveva chiudere.
-  - [ ] `parseEmployees` sui casi limite: vuoto, spazi, `0`, `-1`, `1.5`, `1e3`, `2147483647`, `2147483648`, `007`, `abc`, valori non stringa.
-  - [ ] `normalizeTextValue`: stringa vuota, soli spazi, spazi ai bordi, valori non stringa.
-  - [ ] `formatClockTime`: mezzanotte, mezzogiorno, `09:05` con lo zero davanti.
-  - [ ] `findExistingName` con `exceptId`: la riga esclusa non si conta come doppione di se stessa, e `createClientRecord` che la chiama senza parametro si comporta come prima.
+  - [x] `npm run typecheck` e `npm run build` puliti.
+  - [x] Prova che il tipo della query non sia degradato ad `any`: introdurre di proposito un campo inesistente sulla riga letta, verificare che `tsc` lo rifiuti, poi ripristinare. È il controllo che la Story 1.1 ha dovuto inventarsi, e vale ancora.
+  - [x] Prova che la fonte unica tenga: togliere un campo da `COLUMNS` lasciandolo in `CLIENT_FIELDS`, verificare che `typecheck` si fermi, poi ripristinare. Se non si ferma, Task 6 non ha chiuso il debito che doveva chiudere.
+  - [x] `parseEmployees` sui casi limite: vuoto, spazi, `0`, `-1`, `1.5`, `1e3`, `2147483647`, `2147483648`, `007`, `abc`, valori non stringa.
+  - [x] `normalizeTextValue`: stringa vuota, soli spazi, spazi ai bordi, valori non stringa.
+  - [x] `formatClockTime`: mezzanotte, mezzogiorno, `09:05` con lo zero davanti.
+  - [x] `findExistingName` con `exceptId`: la riga esclusa non si conta come doppione di se stessa, e `createClientRecord` che la chiama senza parametro si comporta come prima.
 
   *Da percorrere con una sessione aperta*
   - [ ] Modifico un campo, confermo, ricarico: il valore c'è.
@@ -274,6 +274,80 @@ Le due che seguono non stanno in `epics.md`: sono decisioni di Luca del 2 agosto
   - [ ] Larghezza 375px: la scheda resta usabile, i campi non escono, i bersagli restano toccabili (NFR4).
   - [ ] Da tastiera: si arriva a ogni campo, il focus si vede, `Salva` e `Annulla` si raggiungono senza mouse.
   - [ ] Un valore lunghissimo senza spazi non fa scorrere la pagina di lato.
+
+### Review Findings
+
+Revisione del 3 agosto 2026, tre livelli in parallelo (adversarial, edge case, aderenza alle AC).
+Le severità sono state assegnate qui, non dai revisori, dopo aver riletto il codice attorno a ogni
+punto segnalato.
+
+**Le tre decisioni di Luca, prese in revisione il 3 agosto 2026**
+
+1. **L'autosave esce da `useActionState`.** I campi lunghi chiamano l'azione dentro un `try/catch` proprio e gestiscono `pending` ed errore a mano, così un rifiuto della promessa diventa lo stato `failed` che AC6 chiede invece di far saltare l'error boundary. Costa la riscrittura della macchina a stati, che la Story 3.3 eredita già giusta. Diventa una correzione.
+2. **La finestra dei tre secondi resta scoperta.** Nessun `beforeunload`, nessuna beacon: la perdita richiede di chiudere la scheda entro tre secondi con il fuoco ancora dentro, e il salvataggio all'uscita dal campo copre già ogni navigazione dentro l'applicazione. Diventa una voce rimandata.
+3. **`.display-title` si cancella.** Il presupposto di Task 7 è caduto quando Task 6 ha riscritto lo scheletro: `kb-0.md` §2 vale identico, e la misura resta dichiarata da `.input--display`. Diventa una correzione, e la voce esce da `deferred-work.md`.
+
+**Corrette il 3 agosto 2026**
+
+- [x] [Review][Patch] L'autosave esce da `useActionState`: un rifiuto dell'azione deve diventare lo stato `failed`, non far smontare la scheda dall'error boundary [src/lib/use-editable-field.ts]
+- [x] [Review][Patch] Cancellare `.display-title`, ora che nessun file la nomina [src/app/globals.css:195]
+- [x] [Review][Patch] Il blur precede il click: `Annulla` salva il testo da scartare, `Salva` scrive due volte [src/lib/use-editable-field.ts:168]
+- [x] [Review][Patch] L'autosave riallinea la textarea al valore ripulito mentre si scrive: l'a-capo appena battuto sparisce e il cursore salta in fondo [src/lib/use-editable-field.ts:110]
+- [x] [Review][Patch] Un autosave fallito si riarma ogni tre secondi all'infinito, senza contatore né freno [src/lib/use-editable-field.ts:126]
+- [x] [Review][Patch] `duplicate_of` sopravvive ad `Annulla`: al tentativo successivo l'avviso di doppione non compare e il primo `Salva` rinomina [src/app/(app)/clienti/[id]/client-field-form.tsx:36]
+- [x] [Review][Patch] Un `value` mancante o non stringa svuota la colonna e risponde "salvato" [src/app/(app)/clienti/actions.ts:123]
+- [x] [Review][Patch] `saveState` non torna mai a `idle`: dopo `Annulla` l'indicatore dichiara un lavoro non salvato che non esiste, e `Riprova` riscrive il valore ripristinato [src/lib/use-editable-field.ts:143]
+- [x] [Review][Patch] L'errore e l'avviso restano a schermo mentre si corregge il campo, `aria-invalid` compreso [src/lib/use-editable-field.ts:155]
+- [x] [Review][Patch] Codice morto: il ramo `name` di `submit()`, il ref `duplicateOf` e l'effetto che lo tiene aggiornato non sono raggiungibili [src/app/(app)/clienti/[id]/client-field-form.tsx:40]
+- [x] [Review][Patch] `-0` passa il controllo sui negativi e viene scritto come `0` invece di essere rifiutato [src/lib/client-fields.ts:99]
+- [x] [Review][Patch] Scheletri fuori forma: i campi corti erano 50px contro i 44px reali [src/app/(app)/clienti/[id]/loading.tsx:28]
+- [x] [Review][Patch] La riga dell'indicatore salta di 26px quando un salvataggio fallisce: `min-height` 18px contro i 44px del pulsante `Riprova` [src/app/globals.css:414]
+- [x] [Review][Patch] `client-field-form.tsx` è 221 righe, sopra il limite che la story dichiara vincolante: la macchina a stati dell'autosave è la seconda cosa [src/app/(app)/clienti/[id]/client-field-form.tsx:1]
+
+**Com'è stato corretto**
+
+`src/lib/use-editable-field.ts` è nuovo e tiene tutto il campo che si salva: il valore, se è
+cambiato, l'esito dell'ultima scrittura, i tre stati dell'indicatore e il timer. È il file che la
+Story 3.3 riuserà, e nasce già senza i difetti che questa revisione ha trovato. `client-field-form.tsx`
+resta un componente solo per undici campi e torna a 157 righe: disegna, non governa.
+
+Le quattro correzioni che contano, e come stanno in piedi:
+
+- **`useActionState` non c'è più.** L'azione si chiama a mano dentro `startTransition`, con un
+  `catch` che trasforma un rifiuto della promessa nello stato `failed`. Il confine d'errore non
+  vede più niente, e nessun guasto di rete può portare via la scheda. Cade con esso anche l'invio
+  nativo del modulo: il `FormData` lo costruisce sempre `run`, quindi il percorso di scrittura è
+  uno solo davvero, non uno solo a parole.
+- **Il blur non salva più quando il fuoco resta nel modulo.** Due difese insieme: `onMouseDown`
+  che impedisce lo spostamento del fuoco col mouse, e il controllo su `relatedTarget` per la
+  tastiera. Serve la coppia perché Safari, cliccando, non dà il fuoco ai pulsanti e
+  `relatedTarget` arriverebbe vuoto.
+- **Un solo tentativo automatico per testo.** `attempted` ricorda l'ultimo valore mandato e il
+  timer non riparte finché quel testo non cambia. Chiude in un colpo il ciclo infinito dopo un
+  fallimento e quello, più silenzioso, di un testo che il server ripulisce e che si rimanderebbe
+  da sé per sempre. `Riprova` resta il modo di insistere.
+- **L'allineamento aspetta.** Il valore ripulito entra nel campo solo quando il campo non ha il
+  fuoco; se il salvataggio finisce mentre si scrive, l'allineamento si mette in attesa e si
+  applica all'uscita. Nessuna textarea riscritta sotto le dita.
+
+**Non corretto, e va detto:** lo scheletro non può sapere se il cliente è ancora vuoto, quindi la
+riga `Di questo cliente sai solo il nome…` continua a comparire dopo il caricamento e a spostare
+la griglia in giù, ma solo al primo caricamento di un cliente appena creato. Riservarle lo spazio
+sempre vorrebbe dire un buco fisso sopra la griglia di ogni cliente compilato, che è peggio del
+salto che eviterebbe. Restano corrette le altezze dei campi, che erano il grosso del disallineamento.
+
+**Verificato:** `npm run typecheck` e `npm run build` puliti, stesse sette rotte. `parseEmployees`
+riprovata sui diciotto casi limite più `-0`, che adesso è rifiutato mentre `0` resta un dato vero.
+`normalizeTextValue` invariata. `.display-title` non compare più da nessuna parte, `grep` compreso.
+**Non verificato:** tutto il percorso con una sessione aperta. Il salvataggio è stato riscritto e
+nessuno lo ha ancora visto funzionare.
+
+**Rimandate**
+
+- [x] [Review][Defer] I due campi lunghi che salvano insieme possono far tornare indietro `baseline` e far ripartire un salvataggio già fatto [src/app/(app)/clienti/[id]/client-field-form.tsx:38] — rimandata, dipende dall'ordine di consegna dei payload RSC e non è stata riprodotta
+- [x] [Review][Defer] Fra l'ultima battuta e i tre secondi non c'è protezione: chiudere la scheda o ricaricare col fuoco ancora nella textarea perde il testo [src/app/(app)/clienti/[id]/client-field-form.tsx:124] — rimandata per decisione di Luca del 3 agosto 2026: la finestra è di tre secondi e solo col fuoco dentro, e il salvataggio all'uscita dal campo copre già ogni navigazione dentro l'applicazione
+
+**Scartata come rumore:** `.input--long` non dichiara `font-family: inherit` come Task 7 elencava. Nessuna conseguenza: `.input` lo dichiara già ed è sempre applicata insieme.
 
 ## Dev Notes
 
@@ -520,11 +594,127 @@ La revisione della Story 1.1 ha prodotto cinque voci rimandate: due riguardano f
 
 ### Agent Model Used
 
+claude-opus-5
+
 ### Debug Log References
+
+**Un valore esportato da un file `'use client'` non arriva al server.** `NAME_FIELD` era stato messo
+dentro `client-field-form.tsx`, com'era naturale: sta accanto al componente che lo usa. Sul server
+però quel modulo non è il modulo, è un riferimento al client, e `typeof NAME_FIELD` risponde
+`"function"`: `NAME_FIELD.key` sarebbe arrivato `undefined` e il campo del nome sarebbe stato reso
+senza etichetta e senza sapere che azione chiamare. Né `typecheck` né `build` se ne accorgono, perché
+nessuno dei due esegue la pagina. Provato con una rotta usa e getta sotto `/auth` (l'unico percorso
+pubblico), poi cancellata: prima `{"tipo":"function"}`, dopo lo spostamento in `client-fields.ts`
+`{"tipo":"object","nome":{"key":"name",...}}`. Regola che ne esce: **i valori che un Server Component
+deve leggere non stanno in un file `'use client'`.**
+
+**Che la fonte unica tenga è stato provato, non dedotto.** Tolto `sector` da `COLUMNS` lasciandolo in
+`CLIENT_FIELDS`: `tsc` risponde `Property 'sector' is missing in type ... but required in type
+'ClientDetail'` su entrambi i punti in cui la riga viene passata. Ripristinato. È la prova che il
+debito rimandato dalla Story 1.1 è chiuso davvero.
+
+**Che il tipo della query non sia `any`.** Come nella Story 1.1: introdotto `data.nonEsiste`, `tsc`
+risponde `Property 'nonEsiste' does not exist on type '{ id: string; name: string; ... }'` con
+l'elenco completo delle colonne. Ripristinato.
+
+**Cache di build.** Confermato quanto annotato dalla Story 1.1: dopo `npm run build`, `next dev` va
+riavviato con `rm -rf .next`.
 
 ### Completion Notes List
 
+**Implementato (Task 1-7)**
+
+- `src/lib/client-fields.ts`: `CLIENT_FIELDS` come unico elenco, i tipi derivati, `isClientFieldKey`,
+  `normalizeTextValue`, `parseEmployees`. Puro, senza React e senza Supabase.
+- `updateClientField` e `renameClient` in `clienti/actions.ts`, il file condiviso già esistente.
+  Chiave controllata dall'allow-list, un campo per chiamata, `maybeSingle()`, nei log solo `code` e
+  `message`, `revalidatePath` sulla scheda e sull'elenco, `updated_at` lasciato al trigger.
+- `findExistingName` estesa con `exceptId`: la rinomina non conta il cliente come doppione di se stesso.
+- `save-indicator.tsx` in `src/components/`, i tre stati esatti, sola presentazione, nessun timer dentro.
+- `client-field-form.tsx`: un solo componente per undici campi. `kind` decide controllo, azione e
+  salvataggio automatico. Ogni campo è un modulo a sé.
+- Scheda e scheletri riscritti su `CLIENT_FIELDS`. Nessun elenco di campi scritto a mano.
+
+**Otto scelte diverse da come le prescriveva il file di story, con il motivo**
+
+1. **`NAME_FIELD` sta in `src/lib/client-fields.ts`, non accanto al componente.** Vedi il Debug Log:
+   da un file `'use client'` non sarebbe arrivato al Server Component. Resta **fuori** da
+   `CLIENT_FIELDS`, quindi `isClientFieldKey('name')` continua a rispondere falso e la trappola di
+   sicurezza della story regge intatta.
+2. **Aggiunto `openSession` in `actions.ts`.** Le due azioni nuove non devono reindirizzare, quindi non
+   possono riusare la sequenza di `createClientRecord`, che finisce con `redirect('/accedi')`. Senza
+   l'helper la distinzione fra sessione assente e auth irraggiungibile sarebbe stata scritta tre volte.
+   `createClientRecord` non è stato toccato: tiene la sua copia perché lì il redirect è parte dell'azione.
+3. **Nessun redirect nelle due azioni nuove, nemmeno quando la sessione è davvero finita.** La story dice
+   "nessun `redirect()` in questa azione" e ne dà il motivo: portare via quello che è stato appena
+   scritto. Vale anche per il caso senza sessione, che con undici campi aperti porterebbe via tutto.
+   Al suo posto un messaggio che dice cosa fare. Chi non ha una sessione lo ferma già il proxy.
+4. **`EMPLOYEES_NEGATIVE_MESSAGE` esportato da `client-fields.ts`.** La stessa frase serve a
+   `parseEmployees` e al ramo `23514`: due copie si allontanerebbero alla prima riscrittura.
+5. **Cambiato il prefisso del log di `findExistingName`** da `createClientRecord:` a `findExistingName:`.
+   Ora la funzione la chiamano due azioni, e il vecchio prefisso sarebbe stato falso nei log della
+   rinomina. È la seconda modifica a codice già revisionato, oltre a `exceptId` che Task 3 autorizza.
+6. **Tre classi in più di quelle elencate in Task 7:** `.save-indicator` (base: i due modificatori
+   hanno bisogno di qualcosa da modificare, e lì sta il colore a riposo e lo spazio riservato),
+   `.save-indicator__retry`, e `.detail-identity` riscritta da `align-items: center` a `flex-start`
+   con `justify-content: space-between`, perché Task 6 cambia quel blocco: la pillola deve stare
+   accanto all'etichetta del nome, non a metà di un campo alto.
+7. **Il modulo tiene `action={formAction}` e in più c'è `submit()`.** Il `Salva` a mano resta un invio
+   vero, con i campi nascosti che Task 5 chiede; il timer, l'uscita dal campo e `Riprova` costruiscono
+   lo stesso `FormData` e chiamano la stessa azione. Un percorso di scrittura solo nel senso che conta:
+   stessa azione, stesse chiavi, stesso comportamento dopo.
+8. **L'allineamento a `state.saved` avviene solo se nel campo c'è ancora quello che è stato mandato.**
+   Allinearlo sempre avrebbe cancellato il testo scritto mentre il salvataggio era in volo, cioè
+   esattamente quello che AC6 vieta. Con questa condizione lo spazio in coda si allinea e il testo
+   nuovo non si tocca.
+
+**Da decidere, e non deciso qui**
+
+- **`.display-title` non è più usata da nessun file.** Task 7 dice esplicitamente di tenerla come misura
+  di riferimento, quindi è rimasta, dichiarata insieme a `.input--display` così il 32/38/600/-0.02em
+  esiste in un posto solo. Resta però una classe che nessun TSX nomina, e `kb-0.md` §2 dice che il
+  codice morto si cancella. Decisione di Luca.
+- **La regola dell'uuid è scritta in due file**, `[id]/page.tsx` e `actions.ts`, con due scopi diversi
+  (una scheda che non c'è, contro una richiesta che non doveva esistere). Metterla in comune voleva
+  dire un file nuovo fuori dai tre che la story dichiara. Rimandata in `deferred-work.md`.
+
+**Chi ha verificato cosa (Task 8).** Il percorso con accesso richiede una sessione che arriva per email:
+non è una cosa che poteva fare l'agente, e le sue caselle restano vuote. Verificato dall'agente:
+`typecheck` e `build` puliti con le sette rotte di prima, tipo della query provato reale e non `any`,
+fonte unica provata (togliere un campo da `COLUMNS` ferma il compilatore), `parseEmployees` su diciotto
+casi limite compresi `''`, spazi, `0`, `-1`, `1.5`, `1e3`, `007`, `2147483647`, `2147483648` e valori non
+stringa, `normalizeTextValue` su otto, `formatClockTime` su mezzanotte, mezzogiorno e `09:05`, il
+confronto dei doppioni con e senza `exceptId` su nove casi, proxy che continua a mandare `/clienti` a
+`/accedi`, nessun errore in console, tutte le classi nuove presenti nel foglio di stile e `.detail__value`
+sparita. **Le ventitré voci del secondo gruppo restano da percorrere con una sessione aperta.**
+
+**Nessun test automatico**, come da perimetro: il comando arriva con la Story 1.6. Le verifiche qui
+sopra sono state fatte con script usa e getta fuori dal repository, sulle funzioni pure compilate.
+`client-fields.ts` non importa né React né Supabase, e insieme a `format-date.ts` esporta tutto quello
+che 1.6 vorrà provare.
+
+**Restano invariati:** nessuna migrazione, nessuna dipendenza nuova, nessun esadecimale fuori da
+`globals.css`, nessun `any`, `createClientRecord` intatto, `.btn` a 40px e l'alone del focus lasciati
+dove stanno.
+
 ### File List
+
+**Nuovi**
+
+- `src/lib/client-fields.ts`
+- `src/components/save-indicator.tsx`
+- `src/app/(app)/clienti/[id]/client-field-form.tsx`
+- `src/lib/use-editable-field.ts` — aggiunto dalla revisione del 3 agosto 2026
+
+**Modificati**
+
+- `src/app/(app)/clienti/actions.ts`
+- `src/app/(app)/clienti/[id]/page.tsx`
+- `src/app/(app)/clienti/[id]/loading.tsx`
+- `src/lib/format-date.ts`
+- `src/app/globals.css`
+- `docs/bmad/implementazione/deferred-work.md`
+- `docs/bmad/implementazione/sprint-status.yaml`
 
 ## Change Log
 
@@ -533,3 +723,7 @@ La revisione della Story 1.1 ha prodotto cinque voci rimandate: due riguardano f
 | 2 agosto 2026 | Story creata sulle quattro AC di `epics.md`. |
 | 2 agosto 2026 | Tre decisioni di Luca. Il nome diventa modificabile (AC5, Task 3). I campi lunghi si salvano da soli con il salvataggio a mano ancora disponibile, e l'indicatore di UX-DR8 si costruisce qui una volta sola perché la Story 3.3 lo riusi (AC6, Task 4 e 5). L'alone del focus resta com'è e appartiene alla Story 5.2. |
 | 2 agosto 2026 | Le prime due decisioni registrate come D21 e D22 in `00-contesto-e-decisioni.md`, la terza come voce rimandata in `deferred-work.md`. |
+| 3 agosto 2026 | Task 1-7 implementati. Fonte unica dei campi, due azioni nuove, indicatore di salvataggio riusabile, campo modificabile unico per undici campi, scheda e scheletri riscritti. Otto scelte diverse dal file di story, con il motivo scritto. Chiusa la seconda voce di `deferred-work.md`: i tre elenchi paralleli sono diventati uno, e la prova è che togliere un campo da `COLUMNS` ferma il compilatore. |
+| 3 agosto 2026 | Task 8 diviso come nella Story 1.1: sette voci verificate dall'agente, ventitré da percorrere con una sessione aperta e lasciate vuote. |
+| 3 agosto 2026 | Story chiusa da Luca con le ventitré prove a sessione aperta ancora da percorrere: la chiusura è una decisione sua, non una verifica. |
+| 3 agosto 2026 | Revisione del codice su tre livelli. Diciassette voci: tre decisioni di Luca, quattordici correzioni applicate, due rimandate, una scartata. Il salvataggio esce da `useActionState` e diventa `src/lib/use-editable-field.ts`, che la Story 3.3 eredita già senza i quattro difetti gravi trovati qui. Story riportata a `in-progress`: le ventitré prove con una sessione aperta valgono adesso su un percorso di scrittura riscritto. |
