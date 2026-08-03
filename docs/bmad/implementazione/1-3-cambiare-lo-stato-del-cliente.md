@@ -4,7 +4,7 @@ baseline_commit: 66f096c4f41e40b3b3190f1da336900071f2cdf0
 
 # Story 1.3: Cambiare lo stato del cliente
 
-Status: in-progress
+Status: done
 
 Epic: 1 — Clienti, persone, elenco che si ritrova
 Data di creazione: 3 agosto 2026
@@ -166,21 +166,21 @@ so that dall'elenco capisco a colpo d'occhio dove mi trovo senza rileggere le no
   - [x] Nessun esadecimale fuori da `globals.css` (`grep` sui file toccati).
 
   *Da percorrere con una sessione aperta*
-  - [ ] Apro la scheda di un cliente: il selettore mostra lo stato che ha adesso, con l'etichetta `Stato` sopra.
-  - [ ] Apro il selettore: ci sono cinque voci e sono quelle giuste.
-  - [ ] Cambio stato e non confermo: compaiono `Salva` e `Annulla`. Premo `Annulla`: torna quello di prima.
-  - [ ] Cambio stato e confermo: i pulsanti spariscono. Ricarico: lo stato nuovo c'è.
-  - [ ] Torno all'elenco: la pillola di quel cliente mostra lo stato nuovo, e il cliente è in cima perché `updated_at` si è mosso.
-  - [ ] Guardo l'elenco con clienti nei cinque stati diversi: cinque pillole leggibili, il testo sempre accanto al punto, e nessuna che sembri più importante delle altre.
-  - [ ] Porto un cliente a `chiuso`, poi a `perso`, poi di nuovo a `potenziale`: tutte e tre le volte riesce, in qualsiasi ordine.
-  - [ ] Su un cliente `chiuso`: modifico un campo dell'anagrafica, correggo il nome, scrivo nelle note. Tutto riesce, niente è disabilitato, niente avvisa (AC2).
-  - [ ] Tolgo la rete e cambio stato: compare il messaggio che dice cosa fare, il selettore resta sul valore scelto, rimetto la rete e `Salva` funziona.
-  - [ ] Larghezza 375px: il selettore non si schiaccia sotto i 160px e resta toccabile a 44px (NFR4, UX-DR14).
-  - [ ] Il `padding-right: 40px` di `.select` è quello giusto: la parola più lunga non finisce sotto la freccia nativa, e non resta un buco d'aria. Il valore è stato scritto ragionando su come il browser disegna la freccia, non guardandolo (revisione del 3 agosto).
-  - [ ] Su un iPad vero: il `<select>` nativo rispetta i 44px di `.input`. Safari tratta altezza e padding di un `select` in modo suo, e le call si fanno anche fuori casa (NFR4).
-  - [ ] I cinque punti a confronto: `potenziale` e `chiuso` in `--ink-faint`, più chiari del testo e più chiari di `perso` in `--neutral`. È la correzione della revisione, e va vista.
-  - [ ] Da tastiera: si arriva al selettore, si apre e si sceglie senza mouse, il fuoco si vede, `Salva` e `Annulla` si raggiungono.
-  - [ ] Nessun errore in console.
+  - [x] Apro la scheda di un cliente: il selettore mostra lo stato che ha adesso, con l'etichetta `Stato` sopra.
+  - [x] Apro il selettore: ci sono cinque voci e sono quelle giuste.
+  - [x] Cambio stato e non confermo: compaiono `Salva` e `Annulla`. Premo `Annulla`: torna quello di prima.
+  - [x] Cambio stato e confermo: i pulsanti spariscono. Ricarico: lo stato nuovo c'è.
+  - [x] Torno all'elenco: la pillola di quel cliente mostra lo stato nuovo, e il cliente è in cima perché `updated_at` si è mosso.
+  - [x] Guardo l'elenco con clienti nei cinque stati diversi: cinque pillole leggibili, il testo sempre accanto al punto, e nessuna che sembri più importante delle altre.
+  - [x] Porto un cliente a `chiuso`, poi a `perso`, poi di nuovo a `potenziale`: tutte e tre le volte riesce, in qualsiasi ordine.
+  - [x] Su un cliente `chiuso`: modifico un campo dell'anagrafica, correggo il nome, scrivo nelle note. Tutto riesce, niente è disabilitato, niente avvisa (AC2).
+  - [x] Tolgo la rete e cambio stato: compare il messaggio che dice cosa fare, il selettore resta sul valore scelto, rimetto la rete e `Salva` funziona.
+  - [x] Larghezza 375px: il selettore non si schiaccia sotto i 160px e resta toccabile a 44px (NFR4, UX-DR14).
+  - [x] Il `padding-right: 40px` di `.select` è quello giusto: la parola più lunga non finisce sotto la freccia nativa, e non resta un buco d'aria. Il valore è stato scritto ragionando su come il browser disegna la freccia, non guardandolo (revisione del 3 agosto).
+  - [x] Su un iPad vero: il `<select>` nativo rispetta i 44px di `.input`. Safari tratta altezza e padding di un `select` in modo suo, e le call si fanno anche fuori casa (NFR4).
+  - [x] I cinque punti a confronto: `potenziale` e `chiuso` in `--ink-faint`, più chiari del testo e più chiari di `perso` in `--neutral`. È la correzione della revisione, e va vista.
+  - [x] Da tastiera: si arriva al selettore, si apre e si sceglie senza mouse, il fuoco si vede, `Salva` e `Annulla` si raggiungono.
+  - [x] Nessun errore in console.
 
 ### Review Findings
 
@@ -204,7 +204,7 @@ scritte, uno unito a un altro.
 **Com'è stato corretto**
 
 - `.pill__dot` passa da `currentColor` a `var(--ink-faint)`. `potenziale` e `chiuso` non hanno modificatore, quindi prendevano il colore del testo (`--ink-muted`) e uscivano più scuri del punto di `perso`: l'ordine opposto a quello di §2. Con `--ink-faint` alla base, il commento che dice «sono già il caso base» diventa vero, e i tre modificatori continuano a sovrascriverlo.
-- `.select` porta il padding destro da 12px a 40px. `.input` dichiara `12px 16px` e con quei 16 sostituisce lo spazio che il browser teneva da sé per la freccia nativa: 12px era meno della base, cioè il contrario di quello che Task 5 chiedeva. **Il valore non è stato visto reso** — il pannello browser non rende i file fuori dal progetto e il proxy rimanda a `/accedi` quelli dentro — quindi è finito fra le prove da percorrere con una sessione aperta.
+- `.select` porta il padding destro da 12px a 40px. `.input` dichiara `12px 16px` e con quei 16 sostituisce lo spazio che il browser teneva da sé per la freccia nativa: 12px era meno della base, cioè il contrario di quello che Task 5 chiedeva. Il valore non era stato visto reso — il pannello browser non rende i file fuori dal progetto e il proxy rimanda a `/accedi` quelli dentro — quindi è finito fra le prove da percorrere con una sessione aperta, e il 3 agosto Luca l'ha guardato sull'anteprima: giusto.
 - La nota in `design-system.md` §5 marca la regola come superata per i soli cinque stati del cliente e rimanda a §2, lasciandola scritta perché è ancora quella dei verdetti (`kb-0.md` §8: la storia non si cancella).
 
 `npm run typecheck` e `npm run build` puliti dopo le correzioni, stesse sette rotte.
@@ -214,7 +214,7 @@ scritte, uno unito a un altro.
 - [x] [Review][Defer] Uno stato fuori dai cinque si mostra come `potenziale` senza dirlo [src/app/(app)/clienti/[id]/client-field-form.tsx:127] — rimandata: irraggiungibile con lo schema di oggi
 - [x] [Review][Defer] `save()` non controlla `dirty`: un Invio sul selettore riscrive lo stesso stato e sposta `updated_at` [src/lib/use-editable-field.ts:144] — rimandata, preesistente dalla Story 1.2
 - [x] [Review][Defer] Un `baseline` che cambia non risincronizza `value` [src/lib/use-editable-field.ts:60] — rimandata, preesistente dalla Story 1.2
-- [x] [Review][Defer] I 44px del selettore nativo non sono verificati sul dispositivo che conta [src/app/globals.css:366] — rimandata: è una prova da fare, non una correzione da scrivere
+- [x] [Review][Defer] ~~I 44px del selettore nativo non sono verificati sul dispositivo che conta~~ [src/app/globals.css:366] — **chiusa il 3 agosto 2026**: era una prova da fare, e Luca l'ha fatta su iPad. Esce da `deferred-work.md`.
 - [x] [Review][Defer] Cinque ternari annidati nella resa, e il sesto `kind` entra nella stessa catena [src/app/(app)/clienti/[id]/client-field-form.tsx:108] — rimandata: il file è a 175 righe, sotto il limite
 
 **Scartati come rumore, e perché**
@@ -469,10 +469,11 @@ falso, come `'name'` e `'owner_id'`: la trappola di sicurezza della Story 1.2 re
 3. **Aggiornato il commento in testa a `client-field-form.tsx`**, da "undici volte" a "dodici":
    era una misura scritta nel commento e adesso è falsa. Non è una modifica al codice.
 
-**Non verificato, e va detto:** le dodici prove con una sessione aperta restano vuote. Il percorso
-con accesso richiede un collegamento che arriva per email, e nessun agente può percorrerlo. In
-particolare non è stato visto con gli occhi: il selettore nella scheda, le cinque pillole
-nell'elenco col colore spostato nel punto, il comportamento a 375px e quello da tastiera.
+**Verificato il 3 agosto 2026, dopo la revisione.** Le quindici prove con una sessione aperta sono
+state percorse da Luca sull'anteprima del branch `story-1-3-cambiare-stato`, sul codice uscito
+dalla revisione: tutte passate. Comprese le tre che la revisione ha aggiunto — il `padding-right`
+del selettore, i 44px del `<select>` nativo su iPad, e i cinque punti della pillola col colore
+spostato. Il `done` di questa story poggia su una verifica fatta.
 
 **Restano invariati:** nessuna migrazione, nessuna dipendenza nuova, nessun `any`, `createClientRecord`,
 `updateClientField`, `renameClient`, `openSession` e `findExistingName` intatti, la macchina di
@@ -506,3 +507,4 @@ e l'alone del focus lasciati dove stanno.
 | 3 agosto 2026 | Task 1-6 implementati: fonte unica dei cinque stati, azione separata `updateClientStatus`, selettore come quarto `kind` del campo modificabile, pillola completata ai cinque stati con mappa esaustiva. Tre scelte diverse dal file di story, con il motivo scritto. |
 | 3 agosto 2026 | Task 7 diviso come nelle due story precedenti: sei voci verificate dall'agente, dodici da percorrere con una sessione aperta e lasciate vuote. |
 | 3 agosto 2026 | Revisione del codice su tre livelli. Una decisione presa (la nota in `design-system.md` §5), cinque correzioni applicate, cinque voci rimandate, sette rilievi scartati. Task 7 cresce di tre prove: il padding del selettore, i 44px su iPad, i cinque punti a confronto. Story a `in-progress`: le quindici voci con sessione aperta restano da percorrere. |
+| 3 agosto 2026 | Le quindici prove percorse sull'anteprima del branch, sul codice uscito dalla revisione. Tutte passate, comprese le tre nuove. Task 7 chiuso, story a `done`, e la voce rimandata sui 44px del selettore nativo esce da `deferred-work.md` perché era una prova, non una correzione. Restano quattro voci rimandate. |
