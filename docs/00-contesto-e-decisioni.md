@@ -2,7 +2,7 @@
 
 **Owner:** Luca Versilia
 **Aperto il:** 2 agosto 2026
-**Ultimo aggiornamento:** 2 agosto 2026, D20
+**Ultimo aggiornamento:** 2 agosto 2026, D22
 
 Questo file è la memoria del progetto. Va portato in ogni nuova chat o strumento per ricostruire il contesto senza ripartire da zero. Si aggiorna solo quando una decisione è confermata, non quando è ipotizzata.
 
@@ -194,6 +194,26 @@ Il motivo che decide fra le tre alternative è uno solo: qui la protezione delle
 **Accesso:** collegamento inviato per email, senza password. Non c'è nessuna password da custodire, e con un utente solo il costo dell'attesa dell'email è trascurabile.
 
 **Protezione di Vercel:** attiva sulle anteprime, tolta dalla produzione. In produzione l'app ha già il proprio accesso e la sicurezza a livello di riga; tenerci sopra anche l'autenticazione di Vercel voleva dire due accessi in fila e un collegamento email che sul telefono non si apre.
+
+### D21. Quando un campo si salva da solo e quando si conferma
+*2 agosto 2026*
+
+`AGENTS.md` dice che ogni campo lungo salva da solo e dice quando ha salvato. Non diceva cosa sia un campo lungo, e alla prima schermata piena di campi la regola si è dovuta chiudere.
+
+**Il campo lungo si salva da solo:** tre secondi dopo l'ultima digitazione, e comunque quando si esce dal campo. Il salvataggio a mano resta sempre disponibile e salva subito. Il salvataggio all'uscita dal campo non è un di più: senza, chi scrive e clicca via entro tre secondi perde quello che ha scritto, cioè esattamente quello che la regola esiste per impedire.
+
+**Il campo corto si conferma:** un `Salva` che compare solo quando il campo è cambiato. Un campo corto è a una battuta dalla fine, la conferma non costa niente e rende la scrittura intenzionale. I due comportamenti convivono nella stessa schermata di proposito, e non vanno uniformati.
+
+**Un campo che si salva da solo deve dire quando ha salvato.** È la seconda metà della regola, non un abbellimento: un salvataggio silenzioso è indistinguibile da un salvataggio mancato. L'indicatore è quello di `design-system.md` §5, con i suoi tre stati esatti, ed è un componente solo per tutto il software: cambia dove sta e chi lo pilota, non com'è fatto.
+
+Conseguenza sull'ordine dei lavori: l'indicatore nasce nella prima schermata che ne ha bisogno, non nella schermata di compilazione della fase 1, che lo riuserà.
+
+### D22. L'anagrafica si corregge tutta, nome compreso
+*2 agosto 2026*
+
+Il nome è l'unico campo obbligatorio (D13) ed è l'identificativo nell'elenco. Proprio per questo si corregge dalla scheda come tutto il resto: un refuso lì resterebbe per sempre, e sarebbe l'unico dato del sistema che non si può correggere.
+
+La rinomina passa dalle stesse regole della creazione: limite di lunghezza, caratteri invisibili tolti, e l'avviso non bloccante quando il nome appartiene già a un altro cliente. Il software registra e mostra, non vieta (D14): il secondo `Salva` rinomina lo stesso.
 
 ---
 
