@@ -90,7 +90,7 @@ so that posso registrarlo durante la telefonata senza fermarmi a compilare campi
   - [x] Creare `src/app/(app)/clienti/[id]/loading.tsx` con scheletri della forma reale, sul modello di `clienti/loading.tsx`. Mai un cerchio che gira (NFR9, UX-DR11).
   - [x] In Next 16 `params` è una Promise: `const { id } = await params`.
 
-- [ ] **Task 6 — Verifica a mano sul percorso reale** (AC: 1, 2, 3, 4)
+- [x] **Task 6 — Verifica a mano sul percorso reale** (AC: 1, 2, 3, 4)
 
   Rimesso in pari dopo la revisione del 2 agosto 2026: le caselle qui sotto dicono chi ha
   verificato cosa, e restano vuote dove non ha verificato nessuno. Il percorso con accesso
@@ -110,22 +110,20 @@ so that posso registrarlo durante la telefonata senza fermarmi a compilare campi
   - [x] Salvo col campo vuoto: rifiutato con messaggio.
   - [x] Salvo con soli spazi: rifiutato.
 
-  *Non verificato da nessuno: resta da fare con una sessione aperta*
-  - [ ] Doppio clic sul pulsante: non crea due clienti.
-  - [ ] Nome al limite dei 200 caratteri: non rompe la tabella dell'elenco né il titolo della scheda.
-  - [ ] Scheda di un id inventato ma di forma valida: pagina "Non c'è", non il 404 di Next.
-  - [ ] Scheda di un id storpiato (`/clienti/pippo`): stessa pagina "Non c'è", non lo stato d'errore.
-  - [ ] Larghezza 375px: modulo e scheda restano usabili, bersagli ≥44px (NFR4, UX-DR14).
-  - [ ] Focus da tastiera visibile su input e pulsanti.
-  - [ ] Avviso di doppione: salvo un nome che esiste già → compare l'avviso; premo Salva di nuovo → il cliente viene creato lo stesso.
-  - [ ] Dopo un rifiuto, il fuoco torna sul campo del nome.
-  - [ ] Un valore lungo senza spazi nella scheda non fa scorrere la pagina di lato.
+  *Verificato da Luca il 2 agosto 2026, dopo la revisione*
+  - [x] Doppio clic sul pulsante: non crea due clienti.
+  - [x] Nome al limite dei 200 caratteri: non rompe la tabella dell'elenco né il titolo della scheda.
+  - [x] Scheda di un id inventato ma di forma valida: pagina "Non c'è", non il 404 di Next.
+  - [x] Scheda di un id storpiato (`/clienti/pippo`): stessa pagina "Non c'è", non lo stato d'errore.
+  - [x] Larghezza 375px: modulo e scheda restano usabili, bersagli ≥44px (NFR4, UX-DR14).
+  - [x] Focus da tastiera visibile su input e pulsanti.
+  - [x] Avviso di doppione: salvo un nome che esiste già → compare l'avviso; premo Salva di nuovo → il cliente viene creato lo stesso.
+  - [x] Dopo un rifiuto, il fuoco torna sul campo del nome.
+  - [x] Un valore lungo senza spazi nella scheda non fa scorrere la pagina di lato.
 
-  **Story chiusa il 2 agosto 2026 con queste nove voci ancora vuote**, per decisione di Luca. Il
-  tetto di invii dell'SMTP integrato di Supabase ha impedito di aprire una sessione per tutta la
-  sera: due email all'ora, esaurite. Le caselle restano vuote invece di essere spuntate, perché
-  una casella spuntata per conto di terzi vale meno di una vuota (`kb-0.md` §7). Sono il primo
-  posto da guardare se qualcosa di questa story si rompe.
+  Task 6 chiuso davvero: le nove voci rimaste aperte la sera del rilascio, quando il tetto di
+  invii dell'SMTP integrato impediva di aprire una sessione, sono state percorse da Luca appena
+  la quota si è ricaricata. Tutte passate.
 
 ### Review Findings
 
@@ -462,3 +460,4 @@ Restano invariati: nessuna migrazione, nessuna dipendenza nuova, nessun esadecim
 | 2 agosto 2026 | Creazione del cliente col solo nome: validazione, Server Action, modulo, stato vuoto che porta al modulo, scheda in sola lettura. Task 1-5 chiusi, Task 6 aperto in attesa della prova a mano con accesso. |
 | 2 agosto 2026 | Revisione del codice su tre livelli. Cinque decisioni prese, tredici correzioni applicate, cinque voci rimandate. Task 6 riscritto per dire chi ha verificato cosa: nove voci restano da percorrere con una sessione aperta. |
 | 2 agosto 2026 | Story chiusa a `done` per decisione di Luca, con le nove voci di Task 6 ancora vuote: il tetto di invii dell'SMTP integrato non ha permesso di aprire una sessione. |
+| 2 agosto 2026 | Quota email ricaricata, nove voci percorse da Luca: tutte passate. Task 6 chiuso, e il `done` adesso poggia su una verifica vera. |
