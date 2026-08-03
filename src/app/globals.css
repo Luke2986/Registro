@@ -284,21 +284,39 @@ a {
   color: var(--ink-muted);
 }
 
+/* `--ink-faint` e non `currentColor`: il testo della pillola è `--ink-muted`, e un punto dello
+   stesso colore del testo smette di essere un punto. È anche il valore che `design-system.md`
+   §2 assegna a `potenziale` e `chiuso`, i due stati che non hanno modificatore. */
 .pill__dot {
   width: 6px;
   height: 6px;
   border-radius: var(--r-full);
-  background: currentColor;
+  background: var(--ink-faint);
 }
 
+/* Il colore dello stato sta nel punto, non nel fondo: i cinque stati sono descrittivi e non
+   gerarchici, e una pillola interamente colorata accanto a una grigia direbbe che quel cliente
+   sta più avanti (design-system.md §2). Il fondo resta lo stesso per tutti e cinque.
+   `potenziale` e `chiuso` non hanno modificatore: sono già il caso base. */
+
 .pill--valutato {
-  background: var(--sec-clienti-tint);
-  color: var(--sec-clienti);
+  color: var(--ink);
+}
+
+.pill--valutato .pill__dot {
+  background: var(--sec-clienti);
 }
 
 .pill--attivo {
-  background: var(--ok-tint);
-  color: var(--ok);
+  color: var(--ink);
+}
+
+.pill--attivo .pill__dot {
+  background: var(--ok);
+}
+
+.pill--perso .pill__dot {
+  background: var(--neutral);
 }
 
 /* pulsanti */
@@ -366,6 +384,17 @@ a {
   min-height: 98px;
   line-height: 24px;
   resize: vertical;
+}
+
+/* Fondo, bordo, raggio e altezza minima li dà `.input`, applicata insieme. Qui solo quello che
+   un selettore ha in più. Nessun `appearance: none`: la freccia disegnata a mano vorrebbe dire
+   un colore scritto fuori da questo file, e sul tablet il controllo nativo si comporta meglio
+   di qualunque sostituto.
+   La freccia nativa sta dentro il padding destro, e i 16px di `.input` hanno sostituito quelli
+   che il browser ci teneva da solo: senza questi 40 il testo ci finisce sotto. */
+.select {
+  cursor: pointer;
+  padding-right: 40px;
 }
 
 .input:hover {
@@ -454,7 +483,7 @@ a {
   margin-bottom: 32px;
 }
 
-/* Il campo del nome prende la riga, la pillola resta accanto alla sua etichetta. */
+/* Il campo del nome prende la riga, il selettore dello stato resta accanto alla sua etichetta. */
 .detail-identity > *:first-child {
   flex: 1;
   min-width: 0;
@@ -477,6 +506,12 @@ a {
    da 220px non è "visibile", è nascosta di fatto. */
 .field--wide {
   grid-column: 1 / -1;
+}
+
+/* `.detail-identity` è un flex che avvolge: senza una larghezza minima il selettore si
+   schiaccia accanto al nome, e le cinque parole non ci stanno più. */
+.field--status {
+  min-width: 160px;
 }
 
 /* i quattro stati di ogni schermata */

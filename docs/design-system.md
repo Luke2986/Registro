@@ -156,6 +156,8 @@ Il nome a `--t-body` peso 500, tutto il resto a `--t-meta` o `--t-data`. Le date
 
 Altezza 22, raggio `--r-full`, padding orizzontale 10, testo `--t-meta` peso 500, fondo nella tinta chiara del colore corrispondente, testo nel colore pieno. Per gli stati del cliente, un punto di 6px prima del testo.
 
+**Superata per i cinque stati del cliente, il 3 agosto 2026.** Il fondo in tinta e il testo nel colore pieno valgono per i verdetti, non per gli stati: là il colore distingue un esito da un altro, qui direbbe che un cliente sta più avanti di un altro. Per gli stati vale la tabella di §2 — fondo `--neutral-tint` per tutti e cinque, e il colore nel punto. La regola qui sopra resta scritta perché è ancora quella dei verdetti.
+
 ### Badge numerico
 
 Come nei riferimenti: raggio `--r-sm`, fondo in tinta chiara, cifra in mono peso 500. Usato per contare le persone o le schede.

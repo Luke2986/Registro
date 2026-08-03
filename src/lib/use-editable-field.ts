@@ -12,7 +12,7 @@ const AUTOSAVE_DELAY = 3000
 
 const UNREACHABLE = 'Il campo non è stato salvato: il server non ha risposto. Riprova fra un momento.'
 
-type Control = HTMLInputElement | HTMLTextAreaElement
+type Control = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
 export type EditableFieldState = {
   value: string

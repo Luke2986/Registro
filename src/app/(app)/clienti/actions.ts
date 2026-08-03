@@ -10,6 +10,7 @@ import {
   parseEmployees,
   type ClientFieldKey,
 } from '@/lib/client-fields'
+import { isClientStatus } from '@/lib/client-status'
 import { createClient } from '@/lib/supabase/server'
 import type { ClientRow } from '@/lib/types'
 import { normalizeClientName, validateClientName } from '@/lib/validate-client-name'
@@ -247,6 +248,67 @@ export async function renameClient(
   revalidatePath('/clienti')
 
   return { saved: validation.name }
+}
+
+export type UpdateClientStatusState = {
+  error?: string
+  /** Lo stato com'è adesso nel database. Sincronizza il selettore dopo il salvataggio. */
+  saved?: string
+}
+
+/**
+ * Azione separata da updateClientField, e non è una scelta di stile: `status` è una delle
+ * colonne che l'allow-list dei campi esiste per rifiutare. Passando da lì, qualunque stringa
+ * arrivata dal browser finirebbe in un update e la difesa resterebbe al vincolo `check` di
+ * Postgres, che risponde in inglese e parla di un vincolo invece che di cosa fare.
+ *
+ * Nessuna condizione sullo stato di partenza, nessuna transizione ammessa o vietata, nessun
+ * ordine fra i cinque valori: da qualsiasi stato si passa a qualsiasi altro. Il software
+ * registra e mostra, non decide e non vieta (D14).
+ */
+export async function updateClientStatus(
+  _previous: UpdateClientStatusState,
+  formData: FormData,
+): Promise<UpdateClientStatusState> {
+  const session = await openSession('updateClientStatus')
+
+  if (!session.ok) return { error: session.error }
+
+  const clientId = formData.get('client_id')
+  const status = formData.get('status')
+
+  // Il selettore ha esattamente cinque opzioni: qualsiasi altro valore è una richiesta che non
+  // doveva esistere. Nei log solo il fatto del rifiuto, come nelle altre azioni della scheda.
+  if (typeof clientId !== 'string' || !UUID.test(clientId) || !isClientStatus(status)) {
+    console.error('updateClientStatus: richiesta rifiutata')
+    return { error: 'Lo stato non è stato salvato. Riprova fra un momento.' }
+  }
+
+  // updated_at lo aggiorna il trigger clients_set_updated_at (0006_triggers.sql).
+  //
+  // maybeSingle e non single: con la sicurezza a livello di riga attiva, la scheda di un altro
+  // proprietario e una scheda cancellata arrivano identiche, cioè zero righe.
+  const { data, error } = await session.supabase
+    .from('clients')
+    .update({ status })
+    .eq('id', clientId)
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    // Solo codice e messaggio: `details` conterrebbe valori della riga (kb-0.md §3).
+    console.error('updateClientStatus: update rifiutato', { code: error.code, message: error.message })
+    return { error: 'Lo stato non è stato salvato. Riprova fra un momento.' }
+  }
+
+  if (!data) return { error: 'Questa scheda non è più disponibile. Torna all’elenco.' }
+
+  revalidatePath(`/clienti/${clientId}`)
+  // Anche l'elenco: lo stato è una sua colonna, e la scrittura sposta updated_at, che è il suo
+  // ordinamento.
+  revalidatePath('/clienti')
+
+  return { saved: status }
 }
 
 /**

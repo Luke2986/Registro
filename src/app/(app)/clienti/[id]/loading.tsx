@@ -19,7 +19,13 @@ export default function ClientLoading() {
             <div className="skeleton" style={{ width: 120 }} />
             <div className="skeleton" style={{ height: 64, borderRadius: 'var(--r-md)' }} />
           </div>
-          <div className="skeleton" style={{ width: 88, height: 22, borderRadius: 'var(--r-full)' }} />
+          {/* Lo stato è un campo come gli altri: etichetta e controllo alto 44px, come il
+              selettore che arriva al suo posto. Uno scheletro a forma di pillola farebbe
+              saltare la riga quando il contenuto arriva. */}
+          <div className="field field--status">
+            <div className="skeleton" style={{ width: 48 }} />
+            <div className="skeleton" style={{ height: 44, borderRadius: 'var(--r-md)' }} />
+          </div>
         </div>
 
         <div className="detail-grid">

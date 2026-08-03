@@ -40,7 +40,21 @@ export type ClientFieldKey = (typeof CLIENT_FIELDS)[number]['key']
  */
 export const NAME_FIELD = { key: 'name', label: 'Nome del cliente', kind: 'name' } as const
 
-export type EditableField = ClientField | typeof NAME_FIELD
+/**
+ * Il descrittore dello stato: **fuori** da CLIENT_FIELDS come il nome, e per un motivo più
+ * severo. `status` è una delle colonne che isClientFieldKey esiste per rifiutare: dentro
+ * l'elenco, updateClientField accetterebbe qualunque stringa arrivi dal browser e la
+ * scriverebbe, lasciando la difesa al vincolo `check` di Postgres, cioè un messaggio in
+ * inglese al posto sbagliato. Il vocabolario dei cinque valori sta in client-status.ts, e
+ * l'azione che lo usa è updateClientStatus.
+ *
+ * Sta qui e non dentro il componente per la stessa ragione di NAME_FIELD: un valore esportato
+ * da un modulo 'use client', letto da un Server Component, non è l'oggetto ma un riferimento
+ * al client, e `key` arriverebbe `undefined`.
+ */
+export const STATUS_FIELD = { key: 'status', label: 'Stato', kind: 'status' } as const
+
+export type EditableField = ClientField | typeof NAME_FIELD | typeof STATUS_FIELD
 
 const KEYS: ReadonlySet<string> = new Set(CLIENT_FIELDS.map((field) => field.key))
 

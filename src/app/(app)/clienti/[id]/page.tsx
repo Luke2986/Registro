@@ -2,8 +2,7 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 
 import { ErrorState } from '@/components/error-state'
-import { StatusPill } from '@/components/status-pill'
-import { CLIENT_FIELDS, NAME_FIELD, type ClientFieldKey } from '@/lib/client-fields'
+import { CLIENT_FIELDS, NAME_FIELD, STATUS_FIELD, type ClientFieldKey } from '@/lib/client-fields'
 import { createClient } from '@/lib/supabase/server'
 import type { ClientRow } from '@/lib/types'
 
@@ -95,14 +94,15 @@ function ClientError({ id }: { id: string }) {
 
 /**
  * Il nome è un campo come gli altri, con la sua etichetta vera: resta grande e leggibile come
- * un titolo, ma è modificabile e lo dichiara. La pillola resta in sola lettura: il selettore
- * dei cinque stati è un'altra story.
+ * un titolo, ma è modificabile e lo dichiara. Accanto, lo stato è un campo anche lui: qui
+ * comanda il selettore, e la pillola resta il modo di leggere lo stato dall'elenco. Due
+ * rappresentazioni dello stesso valore a dieci pixel di distanza sono una di troppo.
  */
 function ClientIdentity({ client }: { client: ClientDetail }) {
   return (
     <div className="detail-identity">
       <ClientFieldForm clientId={client.id} field={NAME_FIELD} value={client.name} />
-      <StatusPill status={client.status} />
+      <ClientFieldForm clientId={client.id} field={STATUS_FIELD} value={client.status} />
     </div>
   )
 }

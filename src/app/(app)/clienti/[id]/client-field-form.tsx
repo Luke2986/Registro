@@ -4,18 +4,19 @@ import { useCallback, useEffect, useRef } from 'react'
 
 import { SaveIndicator } from '@/components/save-indicator'
 import type { EditableField } from '@/lib/client-fields'
+import { CLIENT_STATUSES } from '@/lib/client-status'
 import { useEditableField, type SaveResult } from '@/lib/use-editable-field'
 import { CLIENT_NAME_MAX_LENGTH } from '@/lib/validate-client-name'
 
-import { renameClient, updateClientField } from '../actions'
+import { renameClient, updateClientField, updateClientStatus } from '../actions'
 
 /**
- * Il campo modificabile della scheda, usato undici volte con parametri diversi. `kind` decide
+ * Il campo modificabile della scheda, usato dodici volte con parametri diversi. `kind` decide
  * tre cose e nient'altro: che controllo si rende, quale azione si chiama, se il campo si salva
  * da solo.
  *
  * Ogni campo è un modulo a sé: un salvataggio che fallisce riguarda un campo solo e non porta
- * via quello che c'è scritto negli altri (NFR1). Gli undici moduli sono fratelli dentro la
+ * via quello che c'è scritto negli altri (NFR1). I dodici moduli sono fratelli dentro la
  * card, mai annidati.
  *
  * Il `FormData` lo costruisce `run`, sempre, sia che a tirare la corda sia il pulsante, sia il
@@ -48,6 +49,12 @@ export function ClientFieldForm({
         payload.set('duplicate_of', acknowledged.current)
 
         return renameClient({}, payload)
+      }
+
+      if (field.kind === 'status') {
+        payload.set('status', next)
+
+        return updateClientStatus({}, payload)
       }
 
       payload.set('field', field.key)
@@ -88,7 +95,7 @@ export function ClientFieldForm({
 
   return (
     <form
-      className={`field${autosaves ? ' field--wide' : ''}`}
+      className={`field${autosaves ? ' field--wide' : ''}${field.kind === 'status' ? ' field--status' : ''}`}
       onSubmit={(event) => {
         event.preventDefault()
         save()
@@ -113,6 +120,17 @@ export function ClientFieldForm({
           maxLength={CLIENT_NAME_MAX_LENGTH}
           autoComplete="off"
         />
+      ) : field.kind === 'status' ? (
+        /* Nessuna opzione vuota in testa: la colonna è `not null` con default `potenziale`,
+           quindi uno stato c'è sempre. Freccia nativa, che sul tablet si comporta meglio di
+           qualunque sostituto disegnato a mano. */
+        <select {...shared} className="input select" autoComplete="off">
+          {CLIENT_STATUSES.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
       ) : (
         <input {...shared} className="input" type="text" autoComplete="off" />
       )}
