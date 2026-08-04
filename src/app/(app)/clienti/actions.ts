@@ -13,7 +13,9 @@ import {
 import { isClientStatus } from '@/lib/client-status'
 import { CLIENT_TAG_REMOVE_MAX_LENGTH, normalizeTag, parseTag } from '@/lib/client-tags'
 import { createClient } from '@/lib/supabase/server'
+import { openSession } from '@/lib/supabase/session'
 import type { ClientRow } from '@/lib/types'
+import { UUID } from '@/lib/uuid'
 import { normalizeClientName, validateClientName } from '@/lib/validate-client-name'
 
 export type CreateClientState = {
@@ -116,6 +118,9 @@ export async function updateClientField(
   const clientId = formData.get('client_id')
   const field = formData.get('field')
 
+  // `id` è una colonna uuid: una stringa di altra forma fa rifiutare la query da Postgres. Qui
+  // però non è un indirizzo storpiato come nella scheda, è una richiesta che non doveva
+  // esistere, e si rifiuta prima di toccare il database.
   if (typeof clientId !== 'string' || !UUID.test(clientId) || !isClientFieldKey(field)) {
     // Nei log solo la chiave rifiutata: il valore è un dato del cliente (kb-0.md §3).
     console.error('updateClientField: richiesta rifiutata', { field })
@@ -493,44 +498,6 @@ export async function removeClientTag(
 const TAG_NOT_SAVED = 'Il tag non è stato salvato. Riprova fra un momento.'
 const TAG_NOT_REMOVED = 'Il tag non è stato tolto. Riprova fra un momento.'
 const CLIENT_GONE = 'Questa scheda non è più disponibile. Torna all’elenco.'
-
-/**
- * `id` è una colonna uuid: una stringa di altra forma fa rifiutare la query da Postgres. Qui
- * però non è un indirizzo storpiato come nella scheda, è una richiesta che non doveva esistere,
- * e si rifiuta prima di toccare il database.
- */
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-type SessionResult =
-  | { ok: true; supabase: Awaited<ReturnType<typeof createClient>> }
-  | { ok: false; error: string }
-
-/**
- * Le azioni della scheda non mandano mai a /accedi, nemmeno quando la sessione è davvero
- * finita: una navigazione porterebbe via quello che è appena stato scritto negli altri dieci
- * campi, cioè l'unica promessa non negoziabile del prodotto (NFR1). Chi non ha una sessione
- * lo ferma già il proxy prima di arrivare qui.
- *
- * createClientRecord tiene la sua copia della distinzione perché lì il redirect è parte
- * dell'azione: la creazione porta sulla scheda nuova, e senza sessione non c'è niente da salvare.
- */
-async function openSession(action: string): Promise<SessionResult> {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError && (authError.status === undefined || authError.status >= 500)) {
-    console.error(`${action}: auth non raggiungibile`, { status: authError.status })
-    return { ok: false, error: 'Non è stato possibile verificare l’accesso. Riprova fra un momento.' }
-  }
-
-  if (!user) return { ok: false, error: 'L’accesso non è più valido. Ricarica la pagina per rientrare.' }
-
-  return { ok: true, supabase }
-}
 
 /**
  * Confronto in memoria e non in SQL: "Acme Srl", "acme  srl" e "ACME SRL" sono lo stesso

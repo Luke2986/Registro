@@ -4,7 +4,7 @@ baseline_commit: 461c7ab92b6000bd26cc23a4b17e014190517466
 
 # Story 1.4: Marcare i clienti con tag riusabili
 
-Status: in-progress
+Status: done
 
 Epic: 1 — Clienti, persone, elenco che si ritrova
 Data di creazione: 3 agosto 2026

@@ -57,6 +57,17 @@ export default function ClientLoading() {
           ))}
         </div>
       </div>
+
+      {/* La card delle persone: solo il titolo. Si riserva lo spazio di quello che c'è sempre,
+          non di quello che dipende dai dati, ed è la stessa regola già applicata alla riga dei
+          chip. Il badge e `Aggiungi persona` compaiono solo con almeno una persona, e i blocchi
+          delle persone nemmeno: riservarli farebbe saltare la pagina su ogni cliente che non ne
+          ha, cioè spostare il salto invece di toglierlo. */}
+      <div className="card">
+        <div className="card__header">
+          <div className="skeleton" style={{ width: 72, height: 24 }} />
+        </div>
+      </div>
     </>
   )
 }

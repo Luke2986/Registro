@@ -6,19 +6,17 @@ import { CLIENT_FIELDS, NAME_FIELD, STATUS_FIELD, type ClientFieldKey } from '@/
 import { collectTagSuggestions } from '@/lib/client-tags'
 import { createClient } from '@/lib/supabase/server'
 import type { ClientRow } from '@/lib/types'
+import { isUuid } from '@/lib/uuid'
 
 import { ClientFieldForm } from './client-field-form'
 import { ClientTagsForm } from './client-tags-form'
+import { PeopleCard } from './people-card'
 
 const COLUMNS =
   'id, name, status, tags, sector, website, city, province, address, source_channel, revenue, employees, business_goals, notes'
 
-/**
- * `id` è una colonna uuid: una stringa di altra forma fa rifiutare la query da Postgres, e
- * senza questo controllo un indirizzo storpiato finirebbe nello stato d'errore, con un pulsante
- * Riprova che ricarica lo stesso indirizzo impossibile. Non è un guasto: è una scheda che non c'è.
- */
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+/** Le colonne di PersonDetail: se una manca qui, il tipo non è più soddisfatto e i tipi si fermano. */
+const PEOPLE_COLUMNS = 'id, first_name, last_name, job_title, email, phone, notes, decision_roles, is_primary'
 
 /**
  * L'elenco dei campi sta in un posto solo, CLIENT_FIELDS, e da lì si derivano sia questo tipo
@@ -33,7 +31,11 @@ type ClientDetail = Pick<ClientRow, 'id' | 'name' | 'status' | 'tags' | ClientFi
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
-  if (!UUID.test(id)) notFound()
+  // `id` è una colonna uuid: una stringa di altra forma fa rifiutare la query da Postgres, e
+  // senza questo controllo un indirizzo storpiato finirebbe nello stato d'errore, con un
+  // pulsante Riprova che ricarica lo stesso indirizzo impossibile. Non è un guasto: è una
+  // scheda che non c'è.
+  if (!isUuid(id)) notFound()
 
   const supabase = await createClient()
 
@@ -85,6 +87,21 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
   const suggestions = collectTagSuggestions(tagRows ?? [])
 
+  // `.eq('client_id', id)` non è sicurezza — quella la fa la policy — è correttezza: senza,
+  // arriverebbero le persone di tutti i clienti. L'ordine è quello di inserimento, come i tag:
+  // nessuna AC ne chiede un altro, e riordinare sotto gli occhi di chi guarda è peggio che non
+  // ordinare. `id` come secondo criterio lo rende deterministico anche a parità di istante.
+  const { data: people, error: peopleError } = await supabase
+    .from('people')
+    .select(PEOPLE_COLUMNS)
+    .eq('client_id', id)
+    .order('created_at', { ascending: true })
+    .order('id', { ascending: true })
+
+  if (peopleError) {
+    console.error('ClientPage: persone non lette', { code: peopleError.code, message: peopleError.message })
+  }
+
   return (
     <>
       <ClientHeader />
@@ -95,6 +112,11 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         <ClientTagsForm clientId={data.id} tags={data.tags} suggestions={suggestions} />
         <ClientFields client={data} />
       </div>
+      {/* Card sorella dell'anagrafica, non una sezione dentro di essa: le persone sono voci
+          sotto il cliente, e un elenco che cresce dentro la card dei campi la renderebbe due
+          cose. `people` a null è «non si è caricato», che la card distingue da «non ce ne
+          sono»: va in errore solo lei, e l'anagrafica sopra resta usabile. */}
+      <PeopleCard clientId={data.id} people={people} />
     </>
   )
 }

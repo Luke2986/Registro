@@ -207,6 +207,47 @@ a {
   padding: 24px;
 }
 
+/* Due card sorelle sulla stessa pagina si staccano, altrimenti si toccano e leggono come una
+   sola con una riga in mezzo. Lo stacco è quello della scala, non un valore inventato. */
+.card + .card {
+  margin-top: 24px;
+}
+
+/* «Un titolo e nient'altro nell'intestazione, salvo un'azione allineata a destra»
+   (design-system.md §5). Il badge sta accanto al titolo, l'azione va in fondo. */
+.card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.card__header .btn {
+  margin-left: auto;
+}
+
+/* `--t-heading` di design-system.md §3. */
+.card__title {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Fondo neutro e non in tinta di sezione: i colori di sezione vivono nella navigazione, non nel
+   contenuto (design-system.md §2). Il monospaziato arriva componendo `badge data`, come il
+   progetto già compone `input input--long`. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  color: var(--ink);
+  font-weight: 500;
+}
+
 /* testo */
 
 .meta {
@@ -349,6 +390,17 @@ a {
   background: var(--surface);
   border-color: var(--line);
   color: var(--ink);
+}
+
+/* L'unico distruttivo del progetto, e solo con conferma (design-system.md §5). Il rosso qui non
+   attira l'attenzione: dice che l'azione toglie qualcosa e non torna. */
+.btn--danger {
+  background: none;
+  color: var(--bad);
+}
+
+.btn--danger:hover {
+  background: var(--bad-tint);
 }
 
 /* campi */
@@ -597,6 +649,69 @@ a {
 .tags-add .input {
   flex: 1;
   min-width: 0;
+}
+
+/* persone del cliente */
+
+.people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Nessuna cornice: la separazione la fa la riga, come nella tabella dell'elenco. La colonna
+   tiene lo stacco fra la griglia dei campi, il gruppo dei ruoli e la riga in fondo. */
+.person {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  margin-top: 24px;
+}
+
+.people .person:first-child {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* La spunta del principale a sinistra, il pulsante che elimina a destra. Va a capo su schermo
+   stretto invece di stringere i bersagli. */
+.person__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* È un <fieldset>: il browser gli mette bordo, padding e margini suoi. */
+.field--group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+/* I 44px stanno sulla label, che avvolge la casella: la casella nativa è alta 16px, e senza
+   l'etichetta intorno il bersaglio tattile non c'è (design-system.md §8). Nessun
+   `appearance: none`, per la stessa ragione per cui il selettore dello stato non ce l'ha. */
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
 }
 
 /* i quattro stati di ogni schermata */
