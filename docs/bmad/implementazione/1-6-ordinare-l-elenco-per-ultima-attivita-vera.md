@@ -4,7 +4,7 @@ baseline_commit: cee425a6942b78485197b890080bc3188d25fa69
 
 # Story 1.6: Ordinare l'elenco per ultima attività vera
 
-Status: review
+Status: done
 
 Epic: 1 — Clienti, persone, elenco che si ritrova
 Data di creazione: 4 agosto 2026
@@ -147,7 +147,7 @@ so that riapro lo strumento e riprendo da dove ero, invece di cercare.
 
   - [x] `npm test` passa. Un test che non è stato visto fallire quando doveva non è un test: prima di chiudere, rompere di proposito una riga del calcolo e verificare che il test se ne accorga.
 
-- [ ] **Task 6 — La verifica a mano** (AC: 1, 2, 3, 4) *Il genitore resta vuoto finché le otto caselle di sessione non sono percorse: fra quelle c'è la sola verifica esistente di AC3.*
+- [x] **Task 6 — La verifica a mano** (AC: 1, 2, 3, 4) *Le sette di sessione percorse da Luca il 4 agosto 2026. Resta vuota solo quella rimandata all Epic 3, che oggi non è provabile perché `assessments` è vuota.*
 
   Verificabile dall'agente:
   - [x] `npm run typecheck` passa. Nessun `any`, nessun `as` aggiunto.
@@ -159,13 +159,13 @@ so that riapro lo strumento e riprendo da dove ero, invece di cercare.
   - [ ] Nessun file fuori dall'elenco di «Cosa cambia questa story» è stato aperto. *Non rispettata alla lettera: il commit scrive anche `sprint-status.yaml` e crea questo file, e la revisione ha poi aggiunto `deferred-work.md`, `database.md` §5 e `00-contesto-e-decisioni.md` (D23). Sono tutte scritture di servizio del metodo, dichiarate nel File List, nessuna tocca il codice. La casella resta vuota perché la frase dice «nessun file» e i file sono cinque.*
 
   Richiede una sessione, la fa Luca:
-  - [ ] Con l'elenco pieno: l'ordine è quello di prima, perché senza schede l'ultima attività è `clients.updated_at` e il calcolo non cambia niente. **Nessun cliente è sparito** (AC2).
-  - [ ] Modifico un campo di un cliente in fondo all'elenco: sale in cima. È il comportamento di oggi e non deve regredire.
-  - [ ] Aggiungo una persona a un cliente: **non** sale in cima. È voluto — le persone non entrano nella definizione di ultima attività (`database.md` §5, e le Dev Notes della Story 1.5).
-  - [ ] La colonna `Ultima attività` è in monospaziato, allineata in colonna, e dice `oggi` per quello appena toccato.
-  - [ ] I quattro stati dell'elenco reggono ancora: pieno, vuoto (nessun cliente), in caricamento (gli scheletri di `loading.tsx`), in errore (il riquadro con `Riprova`).
-  - [ ] Larghezza 375px: la tabella resta leggibile e non scorre di lato.
-  - [ ] Nessun errore in console, e nessun avviso di idratazione sulla colonna delle date.
+  - [x] Con l'elenco pieno: l'ordine è quello di prima, perché senza schede l'ultima attività è `clients.updated_at` e il calcolo non cambia niente. **Nessun cliente è sparito** (AC2).
+  - [x] Modifico un campo di un cliente in fondo all'elenco: sale in cima. È il comportamento di oggi e non deve regredire.
+  - [x] Aggiungo una persona a un cliente: **non** sale in cima. È voluto — le persone non entrano nella definizione di ultima attività (`database.md` §5, e le Dev Notes della Story 1.5).
+  - [x] La colonna `Ultima attività` è in monospaziato, allineata in colonna, e dice `oggi` per quello appena toccato.
+  - [x] I quattro stati dell'elenco reggono ancora: pieno, vuoto (nessun cliente), in caricamento (gli scheletri di `loading.tsx`), in errore (il riquadro con `Riprova`).
+  - [x] Larghezza 375px: la tabella resta leggibile e non scorre di lato.
+  - [x] Nessun errore in console, e nessun avviso di idratazione sulla colonna delle date.
 
   Rimandato all'Epic 3, quando le schede esisteranno davvero (da scrivere nel Dev Agent Record, non da spuntare oggi):
   - [ ] Una scheda modificata oggi su un cliente fermo da un mese lo porta in cima (AC1 provato sui dati veri).
@@ -443,7 +443,9 @@ Se un giorno si vuole che quel guardiano funzioni anche sulla macchina di casa, 
 
 **Che l'innesto restituisca `[]` e non `null` è verificato dai tipi, non dai dati.** `ClientListRow` dichiara `assessments: { updated_at: string }[]` non nullabile, e `npm run typecheck` passa: l'inferenza di `@supabase/supabase-js ^2.111.0` sulla `select` concorda. Se rispondesse `null` il tipo non reggerebbe. Vederlo sui dati veri resta nella verifica di Luca — ed è una riga che, se fosse sbagliata, si vedrebbe subito e rumorosamente, non in silenzio.
 
-**Verifica sull'anteprima, fin dove arriva senza sessione.** Server di sviluppo avviato, `/clienti` chiesto: il proxy reindirizza a `/accedi` come deve, nessun errore in console, nessun errore nei log del server. Non ho chiesto il collegamento via email: è a uso singolo ed è di Luca. Tutta la parte «Richiede una sessione» di Task 6 resta com'era, non spuntata.
+**Verifica sull'anteprima, fin dove arriva senza sessione.** Server di sviluppo avviato, `/clienti` chiesto: il proxy reindirizza a `/accedi` come deve, nessun errore in console, nessun errore nei log del server. Non ho chiesto il collegamento via email: è a uso singolo ed è di Luca.
+
+**Le sette verifiche di sessione, percorse da Luca il 4 agosto 2026.** Spuntate su sua conferma. Con quelle si chiude anche la voce di `deferred-work.md` sull'elenco che dipendeva da una tabella mai interrogata in produzione: la query con l'innesto `assessments(updated_at)` è stata eseguita con una sessione vera e ha risposto, quindi nessun cliente è sparito (AC2) e la colonna dell'ultima attività si rende come deve (AC3). Resta vuota solo la casella rimandata all'Epic 3, che oggi non è provabile con i dati veri.
 
 **`last-activity.ts` sfora la soglia delle cinquanta righe.** 51 alla consegna, 74 dopo la revisione. Il codice è 33 righe. La regola dietro la soglia regge, il numero no: la casella di Task 1 è stata rimessa vuota invece di limare via un commento per far tornare un conto.
 
@@ -491,3 +493,4 @@ I test passano da 16 a 22. I sei nuovi coprono: la transitività su tutte e sei 
 | 4 agosto 2026 | 0.1 | Creazione della story | Claude Code (create-story) |
 | 4 agosto 2026 | 0.2 | Implementazione: modulo puro dell'ultima attività, innesto delle schede nell'elenco, giorno civile e fuso dichiarato nella formattazione, comando di test e i primi due file di test. 16 test — i 14 enumerati da Task 5 più due, uno dei quali è l'unico che prova AC1 attraverso il comparatore | Claude Code (dev-story) |
 | 4 agosto 2026 | 0.3 | Revisione a tre strati e applicazione: comparatore reso transitivo, guardie su innesto `null` e stringa illeggibile, duplicato `dayFormat` eliminato, `TZ=UTC` sullo script dei test, tre caselle non veritiere rimesse vuote, due decisioni strutturali registrate in `database.md` e `00-contesto-e-decisioni.md`, cinque voci in `deferred-work.md`. 22 test | Claude Code (code-review) |
+| 4 agosto 2026 | 1.0 | Verifica di sessione percorsa da Luca: le sette caselle di Task 6 spuntate, la voce di `deferred-work.md` sulla tabella mai interrogata chiusa. Story a `done` | Claude Code |
