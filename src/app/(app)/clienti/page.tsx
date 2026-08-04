@@ -4,10 +4,17 @@ import { redirect } from 'next/navigation'
 import { ErrorState } from '@/components/error-state'
 import { StatusPill } from '@/components/status-pill'
 import { formatLastActivity } from '@/lib/format-date'
+import { byLastActivityDesc, lastActivityAt } from '@/lib/last-activity'
 import { createClient } from '@/lib/supabase/server'
 import type { ClientRow } from '@/lib/types'
 
-type ClientListRow = Pick<ClientRow, 'id' | 'name' | 'status' | 'tags' | 'updated_at'>
+/**
+ * Le colonne del cliente si continuano a derivare da ClientRow: nessun elenco di campi
+ * riscritto a mano. Le schede sono un innesto, quindi non stanno in ClientRow.
+ */
+type ClientListRow = Pick<ClientRow, 'id' | 'name' | 'status' | 'tags' | 'updated_at'> & {
+  assessments: { updated_at: string }[]
+}
 
 export default async function ClientsPage() {
   const supabase = await createClient()
@@ -18,19 +25,28 @@ export default async function ClientsPage() {
 
   if (!user) redirect('/accedi')
 
+  // Innesto normale e mai `assessments!inner(...)`: con !inner diventa un join interno e fa
+  // sparire dall'elenco ogni cliente senza schede, che oggi sono tutti. La sicurezza a livello
+  // di riga vale anche sulle righe innestate: assessments_owner_all filtra le schede altrui
+  // dentro la stessa richiesta, senza controlli da riscrivere qui.
   const { data, error } = await supabase
     .from('clients')
-    .select('id, name, status, tags, updated_at')
+    .select('id, name, status, tags, updated_at, assessments(updated_at)')
     .order('updated_at', { ascending: false })
+
+  // `.order` sul database resta e non è ridondante: dà un ordine di partenza determinato.
+  // L'ordinamento vero è qui, perché PostgREST non ordina per un aggregato delle righe
+  // innestate. Copia prima di ordinare: `.sort()` muterebbe sul posto l'array del client di rete.
+  const rows = data ? [...data].sort(byLastActivityDesc) : null
 
   return (
     <>
       <header className="page-header">
         <h1 className="page-title">Clienti</h1>
-        {data && data.length > 0 ? (
+        {rows && rows.length > 0 ? (
           <div className="page-header__actions">
             <p className="data" style={{ color: 'var(--ink-muted)', margin: 0 }}>
-              {data.length}
+              {rows.length}
             </p>
             <Link href="/clienti/nuovo" className="btn btn--primary">
               Nuovo cliente
@@ -45,8 +61,8 @@ export default async function ClientsPage() {
             message="L'elenco non si è caricato. La connessione al database non ha risposto."
             retryHref="/clienti"
           />
-        ) : data && data.length > 0 ? (
-          <ClientsTable rows={data} />
+        ) : rows && rows.length > 0 ? (
+          <ClientsTable rows={rows} />
         ) : (
           <div className="empty">
             <p style={{ margin: 0 }}>Nessun cliente ancora.</p>
@@ -82,7 +98,7 @@ function ClientsTable({ rows }: { rows: ClientListRow[] }) {
             </td>
             <td className="meta">{row.tags.join(', ')}</td>
             <td className="data" style={{ color: 'var(--ink-muted)' }}>
-              {formatLastActivity(row.updated_at)}
+              {formatLastActivity(lastActivityAt(row))}
             </td>
           </tr>
         ))}

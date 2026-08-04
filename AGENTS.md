@@ -58,7 +58,7 @@ Piattaforma: Next.js con App Router e TypeScript, dati e accesso su Supabase, ri
 # tipi:      npm run typecheck
 # migrazioni: file numerati in supabase/migrations, applicati al progetto Supabase
 #             prima del codice che li usa. Mai dalla dashboard.
-# test:      non ancora
+# test:      npm test
 ```
 
 Il proxy si chiama `src/proxy.ts`: da Next 16 il vecchio `middleware.ts` è deprecato.
