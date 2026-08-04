@@ -257,6 +257,12 @@ order by last_activity desc;
 
 Se l'elenco diventasse lento, si materializza in una colonna aggiornata da trigger. Con qualche centinaio di clienti non serve.
 
+**Come è calcolata davvero, dalla Story 1.6 (4 agosto 2026).** Il SQL qui sopra resta la definizione, ma non è quello che gira. L'applicazione legge le schede come righe innestate (`select('… , assessments(updated_at)')`, innesto normale e mai `!inner`, che farebbe sparire i clienti senza schede) e calcola il massimo in memoria, in `src/lib/last-activity.ts`.
+
+Il motivo: PostgREST non sa ordinare un elenco per un valore aggregato delle righe innestate. Per farlo in SQL servirebbe una vista o una colonna materializzata, cioè una migrazione, che l'Epic 1 dichiara di non portare.
+
+**Quando questa scelta smette di valere, e come ci si accorge:** il giorno in cui l'elenco viene paginato, o in cui i clienti superano il migliaio, cioè il tetto di righe di PostgREST. Sono lo stesso momento: ordinare in memoria significa leggere tutte le righe, e al tetto la finestra viene scelta ordinando per `clients.updated_at` mentre la chiave d'ordine vera è l'ultima attività — un cliente recente solo per una scheda verrebbe tagliato prima di essere ordinato. Da lì in avanti serve la colonna materializzata di cui sopra.
+
 ---
 
 ## 6. Protezione degli accessi, due varianti

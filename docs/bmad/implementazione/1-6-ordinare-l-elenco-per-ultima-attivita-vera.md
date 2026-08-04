@@ -57,7 +57,7 @@ so that riapro lo strumento e riprendo da dove ero, invece di cercare.
   - [x] Una data che non si legge (`Date.parse` risponde `NaN`) **perde contro qualsiasi data valida** e non fa cadere la pagina. Se nessuna è valida vince `row.updated_at`, che nello schema è `not null` e quindi c'è sempre.
   - [x] `byLastActivityDesc<T extends ActivityRow & { name: string }>(a: T, b: T): number` — il comparatore. Più recente prima; **a parità esatta ordina per nome**, con `Intl.Collator('it')` a livello di modulo come i formattatori di `format-date.ts`. Senza il secondo criterio due clienti con lo stesso istante cambiano posto a ogni ricarica, e un elenco che si muove da solo è indistinguibile da un difetto.
   - [x] `Array.prototype.sort` è stabile dal 2019, ma la stabilità dipende dall'ordine di partenza, cioè da quello che decide il database: il criterio sul nome sta scritto qui perché la stabilità che serve deve essere **dichiarata**, non dedotta.
-  - [x] Il file resta sotto le cinquanta righe. Se cresce, dentro c'è più di una cosa (`kb-0.md` §2).
+  - [ ] Il file resta sotto le cinquanta righe. Se cresce, dentro c'è più di una cosa (`kb-0.md` §2). *Non rispettata: 51 righe alla consegna, 74 dopo la revisione, che ha aggiunto `activityTime` e la guardia sull'innesto. Il codice è 33 righe, il resto sono i commenti sul perché del confronto sui valori. La regola dietro la soglia — se cresce, dentro c'è più di una cosa — regge: un tipo e tre funzioni che fanno la stessa cosa. La casella resta vuota perché la soglia è scritta come numero e il numero non torna.*
 
 - [x] **Task 2 — L'elenco legge anche le schede** (AC: 1, 2)
   - [x] `src/app/(app)/clienti/page.tsx`, unica query da toccare. La `select` prende in più le schede del cliente, tramite la chiave esterna `assessments_client_id_fkey` che PostgREST già conosce:
@@ -147,7 +147,7 @@ so that riapro lo strumento e riprendo da dove ero, invece di cercare.
 
   - [x] `npm test` passa. Un test che non è stato visto fallire quando doveva non è un test: prima di chiudere, rompere di proposito una riga del calcolo e verificare che il test se ne accorga.
 
-- [x] **Task 6 — La verifica a mano** (AC: 1, 2, 3, 4)
+- [ ] **Task 6 — La verifica a mano** (AC: 1, 2, 3, 4) *Il genitore resta vuoto finché le otto caselle di sessione non sono percorse: fra quelle c'è la sola verifica esistente di AC3.*
 
   Verificabile dall'agente:
   - [x] `npm run typecheck` passa. Nessun `any`, nessun `as` aggiunto.
@@ -156,7 +156,7 @@ so that riapro lo strumento e riprendo da dove ero, invece di cercare.
   - [x] `last-activity.ts` non importa né React né Supabase.
   - [x] `page.tsx` resta sotto le 200 righe; `format-date.ts` e `last-activity.ts` pure.
   - [x] La `select` **non** contiene `!inner`.
-  - [x] Nessun file fuori dall'elenco di «Cosa cambia questa story» è stato aperto.
+  - [ ] Nessun file fuori dall'elenco di «Cosa cambia questa story» è stato aperto. *Non rispettata alla lettera: il commit scrive anche `sprint-status.yaml` e crea questo file, e la revisione ha poi aggiunto `deferred-work.md`, `database.md` §5 e `00-contesto-e-decisioni.md` (D23). Sono tutte scritture di servizio del metodo, dichiarate nel File List, nessuna tocca il codice. La casella resta vuota perché la frase dice «nessun file» e i file sono cinque.*
 
   Richiede una sessione, la fa Luca:
   - [ ] Con l'elenco pieno: l'ordine è quello di prima, perché senza schede l'ultima attività è `clients.updated_at` e il calcolo non cambia niente. **Nessun cliente è sparito** (AC2).
@@ -169,6 +169,38 @@ so that riapro lo strumento e riprendo da dove ero, invece di cercare.
 
   Rimandato all'Epic 3, quando le schede esisteranno davvero (da scrivere nel Dev Agent Record, non da spuntare oggi):
   - [ ] Una scheda modificata oggi su un cliente fermo da un mese lo porta in cima (AC1 provato sui dati veri).
+
+### Review Findings
+
+Revisione del 4 agosto 2026 su `cee425a..386eb3b`, tre revisori in parallelo senza contesto condiviso (Blind Hunter, Edge Case Hunter, Acceptance Auditor). Ogni voce è stata verificata eseguendo, non dedotta. Una scartata come rumore: il controllo su `parts.find(...)` non è codice morto ma un obbligo di `noUncheckedIndexedAccess`, prescritto da Task 3.
+
+**Da decidere**
+
+- [x] [Review][Decision] Il test che sorveglia il fuso è cieco sulla macchina che lo esegue — con `TZ=Europe/Rome` (questa macchina) togliere `timeZone` a `dayFormat` non fa fallire niente; con `TZ=UTC`, cioè Vercel, il test lo prende. La correzione è una parola: `TZ=UTC` davanti allo script `test`. Non l'ho fatta perché quella riga è prescritta parola per parola in Task 4, ed è una tua decisione, non una mia iniziativa
+- [x] [Review][Decision] `TIME_ZONE` non è iniettabile mentre `now` lo è — il commento in `format-date.ts:8` dice «un test la può fissare» ed è falso: è una costante di modulo, catturata da due `Intl.DateTimeFormat` costruiti al caricamento. O si corregge il commento, o si rende il fuso un parametro come `now`, che è lo stesso ragionamento applicato a una sola delle due dipendenze ambientali del file
+- [x] [Review][Decision] Le due decisioni strutturali stanno solo qui — `database.md` §5 continua a documentare il SQL con `greatest(...)` come definizione operativa dell'ultima attività, che non è quello che gira; `00-contesto-e-decisioni.md` si ferma a D22 e non registra né l'ordinamento in memoria né il fuso fisso. `kb-0.md` §8 chiede che una decisione strutturale si scriva dove è stata presa. Quei due file sono tuoi
+- [x] [Review][Decision] Sei domande poste, sei risposte date da me — le domande in fondo alle Dev Notes esistono perché la story le riteneva da chiudere con te. Le ho elencate tutte prima di partire e ho chiesto di essere fermato, e non lo sei stato; ma fra i default auto-applicati ci sono un fuso cablato nel codice, un'opzione di `tsconfig.json` che vale per tutto il progetto e una riga di `AGENTS.md`, che è un file di istruzioni. La domanda 6 era stata scritta esattamente perché quel file richiede il tuo consenso
+
+**Da correggere**
+
+- [x] [Review][Patch] Il comparatore non è transitivo quando una data non si legge [src/lib/last-activity.ts:47] — trovato da tutti e tre i revisori, per strade diverse. Con una riga a data illeggibile fra due valide, il confronto cade sul nome e l'ordine dipende dall'ordine d'ingresso: `[Alfa(gen), Beta(NaN), Gamma(ago)]` esce `Alfa Beta Gamma`, cioè gennaio sopra agosto. Il modulo dichiara nel proprio commento di tollerare le date illeggibili e qui non tiene la promessa
+- [x] [Review][Patch] `assessments: null` fa cadere la pagina fuori dal ramo d'errore [src/lib/last-activity.ts:29] — `TypeError: row.assessments is not iterable`, sollevato a `page.tsx:40`, che sta fuori dal `error ?`: lo stato d'errore progettato non riesce a rendersi. È l'unica forma che le Completion Notes ammettono di non aver mai osservato sui dati veri
+- [x] [Review][Patch] `formatLastActivity` lancia `RangeError` su una stringa illeggibile [src/lib/format-date.ts:41] — la tolleranza al `NaN` costruita in `lastActivityAt` viene sfondata una funzione dopo, dentro `civilDay`. Non è una regressione: anche il codice precedente lanciava
+- [x] [Review][Patch] `dayFormat` duplica `absoluteFormat` byte per byte [src/lib/format-date.ts:10] — `resolvedOptions()` identiche, stesso output, verificato. Due istanze `Intl` costruite al caricamento per la stessa cosa, in un file che la story dichiara di correggere e non riscrivere. È la duplicazione silenziosa di `kb-0.md` §9
+- [x] [Review][Patch] Il commento su `.order('updated_at')` afferma un determinismo che Postgres non dà [src/app/(app)/clienti/page.tsx:37] — un `ORDER BY` su una sola colonna non definisce l'ordine a parità di valore. La sola cosa che rende l'elenco stabile è il criterio sul nome nel comparatore
+- [x] [Review][Patch] Il ramo `Number.isNaN(winnerTime)` non ha test [src/lib/last-activity.test.ts] — i test provano la scheda illeggibile, mai il caso opposto: data del cliente illeggibile e scheda valida che deve vincere. È metà della regola di Task 1, scritta e mai eseguita
+- [x] [Review][Patch] Task 1: la casella «sotto le cinquanta righe» è spuntata, il file è 51 — il Dev Agent Record lo dice apertamente e poi la casella è spuntata lo stesso. Le due cose si contraddicono
+- [x] [Review][Patch] Task 6: la casella «nessun file fuori dall'elenco è stato aperto» è spuntata, ma il commit scrive `sprint-status.yaml` e crea questo file, che in «Cosa cambia questa story» non ci sono. La stessa frase è ripetuta nelle Completion Notes
+- [x] [Review][Patch] Task 6 è spuntato con otto delle sue caselle vuote — la spunta sul genitore è un segnale di completamento falso, e fra le figlie vuote c'è la sola verifica esistente di AC3
+- [x] [Review][Patch] Fedeltà minore al testo di Task 5 — due test in più dei quattordici enumerati (difendibili, uno è l'unico che prova AC1 attraverso il comparatore) non annotati nel Change Log, e `import test` invece di `import { test }` che la story mostra
+
+**Rimandato**
+
+- [x] [Review][Defer] Innesto e clienti senza `.limit()`: PostgREST tronca in silenzio [src/app/(app)/clienti/page.tsx:33] — rimandato. Al tetto di righe la finestra è ordinata per `clients.updated_at` mentre la chiave d'ordine è l'ultima attività: un cliente recente solo per una scheda viene tagliato prima di essere ordinato. Arriva a un migliaio di clienti
+- [x] [Review][Defer] L'elenco dipende ora da una tabella mai interrogata in produzione [src/app/(app)/clienti/page.tsx:33] — rimandato. L'innesto è nella stessa richiesta: un problema qualsiasi su `assessments` fa cadere l'intera schermata iniziale sullo stato d'errore invece di darla con una colonna in meno. Coperto dalla verifica di sessione ancora da percorrere
+- [x] [Review][Defer] `npm test` non è attraversato da nessun cancello — rimandato. Niente CI, niente hook: verificato, non esistono `.github/` né `.husky/`. `next build` non esegue i test, quindi un test rosso non ferma nessun rilascio
+- [x] [Review][Defer] `allowImportingTsExtensions` allenta tutto il progetto per due file di test [tsconfig.json:12] — rimandato. Rende legale l'import con estensione ovunque sotto `**/*.ts`, e non c'è nessun linter che lo impedisca al codice di rotta
+- [x] [Review][Defer] `lastActivityAt` è ricalcolato due volte per confronto, più una per riga in resa [src/lib/last-activity.ts:47] — rimandato. Decorare una volta e ordinare sui numeri era la forma ovvia. Oggi trascurabile — nessuna scheda esiste — ma la story motiva l'intera scelta architetturale col costo dell'ordinamento in memoria
 
 ## Dev Notes
 
@@ -413,11 +445,11 @@ Se un giorno si vuole che quel guardiano funzioni anche sulla macchina di casa, 
 
 **Verifica sull'anteprima, fin dove arriva senza sessione.** Server di sviluppo avviato, `/clienti` chiesto: il proxy reindirizza a `/accedi` come deve, nessun errore in console, nessun errore nei log del server. Non ho chiesto il collegamento via email: è a uso singolo ed è di Luca. Tutta la parte «Richiede una sessione» di Task 6 resta com'era, non spuntata.
 
-**`last-activity.ts` è 51 righe, non «sotto le cinquanta».** Il codice è 23 righe, il resto sono i commenti sul perché del confronto fra numeri e del secondo criterio d'ordine. La regola dietro la soglia — se cresce, dentro c'è più di una cosa — è rispettata: un tipo e due funzioni che fanno la stessa cosa. Segnalato invece di limato via, perché limare via un commento per far tornare un numero è il modo sbagliato di rispettare una regola.
+**`last-activity.ts` sfora la soglia delle cinquanta righe.** 51 alla consegna, 74 dopo la revisione. Il codice è 33 righe. La regola dietro la soglia regge, il numero no: la casella di Task 1 è stata rimessa vuota invece di limare via un commento per far tornare un conto.
 
 **Rimandato all'Epic 3, e sono due cose.** La prima è la casella non spuntata in fondo a Task 6: AC1 provato sui dati veri, che oggi si può provare solo nel test perché `assessments` è vuota. La seconda sta nelle Dev Notes e vale la pena ripeterla qui, perché è la riga che si dimentica: **da oggi l'ordine dell'elenco dipende anche da `assessments.updated_at`, ma nessuna azione rivalida `/clienti` quando una scheda cambia.** Il giorno in cui la Story 3.3 salva una risposta, quella scrittura deve rivalidare anche `/clienti`, altrimenti si lavora un'ora su una scheda, si torna all'elenco e il cliente è dov'era.
 
-**Perimetro rispettato.** Nessun file fuori dall'elenco di «Cosa cambia questa story» è stato aperto in scrittura. `globals.css` non toccato, colonne e markup della tabella identici, nessuna migrazione, nessuna dipendenza nuova, nessun `any` e nessun `as` aggiunto. `npm run typecheck`, `npm run build` e `npm test` passano tutti e tre.
+**Perimetro del codice rispettato, con una precisazione sulla contabilità.** Nessun file di codice fuori dall'elenco di «Cosa cambia questa story» è stato aperto: `globals.css` non toccato, colonne e markup della tabella identici, nessuna migrazione, nessuna dipendenza nuova, nessun `any`, e l'unico `as` è quello di un test che costruisce di proposito una forma che il tipo vieta. Fuori dall'elenco sono stati scritti cinque file di metodo — `sprint-status.yaml`, questo file, `deferred-work.md`, `database.md` §5 e `00-contesto-e-decisioni.md` — tutti dichiarati nel File List. La prima stesura di questa nota diceva «nessun file», che era falso, e la revisione l'ha presa.
 
 ### File List
 
@@ -435,9 +467,27 @@ Se un giorno si vuole che quel guardiano funzioni anche sulla macchina di casa, 
 - `docs/bmad/implementazione/sprint-status.yaml`
 - `docs/bmad/implementazione/1-6-ordinare-l-elenco-per-ultima-attivita-vera.md`
 
+**Modificati dalla revisione, oltre ai precedenti**
+- `docs/bmad/implementazione/deferred-work.md` — le cinque voci rimandate più la revalidazione di `/clienti`
+- `docs/database.md` — §5, la nota su come l'ultima attività è calcolata davvero
+- `docs/00-contesto-e-decisioni.md` — D23, le due decisioni strutturali di questa story
+
+### Note della revisione del 4 agosto 2026
+
+Tre revisori in parallelo. **I quattro AC erano soddisfatti e nessun difetto era raggiungibile dai dati veri**, ma tutti e tre hanno trovato la stessa riga: il comparatore, quando un confronto cadeva su `NaN`, ripiegava sul nome e smetteva di essere transitivo. Riprodotto: `[Alfa(gen), Beta(NaN), Gamma(ago)]` usciva `Alfa Beta Gamma`, gennaio sopra agosto. Corretto confrontando i valori invece della differenza, con una data illeggibile che vale `−Infinity`.
+
+Corretti insieme a quello: la guardia sull'innesto `null`, che senza cadeva **fuori** dal ramo d'errore della pagina; `formatLastActivity` che lanciava `RangeError` su una stringa illeggibile e ora rende una cella vuota; `dayFormat`, che era un duplicato byte-per-byte di `absoluteFormat` con le stesse `resolvedOptions()`; e il commento su `.order`, che attribuiva a un `ORDER BY` su una colonna sola un determinismo che Postgres non dà.
+
+**Lo script `test` ora esegue con `TZ=UTC`.** Era la decisione rimandata: senza, su una macchina già a Roma il test che sorveglia il fuso non prendeva il difetto che esiste per prendere. Con `TZ=UTC` il fuso della macchina non coincide mai con quello dichiarato, che è la condizione in cui un `timeZone` dimenticato fallisce. Nota: `TZ=` davanti a un comando non funziona su Windows, e questo progetto gira su macOS.
+
+**Tre caselle spuntate sono state rimesse vuote** perché non erano vere: le cinquanta righe, «nessun file fuori dall'elenco» e il genitore di Task 6. Le avevo spuntate io, e la revisione le ha prese.
+
+I test passano da 16 a 22. I sei nuovi coprono: la transitività su tutte e sei le permutazioni, due righe entrambe illeggibili, l'innesto `null`, la stringa illeggibile in formattazione, e il ramo «data del cliente illeggibile, vince la scheda» che era codice scritto e mai eseguito. Tutti e sei sono stati visti fallire rimettendo i difetti.
+
 ## Change Log
 
 | Data | Versione | Descrizione | Autore |
 |---|---|---|---|
 | 4 agosto 2026 | 0.1 | Creazione della story | Claude Code (create-story) |
-| 4 agosto 2026 | 0.2 | Implementazione: modulo puro dell'ultima attività, innesto delle schede nell'elenco, giorno civile e fuso dichiarato nella formattazione, comando di test e i primi due file di test. 16 test, tutti verdi | Claude Code (dev-story) |
+| 4 agosto 2026 | 0.2 | Implementazione: modulo puro dell'ultima attività, innesto delle schede nell'elenco, giorno civile e fuso dichiarato nella formattazione, comando di test e i primi due file di test. 16 test — i 14 enumerati da Task 5 più due, uno dei quali è l'unico che prova AC1 attraverso il comparatore | Claude Code (dev-story) |
+| 4 agosto 2026 | 0.3 | Revisione a tre strati e applicazione: comparatore reso transitivo, guardie su innesto `null` e stringa illeggibile, duplicato `dayFormat` eliminato, `TZ=UTC` sullo script dei test, tre caselle non veritiere rimesse vuote, due decisioni strutturali registrate in `database.md` e `00-contesto-e-decisioni.md`, cinque voci in `deferred-work.md`. 22 test | Claude Code (code-review) |

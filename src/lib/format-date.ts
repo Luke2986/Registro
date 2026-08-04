@@ -3,22 +3,23 @@ const MS_PER_DAY = 86_400_000
 /**
  * Il fuso si dichiara qui perché formatLastActivity gira sul server: su Vercel il fuso è UTC,
  * in casa è Roma, e una modifica delle 00:30 di Roma si renderebbe come il giorno prima. Una
- * costante e non una variabile d'ambiente: così è visibile nel codice e un test la può fissare.
+ * costante e non una variabile d'ambiente: così sta nel codice, si legge, e vale identica nei
+ * tre ambienti. È lo script `test` a eseguire con `TZ=UTC`, così il fuso della macchina non
+ * coincide mai con quello dichiarato e un `timeZone` dimenticato fa fallire un test invece di
+ * nascondersi fino al rilascio.
  */
 const TIME_ZONE = 'Europe/Rome'
 
+/**
+ * Un formattatore solo per due usi: la forma assoluta lo chiama con `format`, il giorno civile
+ * con `formatToParts`. Dichiararne due con le stesse opzioni darebbe due `resolvedOptions()`
+ * identiche destinate a divergere alla prima modifica di una sola (`kb-0.md` §9).
+ */
 const absoluteFormat = new Intl.DateTimeFormat('it-IT', {
   timeZone: TIME_ZONE,
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
-})
-
-const dayFormat = new Intl.DateTimeFormat('it-IT', {
-  timeZone: TIME_ZONE,
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
 })
 
 const clockFormat = new Intl.DateTimeFormat('it-IT', {
@@ -30,9 +31,13 @@ const clockFormat = new Intl.DateTimeFormat('it-IT', {
  * Il giorno civile come numero: due istanti dello stesso giorno a Roma danno lo stesso numero,
  * e la differenza fra due numeri è la differenza in giorni. Si ricava dalle parti formattate nel
  * fuso dichiarato e non da getDate(), che risponde nel fuso della macchina.
+ *
+ * Il controllo sulle tre parti non è difensivo: `noUncheckedIndexedAccess` rende `find` un
+ * `| undefined`, e la regola è gestirlo con un controllo e mai con un `as`. Su una data valida
+ * le tre parti ci sono sempre, perché stanno nelle opzioni risolte.
  */
 function civilDay(date: Date): number {
-  const parts = dayFormat.formatToParts(date)
+  const parts = absoluteFormat.formatToParts(date)
   const year = parts.find((part) => part.type === 'year')
   const month = parts.find((part) => part.type === 'month')
   const day = parts.find((part) => part.type === 'day')
@@ -48,9 +53,15 @@ function civilDay(date: Date): number {
  * La differenza è fra giorni civili e non fra periodi di ventiquattro ore: una modifica delle
  * 23:00 di ieri, guardata alle 08:00 di stamattina, deve leggersi `ieri`, che è quello che una
  * persona intende quando legge quella parola.
+ *
+ * Una stringa che non si legge rende una cella vuota e non un'eccezione: `Intl` lancia su una
+ * data invalida, e qui siamo dentro un componente server, dove un'eccezione è la pagina intera
+ * che non si rende. Un valore non rilevato si mostra vuoto, mai come zero e mai come un errore.
  */
 export function formatLastActivity(iso: string, now: Date = new Date()): string {
   const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return ''
+
   const days = civilDay(now) - civilDay(date)
 
   if (days <= 0) return 'oggi'

@@ -34,9 +34,12 @@ export default async function ClientsPage() {
     .select('id, name, status, tags, updated_at, assessments(updated_at)')
     .order('updated_at', { ascending: false })
 
-  // `.order` sul database resta e non è ridondante: dà un ordine di partenza determinato.
-  // L'ordinamento vero è qui, perché PostgREST non ordina per un aggregato delle righe
-  // innestate. Copia prima di ordinare: `.sort()` muterebbe sul posto l'array del client di rete.
+  // `.order` sul database resta perché sceglie *quali* righe tornano quando ce ne sono più del
+  // tetto di PostgREST, e le più recenti sono quelle giuste. Non dà però un ordine stabile: un
+  // ORDER BY su una colonna sola non definisce niente a parità di valore, e a renderlo stabile è
+  // il criterio sul nome dentro il comparatore. L'ordinamento vero è qui, perché PostgREST non
+  // ordina per un aggregato delle righe innestate. Copia prima di ordinare: `.sort()` muterebbe
+  // sul posto l'array del client di rete.
   const rows = data ? [...data].sort(byLastActivityDesc) : null
 
   return (

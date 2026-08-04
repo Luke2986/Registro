@@ -1,4 +1,4 @@
-import test from 'node:test'
+import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { formatLastActivity } from './format-date.ts'
@@ -55,4 +55,12 @@ test('una data futura → oggi', () => {
   const now = new Date('2026-08-04T10:00:00+02:00')
 
   assert.equal(formatLastActivity('2026-08-05T10:00:00+02:00', now), 'oggi')
+})
+
+test('una stringa illeggibile rende una cella vuota, non un’eccezione', () => {
+  // `Intl` lancia su una data invalida, e questa funzione gira in un componente server: senza
+  // guardia, una stringa storta sarebbe la schermata iniziale che non si rende.
+  const now = new Date('2026-08-04T10:00:00+02:00')
+
+  assert.equal(formatLastActivity('non una data', now), '')
 })

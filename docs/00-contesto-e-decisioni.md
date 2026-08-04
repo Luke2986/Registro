@@ -2,7 +2,7 @@
 
 **Owner:** Luca Versilia
 **Aperto il:** 2 agosto 2026
-**Ultimo aggiornamento:** 2 agosto 2026, D22
+**Ultimo aggiornamento:** 4 agosto 2026, D23
 
 Questo file è la memoria del progetto. Va portato in ogni nuova chat o strumento per ricostruire il contesto senza ripartire da zero. Si aggiorna solo quando una decisione è confermata, non quando è ipotizzata.
 
@@ -214,6 +214,19 @@ Conseguenza sull'ordine dei lavori: l'indicatore nasce nella prima schermata che
 Il nome è l'unico campo obbligatorio (D13) ed è l'identificativo nell'elenco. Proprio per questo si corregge dalla scheda come tutto il resto: un refuso lì resterebbe per sempre, e sarebbe l'unico dato del sistema che non si può correggere.
 
 La rinomina passa dalle stesse regole della creazione: limite di lunghezza, caratteri invisibili tolti, e l'avviso non bloccante quando il nome appartiene già a un altro cliente. Il software registra e mostra, non vieta (D14): il secondo `Salva` rinomina lo stesso.
+
+### D23. L'ultima attività si calcola in memoria, e le date si rendono in un fuso dichiarato
+*4 agosto 2026*
+
+Due decisioni prese durante la Story 1.6 e registrate qui perché sono strutturali: chi le trovasse strane fra tre mesi deve poter leggere il motivo senza aprire un file di implementazione.
+
+**L'ordinamento dell'elenco si calcola in memoria, non in SQL.** `database.md` §5 definisce l'ultima attività come il maggiore fra `clients.updated_at` e l'ultima modifica delle schede, e ne scrive il SQL. PostgREST però non ordina per un valore aggregato delle righe innestate: farlo nel database vorrebbe dire una vista o una colonna materializzata, cioè una migrazione, che l'Epic 1 dichiara di non portare. La definizione resta quella, il calcolo sta in `src/lib/last-activity.ts`.
+
+Smette di bastare quando l'elenco viene paginato o i clienti superano il migliaio, che è il tetto di righe di PostgREST. Sono lo stesso momento, ed è lì che si materializza la colonna.
+
+**Le date si rendono nel fuso `Europe/Rome`, dichiarato nel codice.** La formattazione dell'ultima attività gira sul server: su Vercel il fuso è UTC, in casa è Roma, e senza dichiararlo una modifica delle 00:30 si renderebbe come il giorno prima. Una costante in `src/lib/format-date.ts` e non una variabile d'ambiente, così sta nel codice, si legge, e vale identica nei tre ambienti.
+
+Conseguenza da tenere: lo script dei test esegue con `TZ=UTC`, così il fuso della macchina non coincide mai con quello dichiarato. Senza, un `timeZone` dimenticato passerebbe inosservato sulla macchina di casa e comparirebbe solo in produzione. Il giorno che il software servisse un fuso diverso, la costante diventa un parametro: oggi sarebbe la macchina prima del problema.
 
 ---
 

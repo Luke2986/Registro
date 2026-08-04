@@ -25,7 +25,11 @@ export function lastActivityAt(row: ActivityRow): string {
   let winner = row.updated_at
   let winnerTime = Date.parse(winner)
 
-  for (const assessment of row.assessments) {
+  // `?? []` difende una forma che il tipo vieta: PostgREST risponde `[]` sugli innesti vuoti e
+  // l'inferenza di supabase-js lo dichiara non nullabile. Ma è l'unica riga di questa story mai
+  // vista girare su dati veri, e se rispondesse `null` il `for` cadrebbe dentro un componente
+  // server, cioè fuori dal ramo d'errore della pagina, che quindi non riuscirebbe a rendersi.
+  for (const assessment of row.assessments ?? []) {
     const time = Date.parse(assessment.updated_at)
     if (Number.isNaN(time)) continue
     if (Number.isNaN(winnerTime) || time > winnerTime) {
@@ -38,14 +42,33 @@ export function lastActivityAt(row: ActivityRow): string {
 }
 
 /**
+ * Una data illeggibile vale meno di qualsiasi data valida, come dice `lastActivityAt`. Serve un
+ * numero e non `NaN`, perché `NaN` in un comparatore non rende una riga ultima: rende il
+ * confronto indecidibile, e il ripiego che ne segue distrugge l'ordine di righe che con quella
+ * riga non c'entrano niente.
+ */
+function activityTime(row: ActivityRow): number {
+  const time = Date.parse(lastActivityAt(row))
+
+  return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time
+}
+
+/**
  * Più recente prima; a parità esatta ordina per nome. Senza il secondo criterio due clienti con
  * lo stesso istante cambiano posto a ogni ricarica, e un elenco che si muove da solo è
  * indistinguibile da un difetto. `sort` è stabile dal 2019, ma la stabilità dipende dall'ordine
  * di partenza, cioè dal database: la stabilità che serve dev'essere dichiarata, non dedotta.
+ *
+ * Il confronto è sui valori e non sulla differenza. Sottrarre due istanti sembra più diretto, ma
+ * fa comparire `NaN` appena uno dei due non si legge, e `−Infinity − (−Infinity)` è `NaN` anche
+ * quando entrambi sono illeggibili: da lì il comparatore smette di essere transitivo e l'ordine
+ * finale dipende da quello di partenza. Confrontando i valori l'ordine è totale sempre.
  */
 export function byLastActivityDesc<T extends ActivityRow & { name: string }>(a: T, b: T): number {
-  const difference = Date.parse(lastActivityAt(b)) - Date.parse(lastActivityAt(a))
-  if (difference !== 0 && !Number.isNaN(difference)) return difference
+  const timeA = activityTime(a)
+  const timeB = activityTime(b)
+
+  if (timeA !== timeB) return timeB > timeA ? 1 : -1
 
   return byName.compare(a.name, b.name)
 }
