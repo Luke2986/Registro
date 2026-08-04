@@ -28,6 +28,18 @@ export default function ClientLoading() {
           </div>
         </div>
 
+        {/* I tag stanno fra l'identità e la griglia, come nella scheda: etichetta stretta e un
+            blocco alto quanto la riga di scrittura. Uno scheletro che non ha la forma del
+            contenuto fa saltare la pagina quando il contenuto arriva. */}
+        <div className="field field--tags">
+          <div className="skeleton" style={{ width: 32 }} />
+          <div className="skeleton" style={{ height: 44, borderRadius: 'var(--r-md)' }} />
+          {/* La riga che spiega il minuscolo è sempre resa, mai condizionale: senza il suo
+              posto qui, la griglia dei campi scende di 24px quando il contenuto arriva. La
+              riga dei chip invece non si riserva, perché un cliente senza tag non ce l'ha. */}
+          <div className="skeleton" style={{ width: 280 }} />
+        </div>
+
         <div className="detail-grid">
           {CLIENT_FIELDS.map((field) => (
             <div className={`field${field.kind === 'long' ? ' field--wide' : ''}`} key={field.key}>

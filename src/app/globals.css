@@ -514,6 +514,91 @@ a {
   min-width: 160px;
 }
 
+/* tag del cliente */
+
+/* Lo stesso stacco che `.detail-identity` ha già sopra la griglia. Il campo sta fuori da
+   `.detail-grid`, quindi `field--wide` — che agisce su `grid-column` — qui non farebbe niente. */
+.field--tags {
+  margin-bottom: 32px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Non `.pill`: quella ha il punto da 6px e i 22px di altezza perché è una pillola di stato in
+   una tabella, mentre questo è un controllo che si tocca. Alto 44 come `.input`, così la riga
+   dei chip e la riga di scrittura hanno la stessa altezza e il campo non sembra due cose.
+   Neutro: verde, ambra e rosso significano esiti e il blu significa la sezione, e un tag non è
+   né l'uno né l'altro (design-system.md §2). */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-sunken);
+  color: var(--ink);
+  border-radius: var(--r-full);
+  padding-left: 12px;
+  padding-right: 0;
+  min-height: 44px;
+  font-size: 13px;
+  max-width: 100%;
+}
+
+/* `flex-wrap` su `.tags` manda a capo fra un chip e l'altro, non dentro. Senza queste due
+   righe un tag di 40 caratteri senza spazi resta più largo della card — a 375px lo spazio
+   utile è 295px e il chip ne chiede oltre 310 — e la pagina scorre di lato. È lo stesso
+   difetto che `.tags-add .input` chiude per il campo di scrittura, sul pezzo che era rimasto
+   scoperto. */
+.tag__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* I 44px non sono negoziabili: è un bersaglio tattile e le call si fanno anche su tablet
+   (design-system.md §8). Stesso precedente di `.save-indicator__retry`, che è testo e tiene
+   comunque l'altezza minima. `flex-shrink: 0` perché il bersaglio non si stringe quando il
+   testo accanto va a capo: sarebbero 44px promessi e non dati. */
+.tag__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  border-radius: var(--r-full);
+  color: var(--ink-muted);
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.tag__remove:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Non `.field__actions`: quella è la riga dei pulsanti sotto un campo, questa è il campo stesso
+   accanto al suo pulsante. Il `min-width: 0` è la stessa ragione già scritta su `.detail-grid
+   > *`: senza, un tag lungo allarga il campo e porta la card a scorrere di lato. */
+/* `center` e non `flex-start`: `.input` è alto almeno 44px e `.btn` esattamente 40, quindi in
+   alto sarebbero allineati e in basso no. I 40px del pulsante restano la voce già rimandata
+   dalla revisione della Story 1.1; qui si toglie almeno il disallineamento. */
+.tags-add {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tags-add .input {
+  flex: 1;
+  min-width: 0;
+}
+
 /* i quattro stati di ogni schermata */
 
 .empty {

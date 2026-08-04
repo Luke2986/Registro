@@ -3,13 +3,15 @@ import { notFound, redirect } from 'next/navigation'
 
 import { ErrorState } from '@/components/error-state'
 import { CLIENT_FIELDS, NAME_FIELD, STATUS_FIELD, type ClientFieldKey } from '@/lib/client-fields'
+import { collectTagSuggestions } from '@/lib/client-tags'
 import { createClient } from '@/lib/supabase/server'
 import type { ClientRow } from '@/lib/types'
 
 import { ClientFieldForm } from './client-field-form'
+import { ClientTagsForm } from './client-tags-form'
 
 const COLUMNS =
-  'id, name, status, sector, website, city, province, address, source_channel, revenue, employees, business_goals, notes'
+  'id, name, status, tags, sector, website, city, province, address, source_channel, revenue, employees, business_goals, notes'
 
 /**
  * `id` è una colonna uuid: una stringa di altra forma fa rifiutare la query da Postgres, e
@@ -22,8 +24,11 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
  * L'elenco dei campi sta in un posto solo, CLIENT_FIELDS, e da lì si derivano sia questo tipo
  * sia la griglia. Se un campo entra nell'elenco senza entrare in COLUMNS, la riga tornata dalla
  * query non soddisfa più ClientDetail e il controllo dei tipi si ferma.
+ *
+ * `tags` è elencato a parte come `name` e `status`: non è un campo di testo che passa da
+ * updateClientField, e dentro CLIENT_FIELDS l'allow-list smetterebbe di rifiutarlo.
  */
-type ClientDetail = Pick<ClientRow, 'id' | 'name' | 'status' | ClientFieldKey>
+type ClientDetail = Pick<ClientRow, 'id' | 'name' | 'status' | 'tags' | ClientFieldKey>
 
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -60,11 +65,34 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   // identico a uno inesistente. È anche la risposta giusta: non si distinguono i due casi.
   if (!data) notFound()
 
+  // Dopo che la riga è confermata, non prima: un indirizzo che non esiste non paga una query
+  // in più.
+  //
+  // In memoria e non in SQL: PostgREST non espone `unnest`, quindi il `select distinct
+  // unnest(tags)` si ottiene leggendo la sola colonna e appiattendo lato applicazione. È lo
+  // stesso precedente di findExistingName: con qualche centinaio di clienti leggere una colonna
+  // costa meno della migrazione che servirebbe. La riga la filtra la policy, non questa query.
+  const { data: tagRows, error: tagsError } = await supabase.from('clients').select('tags')
+
+  if (tagsError) {
+    // Un suggerimento mancante non è un guasto della scheda: è un aiuto che non c'è, e far
+    // cadere la pagina per quello sarebbe sproporzionato. Si va avanti con l'elenco vuoto.
+    console.error('ClientPage: suggerimenti dei tag non letti', {
+      code: tagsError.code,
+      message: tagsError.message,
+    })
+  }
+
+  const suggestions = collectTagSuggestions(tagRows ?? [])
+
   return (
     <>
       <ClientHeader />
       <div className="card">
         <ClientIdentity client={data} />
+        {/* I tag stanno con l'identità del cliente, non fra i campi anagrafici della griglia:
+            sono una marcatura trasversale, non un dato dell'azienda. */}
+        <ClientTagsForm clientId={data.id} tags={data.tags} suggestions={suggestions} />
         <ClientFields client={data} />
       </div>
     </>

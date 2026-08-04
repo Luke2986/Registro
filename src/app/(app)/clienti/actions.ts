@@ -11,6 +11,7 @@ import {
   type ClientFieldKey,
 } from '@/lib/client-fields'
 import { isClientStatus } from '@/lib/client-status'
+import { CLIENT_TAG_REMOVE_MAX_LENGTH, normalizeTag, parseTag } from '@/lib/client-tags'
 import { createClient } from '@/lib/supabase/server'
 import type { ClientRow } from '@/lib/types'
 import { normalizeClientName, validateClientName } from '@/lib/validate-client-name'
@@ -310,6 +311,188 @@ export async function updateClientStatus(
 
   return { saved: status }
 }
+
+/** Entrambe le azioni sui tag rispondono la stessa cosa: l'errore, o niente. */
+export type ClientTagsState = { error?: string }
+
+/**
+ * Nessun `saved` come nelle altre tre azioni: qui non c'è un campo da risincronizzare. I chip
+ * li rende il server, e dopo `revalidatePath` arrivano dal payload rivalidato.
+ *
+ * Due azioni e non una che riceve l'elenco intero: mandare l'array completo dal browser
+ * vorrebbe dire fidarsi del client su *quali* tag ha quel cliente, non solo su quale sta
+ * aggiungendo. La policy protegge la riga di un altro proprietario, non la colonna scritta male
+ * sulla propria (kb-0.md §3). Con due azioni il browser dice una parola sola e il server
+ * calcola il resto.
+ *
+ * `tags` non entra in CLIENT_FIELDS e questa è la sola via di scrittura che ha: passando
+ * dall'allow-list dei campi, updateClientField scriverebbe una stringa in una colonna text[].
+ */
+export async function addClientTag(
+  _previous: ClientTagsState,
+  formData: FormData,
+): Promise<ClientTagsState> {
+  const session = await openSession('addClientTag')
+
+  if (!session.ok) return { error: session.error }
+
+  const clientId = formData.get('client_id')
+
+  if (typeof clientId !== 'string' || !UUID.test(clientId)) {
+    console.error('addClientTag: richiesta rifiutata')
+    return { error: TAG_NOT_SAVED }
+  }
+
+  // Sul server prima di comporre qualsiasi cosa: il maxLength dell'input serve a chi scrive,
+  // non alla sicurezza (NFR10). Nei log niente del valore rifiutato: un tag è testo scritto da
+  // una persona su un cliente reale, cioè un dato del cliente (kb-0.md §3).
+  const parsed = parseTag(formData.get('tag'))
+
+  if (!parsed.ok) return { error: parsed.message }
+
+  const current = await session.supabase.from('clients').select('tags').eq('id', clientId).maybeSingle()
+
+  if (current.error) {
+    console.error('addClientTag: lettura fallita', {
+      code: current.error.code,
+      message: current.error.message,
+    })
+    return { error: TAG_NOT_SAVED }
+  }
+
+  if (!current.data) return { error: CLIENT_GONE }
+
+  // Il tag c'è già: si esce senza scrivere e senza errore. Non è un rifiuto — è AC2 — e
+  // soprattutto un update inutile sposterebbe updated_at, facendo saltare il cliente in cima
+  // all'elenco per un tag che c'era già.
+  //
+  // Confrontato sul normalizzato e non per uguaglianza esatta: removeClientTag dichiara che
+  // l'array può contenere valori scritti prima che la normalizzazione esistesse, e con un
+  // confronto esatto `Referral` già in riga lascerebbe entrare anche `referral`. Due tag che si
+  // leggono uguali e sono diversi sono esattamente quello che AC2 e D17 chiudono.
+  //
+  // Si rivalida lo stesso, pur non scrivendo niente: se il tag c'è nel database e non nei chip
+  // che questa pagina mostra, la pagina è vecchia, e senza rivalidazione resterebbe vecchia
+  // finché non la si ricarica a mano. updated_at non si muove, quindi l'ordine dell'elenco non
+  // cambia.
+  if (current.data.tags.some((it) => normalizeTag(it) === parsed.value)) {
+    revalidatePath(`/clienti/${clientId}`)
+    revalidatePath('/clienti')
+
+    return {}
+  }
+
+  // In coda, mai ordinati: un sort() a ogni aggiunta rimescolerebbe i chip già presenti sotto
+  // gli occhi di chi guarda, e nessuna AC chiede un ordine.
+  //
+  // updated_at lo aggiorna il trigger clients_set_updated_at (0006_triggers.sql), e la riga la
+  // filtra la policy clients_owner_all: un .eq('owner_id', …) a mano sarebbe ridondante e
+  // farebbe credere che sia lui a proteggere (D20).
+  const { data, error } = await session.supabase
+    .from('clients')
+    .update({ tags: [...current.data.tags, parsed.value] })
+    .eq('id', clientId)
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    console.error('addClientTag: update rifiutato', { code: error.code, message: error.message })
+    return { error: TAG_NOT_SAVED }
+  }
+
+  if (!data) return { error: CLIENT_GONE }
+
+  revalidatePath(`/clienti/${clientId}`)
+  // Anche l'elenco, per due motivi insieme: i tag sono una sua colonna, e la scrittura sposta
+  // updated_at, che oggi è il suo ordinamento.
+  revalidatePath('/clienti')
+
+  return {}
+}
+
+/**
+ * Il tag arriva da un chip reso dal server, quindi è già nella forma memorizzata: si confronta
+ * per uguaglianza esatta e **non** si normalizza. Normalizzarlo qui vorrebbe dire non poter più
+ * togliere un tag scritto prima che la normalizzazione esistesse.
+ *
+ * Nessuna conferma prima di togliere: è reversibile — si riscrive in due secondi e il
+ * suggerimento resta finché un altro cliente lo porta — e una conferma per un'azione
+ * reversibile è rumore (kb-0.md §6).
+ */
+export async function removeClientTag(
+  _previous: ClientTagsState,
+  formData: FormData,
+): Promise<ClientTagsState> {
+  const session = await openSession('removeClientTag')
+
+  if (!session.ok) return { error: session.error }
+
+  const clientId = formData.get('client_id')
+  const tag = formData.get('tag')
+
+  // Il tetto non è il limite di un tag — quello vale in scrittura e stringerlo qui vorrebbe dire
+  // non poter più togliere un tag scritto prima che esistesse — ma il punto oltre il quale la
+  // stringa non può essere un valore memorizzato. Ogni input si valida sul server, anche quello
+  // di una cancellazione (kb-0.md §3).
+  const invalid =
+    typeof clientId !== 'string' ||
+    !UUID.test(clientId) ||
+    typeof tag !== 'string' ||
+    tag.length > CLIENT_TAG_REMOVE_MAX_LENGTH
+
+  if (invalid) {
+    console.error('removeClientTag: richiesta rifiutata')
+    return { error: TAG_NOT_REMOVED }
+  }
+
+  const current = await session.supabase.from('clients').select('tags').eq('id', clientId).maybeSingle()
+
+  if (current.error) {
+    console.error('removeClientTag: lettura fallita', {
+      code: current.error.code,
+      message: current.error.message,
+    })
+    return { error: TAG_NOT_REMOVED }
+  }
+
+  if (!current.data) return { error: CLIENT_GONE }
+
+  const remaining = current.data.tags.filter((it) => it !== tag)
+
+  // Il tag non c'era: si esce senza scrivere, per lo stesso motivo dell'aggiunta di un tag già
+  // presente. Un update che non cambia niente sposterebbe updated_at lo stesso. Si rivalida
+  // comunque: un chip premuto due volte, o tolto altrove, vuol dire che questa pagina mostra
+  // un elenco che nel database non c'è più.
+  if (remaining.length === current.data.tags.length) {
+    revalidatePath(`/clienti/${clientId}`)
+    revalidatePath('/clienti')
+
+    return {}
+  }
+
+  const { data, error } = await session.supabase
+    .from('clients')
+    .update({ tags: remaining })
+    .eq('id', clientId)
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    console.error('removeClientTag: update rifiutato', { code: error.code, message: error.message })
+    return { error: TAG_NOT_REMOVED }
+  }
+
+  if (!data) return { error: CLIENT_GONE }
+
+  revalidatePath(`/clienti/${clientId}`)
+  revalidatePath('/clienti')
+
+  return {}
+}
+
+const TAG_NOT_SAVED = 'Il tag non è stato salvato. Riprova fra un momento.'
+const TAG_NOT_REMOVED = 'Il tag non è stato tolto. Riprova fra un momento.'
+const CLIENT_GONE = 'Questa scheda non è più disponibile. Torna all’elenco.'
 
 /**
  * `id` è una colonna uuid: una stringa di altra forma fa rifiutare la query da Postgres. Qui

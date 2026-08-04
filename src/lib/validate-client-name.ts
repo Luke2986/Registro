@@ -4,8 +4,15 @@ type ValidationResult = { ok: true; name: string } | { ok: false; message: strin
  * Caratteri invisibili che né il `trim()` di JavaScript né il `trim()` di Postgres tolgono:
  * incollati da una pagina web passerebbero per un nome e produrrebbero una riga anonima
  * nell'elenco, cioè quello che l'obbligo del nome esiste per evitare (D13).
+ *
+ * Esportata perché la toglie anche `normalizeTag`: un zero-width incollato da una pagina web
+ * produrrebbe due tag che si leggono uguali e sono diversi, cioè lo stesso difetto. Una seconda
+ * copia di questa espressione si allontanerebbe dalla prima alla prima riscrittura (kb-0.md §9).
+ *
+ * Ha il flag `g`: con `String.replace` è sicura, perché `replace` azzera `lastIndex` a ogni
+ * chiamata. Con `.test()` o `.exec()` no, e quella strada non si prende.
  */
-const INVISIBLE = /[​-‍⁠﻿]/g
+export const INVISIBLE = /[​-‍⁠﻿]/g
 
 /** Il database non pone un massimo: senza un limite qui un incolla accidentale diventa un dato. */
 export const CLIENT_NAME_MAX_LENGTH = 200
