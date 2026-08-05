@@ -1,4 +1,10 @@
-import { INVISIBLE } from './validate-client-name'
+// Import con estensione, e non è una preferenza: `node --test` esegue i `.ts` come ESM, dove il
+// percorso relativo va scritto per esteso. La regola vera è che un modulo di `src/lib` raggiunto
+// da un test deve usare `.ts` su tutta la propria catena, perché il primo import senza estensione
+// fa morire il test con ERR_MODULE_NOT_FOUND da un file che chi lo scrive non ha toccato. Né
+// `tsc --noEmit` né `next build` se ne accorgono, perché `allowImportingTsExtensions` li accetta
+// entrambi: la verifica è `npm test`.
+import { INVISIBLE } from './validate-client-name.ts'
 
 /**
  * Le regole dei tag: come si scrivono, quanto sono lunghi, quali si suggeriscono.
@@ -26,6 +32,26 @@ export const CLIENT_TAG_MAX_LENGTH = 40
  * perché ogni input si valida sul server, cancellazioni comprese (kb-0.md §3).
  */
 export const CLIENT_TAG_REMOVE_MAX_LENGTH = 1000
+
+/**
+ * I caratteri che rompono il filtro per tag, e il motivo per cui un tag non può contenerli.
+ *
+ * Il filtro dell'elenco usa `.contains('tags', [tag])`, che `postgrest-js` serializza come
+ * `cs.{valore}` unendo gli elementi con la virgola e **senza virgolettarli**. Dentro quel
+ * letterale di array la virgola separa due elementi, e graffe, virgolette e barre rovesciate ne
+ * cambiano la struttura: `cs.{dell"anno}` non è un letterale valido, PostgREST risponde 400 e la
+ * schermata cade in errore su un tag che l'interfaccia stessa ha offerto.
+ *
+ * Si vieta qui invece di virgolettare il letterale a valle: la guardia si prova per intero in un
+ * modulo puro, mentre un quoter di letterali Postgres scritto a mano andrebbe provato contro
+ * PostgREST, che da qui non si esercita. D17 dice che i tag sono liberi nel senso di «nessun
+ * vocabolario chiuso», non «qualsiasi sequenza di byte»: è la stessa ragione per cui la virgola
+ * era già vietata prima di questa riga.
+ *
+ * Senza flag `g`, quindi `.test()` è sicura: con `g` porterebbe `lastIndex` fra una chiamata e
+ * l'altra, che è la trappola già annotata su `INVISIBLE`.
+ */
+export const TAG_BREAKS_ARRAY_LITERAL = /[,{}"\\]/
 
 /**
  * Forma da salvare, non forma di confronto: qui il minuscolo è il dato, ed è tutto il punto
@@ -62,6 +88,12 @@ export function parseTag(raw: unknown): TagResult {
   // dire che è lunga.
   if (value.includes(',')) {
     return { ok: false, message: 'Un tag non contiene virgole. Scrivine uno per volta.' }
+  }
+
+  // Prima il caso della virgola, che ha un motivo suo e merita di dirlo; qui restano gli altri
+  // quattro caratteri di TAG_BREAKS_ARRAY_LITERAL, che rompono il filtro invece dell'elenco.
+  if (TAG_BREAKS_ARRAY_LITERAL.test(value)) {
+    return { ok: false, message: 'Un tag non contiene " { } o \\. Riscrivilo senza.' }
   }
 
   // Misurato sul normalizzato e non sul grezzo: gli spazi tolti non devono far rifiutare un

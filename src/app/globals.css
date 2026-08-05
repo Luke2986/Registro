@@ -263,6 +263,40 @@ a {
   line-height: 18px;
 }
 
+/* elenco: ricerca e filtri */
+
+/* `flex-end` e non `center`: `.input` è alto almeno 44 e `.btn` esattamente 40, e allineare in
+   basso toglie il disallineamento visibile senza toccare il pulsante, che è la voce già
+   rimandata alla Story 5.2. È quello che `.tags-add` fa già per lo stesso motivo.
+   `flex-wrap` perché a 375px i tre campi e i due comandi non stanno su una riga. */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* `min-width: 0` per la stessa ragione già scritta su `.detail-grid > *`: senza, un campo non
+   scende sotto la larghezza del proprio contenuto e a schermo stretto la card scorre di lato. */
+.filters .field {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+/* Stessa altezza per i tre controlli della barra. `min-height: 44` è un pavimento che il
+   contenuto non tocca: reso, `.input` viene 46 e `.select` 48, e con `align-items: flex-end`
+   quei 2px finivano sull'etichetta — `Nome` due pixel più in basso di `Stato` e `Tag`, misurato
+   a 1280. Solo dentro `.filters`: `.input` è condivisa da ogni schermata del progetto e la sua
+   altezza è la voce già rimandata alla Story 5.2. */
+.filters .input {
+  height: 48px;
+}
+
+.filters .btn {
+  flex-shrink: 0;
+}
+
 /* elenco: tabella senza griglia */
 
 .table {
@@ -389,6 +423,22 @@ a {
 .btn--secondary {
   background: var(--surface);
   border-color: var(--line);
+  color: var(--ink);
+}
+
+/* La variante discreta di design-system.md §5, per le azioni terziarie: nessun fondo, nessun
+   bordo. `Azzera i filtri` deve stare accanto a `Filtra` senza contendergli il posto, e due
+   pulsanti bordati affiancati direbbero che valgono uguale. */
+.btn--quiet {
+  background: none;
+  color: var(--ink-muted);
+}
+
+/* Senza questo, `Azzera i filtri` è un `<Link>` senza fondo né bordo accanto a un `Filtra`
+   bordato: non si legge come un comando, e al passaggio del mouse non risponde. Stessa forma di
+   `.btn--danger:hover`, con la tinta neutra al posto di quella dell'errore. */
+.btn--quiet:hover {
+  background: var(--surface-sunken);
   color: var(--ink);
 }
 

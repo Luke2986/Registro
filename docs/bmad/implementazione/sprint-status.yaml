@@ -1,5 +1,5 @@
 # generated: 02-08-2026 18:53
-# last_updated: 04-08-2026 18:20
+# last_updated: 05-08-2026
 # project: Registro
 # project_key: NOKEY
 # tracking_system: file-system
@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 02-08-2026 18:53
-last_updated: 04-08-2026 18:20
+last_updated: 05-08-2026
 project: Registro
 project_key: NOKEY
 tracking_system: file-system
@@ -55,7 +55,7 @@ development_status:
   1-4-marcare-i-clienti-con-tag-riusabili: done
   1-5-registrare-le-persone-e-chi-decide: done
   1-6-ordinare-l-elenco-per-ultima-attivita-vera: done
-  1-7-cercare-e-filtrare-l-elenco: backlog
+  1-7-cercare-e-filtrare-l-elenco: in-progress
   1-8-poter-tornare-indietro-da-una-modifica-di-schema: backlog
   epic-1-retrospective: optional
 
