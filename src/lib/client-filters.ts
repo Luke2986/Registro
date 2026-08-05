@@ -157,19 +157,17 @@ export function filtersHref(filters: ClientFilters): string {
  *
  * `\\` per primo nella classe di caratteri, altrimenti si sfugge la barra appena aggiunta.
  *
- * **Il `*` non si tocca, e questa funzione non sa che fine faccia.** La documentazione di
- * PostgREST lo dichiara alias di `%` nei modelli di `like`/`ilike`, con la conversione prima di
- * SQL, quindi sfuggirlo produrrebbe `\%` — un `%` letterale, non un `*`. **Non è stato visto
- * girare**: da qui PostgREST non si esercita, e con la sicurezza a livello di riga una richiesta
- * senza sessione risponde `[]` in entrambi i casi, quindi non prova niente.
+ * **Il `*` non si tocca.** PostgREST lo dichiara alias di `%` nei modelli di `like`/`ilike`, con
+ * la conversione prima di SQL, quindi sfuggirlo produrrebbe `\%` — un `%` letterale, e non un
+ * `*`. Verificato in sessione il 5 agosto 2026: `?nome=*` risponde tutti i clienti, quindi la
+ * conversione avviene davvero.
  *
- * Se la conversione avviene, `?nome=*` risponde tutti i clienti. Si accetta di proposito: è un
- * falso positivo, e si vede — il campo mostra `*` accanto a duecento righe. Toglierlo darebbe un
- * falso negativo, cioè un cliente `5*5` che non si trova più e nessuno se ne accorge, che è il
- * modo di fallire peggiore dei due in un elenco che serve a ritrovare le cose.
+ * Si accetta di proposito: è un falso positivo, e si vede — il campo mostra `*` accanto a tutte
+ * le righe. Toglierlo darebbe un falso negativo, cioè un cliente `5*5` che non si trova più e di
+ * cui nessuno si accorge, che è il modo di fallire peggiore dei due in un elenco che serve a
+ * ritrovare le cose.
  *
- * Il test accanto fissa quello che questa funzione fa davvero al `*` — niente. Il giorno che la
- * verifica di sessione dice come si comporta PostgREST, è lì che si vede cosa cambia.
+ * Il test accanto fissa quello che questa funzione fa davvero al `*`: niente.
  */
 export function likePattern(term: string): string {
   return `%${term.replace(/[\\%_]/g, (char) => `\\${char}`)}%`

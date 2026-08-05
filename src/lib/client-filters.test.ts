@@ -117,10 +117,9 @@ test('AC1 — un termine normale diventa un modello con i jolly ai due lati', ()
 
 test('AC1 — il * non viene toccato, ed è una scelta e non una dimenticanza', () => {
   // PostgREST dichiara `*` alias di `%` e converte prima di SQL, quindi sfuggirlo produrrebbe un
-  // `%` letterale invece di un `*`. Non è stato visto girare: da qui PostgREST non si esercita.
-  // Si lascia passare di proposito — un falso positivo si vede, un carattere cancellato in
-  // silenzio no — e questo test fissa quello che la funzione fa davvero, così il giorno che la
-  // verifica di sessione dice come si comporta PostgREST è qui che si vede cosa cambia.
+  // `%` letterale invece di un `*`. Verificato in sessione il 5 agosto 2026: `?nome=*` risponde
+  // tutti i clienti. Si lascia passare di proposito — un falso positivo si vede, un carattere
+  // cancellato in silenzio no — e questo test fissa quello che la funzione fa davvero.
   assert.equal(likePattern('*'), '%*%')
   assert.equal(likePattern('a*b'), '%a*b%')
 })

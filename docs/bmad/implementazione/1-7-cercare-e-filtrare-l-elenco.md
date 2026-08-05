@@ -4,7 +4,7 @@ baseline_commit: 4ac1646
 
 # Story 1.7: Cercare e filtrare l'elenco
 
-Status: in-progress
+Status: done
 
 Epic: 1 — Clienti, persone, elenco che si ritrova
 Data di creazione: 4 agosto 2026
@@ -314,14 +314,14 @@ Tre delle sei voci non avevano bisogno di una sessione, e l'ipotesi era sbagliat
 - [x] **La barra rovesciata era vietata per un motivo sbagliato.** `cs.{a\b}` risponde **200**: `\` è il carattere di *escape* del letterale, non uno che lo rompe, e `cs.{a\}b}` lo conferma — è valido, e cerca `a}b`. Vietarla resta giusto, per una ragione diversa e peggiore delle altre: un tag salvato come `a\b` verrebbe cercato come `ab` e non si troverebbe mai, senza nessun errore a dirlo. Corretto il motivo scritto in `client-tags.ts` e nel test; il comportamento non cambia.
 - [x] **L'indice trigram serve la ricerca per parte di nome (AC1), l'indice gin serve il filtro per tag (AC3).** `explain` con `enable_seqscan = off`: `name ilike '%acme%'` → `Bitmap Index Scan on clients_name_trgm_idx`; `tags @> '{referral}'` → `Bitmap Index Scan on clients_tags_idx`; in entrambi con la condizione dentro `Index Cond`, non in un filtro dopo. La scansione sequenziale si è dovuta togliere a mano perché la tabella ha due righe: a quella misura il pianificatore preferisce leggerle tutte, ed è la scelta giusta. Quindi questo prova che la forma della query *sa* usare l'indice, non che oggi lo usi.
 
-**Cosa resta e richiede una sessione vera.** Quello che dipende dai dati, e che né un'anteprima né una richiesta anonima possono dire:
+**Quello che dipendeva dai dati, verificato da Luca in sessione il 5 agosto 2026.** Né un'anteprima né una richiesta anonima potevano dirlo, quindi è stato provato usando il software:
 
-- [ ] Se PostgREST converta davvero `*` in `%`: battere `*` nel campo nome e guardare se l'elenco risponde tutto. Il piano di esecuzione lo direbbe, ma `application/vnd.pgrst.plan` è disattivato su questo progetto (406), e con la sicurezza a livello di riga una richiesta anonima risponde `[]` in entrambi i casi. Se non convertisse, cambia il commento di `likePattern` e non il codice.
-- [ ] Che l'ordinamento per ultima attività regga su righe vere, filtrate e non (AC5, non regressione della 1.6).
-- [ ] Che un cliente salvato con due spazi nel nome si trovi copiandone il nome dall'elenco.
-- [ ] Che aggiungendo un tag con `"` o `}` compaia il messaggio di rifiuto invece del salvataggio.
+- [x] PostgREST converte `*` in `%`: battuto `*` nel campo nome, l'elenco risponde tutto. Il piano di esecuzione lo avrebbe detto da solo, ma `application/vnd.pgrst.plan` è disattivato su questo progetto (406), e con la sicurezza a livello di riga una richiesta anonima risponde `[]` in entrambi i casi. Aggiornato il commento di `likePattern`, che diceva di non averlo visto girare; il codice non cambia, e la scelta di non sfuggire il `*` resta quella già motivata.
+- [x] L'ordinamento per ultima attività regge su righe vere, filtrate e non (AC5, nessuna regressione della 1.6).
+- [x] Un cliente salvato con due spazi nel nome si trova copiandone il nome dall'elenco.
+- [x] Aggiungendo un tag con `"` o `}` compare il messaggio di rifiuto invece del salvataggio.
 
-Le righe di prova che chiuderebbero le ultime tre non si scrivono in produzione (kb-0.md §5): si compilano usando il software.
+Le righe di prova non si sono scritte in produzione (kb-0.md §5): si sono compilate usando il software, che è anche il modo in cui la prima versione doveva essere provata.
 
 ## Dev Notes
 
@@ -616,3 +616,4 @@ Nessuna strada resta dentro il perimetro: riscrivere `normalizeTag` è vietato d
 | 5 agosto 2026 | 0.4 | `ClientsTable` estratta in `clients-table.tsx` su decisione di Luca: `page.tsx` da 213 a 172, un componente per file. Contenuto della tabella identico a `4ac1646`. | Claude Code (code-review) |
 | 5 agosto 2026 | 0.5 | Verifica resa con una rotta di anteprima temporanea, senza toccare il controllo d'accesso. Rimontaggio dei `<select>` provato in entrambi i sensi, salto dello scheletro da 26px a 0, quattro stati e 375px verificati. Trovata e corretta una dodicesima cosa: le tre etichette della barra non erano allineate. Restano sei verifiche che richiedono una sessione vera. | Claude Code (code-review) |
 | 5 agosto 2026 | 0.6 | Tre delle sei verifiche chiuse senza sessione: un 400 di PostgREST precede il filtro per proprietario, e `explain` non legge righe. I due indici servono le due query. La barra rovesciata non rompe il letterale — lo sfugge — quindi il divieto resta e il motivo scritto cambia: fallisce in silenzio invece che con un errore. | Claude Code (code-review) |
+| 5 agosto 2026 | 0.7 | Luca chiude in sessione le ultime quattro verifiche, quelle che volevano dati veri. PostgREST converte davvero `*` in `%`: aggiornati il commento di `likePattern` e il suo test, che dicevano di non averlo visto girare. Story `done`. | Claude Code (code-review) |
