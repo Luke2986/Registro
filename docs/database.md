@@ -334,10 +334,33 @@ supabase/migrations/
   0005_assessments_answers.sql
   0006_triggers.sql
   0007_rls.sql          -- solo variante A
-seed.sql                 -- questionario iniziale, mai in produzione con dati finti
+supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
+supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```
 
 Ordine obbligato: estensioni, tabelle senza dipendenze, tabelle dipendenti, trigger, policy.
+
+### Come si dichiara la reversibilità (D24)
+
+`kb-0.md` §5 chiede che ogni migrazione sia reversibile o dichiari perché non lo è. Qui c'è il formato con cui lo dice, ed è vincolante: una migrazione senza dichiarazione è un difetto, della stessa gravità di una policy mancante.
+
+La dichiarazione è una nota dentro il file di migrazione, non un file `.down.sql` e non un documento a parte: una nota lontana dal codice che descrive invecchia da sola. Sta subito sotto la riga del titolo (`-- 000N nome`) e sopra la prosa che già spiega perché lo schema è fatto così, e sono tre chiavi fisse, sempre queste tre e sempre in quest'ordine:
+
+```sql
+-- Reversibile: <sì | sì nella struttura, no nei dati | no>
+-- Come si annulla: <le istruzioni esatte, oppure «non si può, perché …»>
+-- Cosa si perde: <che cosa sparisce eseguendola, oppure «niente»>
+```
+
+`Reversibile:` comincia con `sì` o con `no` e il resto della riga è libero per la sfumatura, perché quasi nessuna migrazione è un sì secco. Quando struttura e dati si comportano diversamente la formula è `sì nella struttura, no nei dati`: una `create table` si annulla sempre, e sempre portandosi via quello che c'era dentro, quindi chiamarla «reversibile» e basta sarebbe formalmente esatto e praticamente una bugia. `Come si annulla:` porta SQL eseguibile, non una descrizione; se occupa più di una riga si continua con `--` allineato. Le tre chiavi si scrivono lettera per lettera così come stanno qui: sono quello che il controllo cerca, e una dichiarazione scritta con parole diverse è una dichiarazione che nessuno trova.
+
+**Le istruzioni di annullamento si scrivono senza `cascade`.** Un `drop table clients cascade` eseguito nell'ordine sbagliato non fallisce: toglie i vincoli di chiave esterna di `people` e `assessments` e lascia righe che puntano a un cliente che non esiste più. Non tace del tutto — emette una `notice` che elenca i vincoli caduti — ma una `notice` non ferma niente e finisce in un registro che nessuno rilegge. La forma senza `cascade` invece rifiuta finché qualcosa dipende dalla tabella, e quel rifiuto è l'informazione: vuol dire che c'è una migrazione più recente da annullare prima. Si preferisce un annullamento che fallisce rumorosamente a uno che riesce e danneggia.
+
+**Si annulla in ordine inverso di numero:** 0007 prima di 0006, 0006 prima di 0005, e così via. Vale per l'intero insieme, quindi sta scritto qui una volta e non si ripete in ogni file.
+
+Il controllo che se ne accorge quando la dichiarazione manca è `supabase/migrations.test.ts`, e gira con `npm test`. Verifica la presenza, l'ordine e il prefisso, non la correttezza dell'SQL di annullamento: quella la verifica una persona, perché nessun programma può sapere se `drop table people;` è la cosa giusta da scrivere in quel file.
+
+`seed.sql` non è una migrazione e non riceve la dichiarazione: contiene dati, non schema, ed è rieseguibile per sua natura.
 
 ---
 

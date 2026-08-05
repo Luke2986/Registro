@@ -1,4 +1,10 @@
 -- 0002 clienti
+-- Reversibile: sì nella struttura, no nei dati.
+-- Come si annulla: drop table clients;
+--   I tre indici cadono con la tabella. Fallisce finché esistono people o assessments,
+--   che riferiscono clients(id): si annullano prima 0005 e 0003.
+-- Cosa si perde: tutti i clienti. Non si ricostruiscono da nessun'altra tabella.
+--
 -- name è l'unico campo obbligatorio (D13). Tutto il resto resta vuoto finché non si sa,
 -- e null non va mai mostrato come zero.
 -- status è descrittivo, non blocca nessuna azione (D14).

@@ -1,4 +1,10 @@
 -- 0003 persone
+-- Reversibile: sì nella struttura, no nei dati.
+-- Come si annulla: drop table people;
+--   Fallisce finché esiste assessments, che riferisce people(id) con interviewee_id:
+--   si annulla prima 0005.
+-- Cosa si perde: tutte le persone e i loro ruoli rispetto alla decisione.
+--
 -- L'azienda è il contenitore, le persone sono voci sotto, anche quando ce n'è una sola (D13).
 -- decision_roles è multiplo perché in una piccola impresa la stessa persona è tutte le cose
 -- insieme. Il check con <@ verifica l'appartenenza all'insieme ammesso senza usare un enum.

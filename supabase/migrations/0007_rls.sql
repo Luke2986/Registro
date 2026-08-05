@@ -1,4 +1,27 @@
 -- 0007 sicurezza a livello di riga
+-- Reversibile: sì per il database, no per le regole del progetto.
+-- Come si annulla: drop policy clients_owner_all on clients;
+--   drop policy people_owner_all on people;
+--   drop policy questionnaires_owner_all on questionnaires;
+--   drop policy question_blocks_owner_all on question_blocks;
+--   drop policy questions_owner_all on questions;
+--   drop policy assessments_owner_all on assessments;
+--   drop policy answers_owner_all on answers;
+--   alter table clients         disable row level security;
+--   alter table people          disable row level security;
+--   alter table questionnaires  disable row level security;
+--   alter table question_blocks disable row level security;
+--   alter table questions       disable row level security;
+--   alter table assessments     disable row level security;
+--   alter table answers         disable row level security;
+--   In quest'ordine, e non al contrario: senza policy la sicurezza a livello di riga ancora
+--   attiva nega tutto, mentre disattivarla per prima aprirebbe le tabelle per il tempo che
+--   resta. Il database accetta entrambe le strade.
+-- Cosa si perde: niente di dati. Si perde la protezione delle righe, che AGENTS.md e
+--   kb-0.md §3 vietano di disattivare senza eccezioni temporanee. Queste istruzioni
+--   stanno scritte perché la domanda «si può tornare indietro» abbia una risposta,
+--   non perché siano una strada percorribile.
+--
 -- Attiva su tutte le tabelle dal primo giorno, anche con un solo utente (D9).
 -- Il giorno che arrivano i collaboratori cambia solo la condizione delle policy,
 -- non lo schema.

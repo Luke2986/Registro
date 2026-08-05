@@ -17,6 +17,7 @@ Rispondi in italiano.
 - Nessun valore esadecimale nel codice. Solo i token del design system.
 - `any` è vietato in TypeScript.
 - Ogni modifica allo schema è un file di migrazione versionato. Mai dalla dashboard.
+- Ogni migrazione dichiara in testa come si annulla, o perché non si può. Formato in `docs/database.md` §7; la sua assenza è un difetto come lo sarebbe una policy mancante.
 - Sicurezza a livello di riga attiva su tutte le tabelle dal primo giorno, anche con un solo utente. Dove la piattaforma non la supporta, ogni query filtra per proprietario e il filtro si verifica sul server.
 - Ogni schermata che carica dati ha quattro stati progettati: pieno, vuoto, in caricamento, in errore.
 - Nessuno stato del cliente blocca nessuna azione. Il software registra e mostra, non decide e non vieta.

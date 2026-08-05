@@ -1,4 +1,14 @@
 -- 0004 questionario
+-- Reversibile: sì nella struttura, no nei dati.
+-- Come si annulla: drop table questions;
+--   drop table question_blocks;
+--   drop table questionnaires;
+--   In quest'ordine. Il primo fallisce finché esiste answers, che riferisce questions(id);
+--   l'ultimo finché esiste assessments. Si annulla prima 0005.
+-- Cosa si perde: il questionario, i suoi blocchi e le sue domande. È l'unica delle
+--   sette il cui contenuto si rimette rieseguendo seed.sql — ma il seed rimette le
+--   23 domande approvate, non quelle riscritte o disattivate dall'interfaccia.
+--
 -- Le domande sono dati, non codice: si modificano dall'interfaccia e non richiedono un rilascio.
 -- version cresce quando cambia la struttura ed è informativo: la ricostruzione di una scheda
 -- vecchia avviene tramite le copie salvate nelle risposte, non da qui.

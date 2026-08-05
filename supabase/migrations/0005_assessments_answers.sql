@@ -1,4 +1,10 @@
 -- 0005 schede di prequalifica e risposte
+-- Reversibile: sì nella struttura, no nei dati.
+-- Come si annulla: drop table answers;
+--   drop table assessments;
+--   In quest'ordine: answers riferisce assessments(id).
+-- Cosa si perde: tutte le schede di prequalifica e tutte le risposte, cioè il lavoro
+--   delle call. Nessuna copia di questi dati esiste altrove nello schema.
 --
 -- total_questions è il denominatore dell'avanzamento (D16) e si scrive una volta sola,
 -- alla creazione della scheda: contiene il numero di domande attive in quel momento.

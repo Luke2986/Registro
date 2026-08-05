@@ -2,7 +2,7 @@
 
 **Owner:** Luca Versilia
 **Aperto il:** 2 agosto 2026
-**Ultimo aggiornamento:** 4 agosto 2026, D23
+**Ultimo aggiornamento:** 5 agosto 2026, D24
 
 Questo file è la memoria del progetto. Va portato in ogni nuova chat o strumento per ricostruire il contesto senza ripartire da zero. Si aggiorna solo quando una decisione è confermata, non quando è ipotizzata.
 
@@ -227,6 +227,17 @@ Smette di bastare quando l'elenco viene paginato o i clienti superano il migliai
 **Le date si rendono nel fuso `Europe/Rome`, dichiarato nel codice.** La formattazione dell'ultima attività gira sul server: su Vercel il fuso è UTC, in casa è Roma, e senza dichiararlo una modifica delle 00:30 si renderebbe come il giorno prima. Una costante in `src/lib/format-date.ts` e non una variabile d'ambiente, così sta nel codice, si legge, e vale identica nei tre ambienti.
 
 Conseguenza da tenere: lo script dei test esegue con `TZ=UTC`, così il fuso della macchina non coincide mai con quello dichiarato. Senza, un `timeZone` dimenticato passerebbe inosservato sulla macchina di casa e comparirebbe solo in produzione. Il giorno che il software servisse un fuso diverso, la costante diventa un parametro: oggi sarebbe la macchina prima del problema.
+
+### D24. La reversibilità di una migrazione si dichiara dentro il file, e l'annullamento si scrive senza `cascade`
+*5 agosto 2026*
+
+`kb-0.md` §5 chiede da sempre che ogni migrazione sia reversibile o dichiari perché non lo è. La regola c'era, il formato no, e nelle sette migrazioni già applicate non era applicata. Questa decisione la rende eseguibile. Sono due cose e vanno insieme, perché la seconda è il motivo per cui la prima è utile invece di decorativa.
+
+**La dichiarazione è tre chiavi fisse dentro il file di migrazione.** Non un file `.down.sql`, non una migrazione inversa, non un documento a parte: una nota lontana dal codice che descrive invecchia da sola, e qui non esiste nemmeno una macchina che eseguirebbe una migrazione inversa — le sette sono state applicate una per una con `apply_migration`, e niente rilegge quei file. Le chiavi sono fisse e non prosa libera perché la prosa libera basta a chi scrive oggi e non a chi cerca fra sei mesi: chi la riscriverà sceglierà parole sue, e non ci sarà più niente da trovare. Il formato per esteso sta in `database.md` §7 e non si ripete qui: una decisione che duplica una convenzione produce due copie che divergono alla prima riscrittura.
+
+**Le istruzioni di annullamento si scrivono senza `cascade`.** È la parte meno ovvia e la più utile, e il motivo va ricordato perché fra tre mesi la regola sembrerà solo scomoda. `drop table clients cascade` **non** porta via `people` e `assessments`: porta via i loro vincoli di chiave esterna e lascia le righe dentro, orfane, che puntano a un cliente che non esiste più. Non tace del tutto — annuncia con una `notice` i vincoli che si porta via — ma una `notice` non è un errore, non ferma niente, e finisce in un registro che nessuno rilegge. La forma senza `cascade` invece rifiuta finché qualcosa dipende dalla tabella, e quel rifiuto è esattamente l'informazione che serve: c'è una migrazione più recente da annullare prima. **Un annullamento che fallisce è migliore di uno che riesce a metà**, perché il primo si legge e il secondo si scopre mesi dopo.
+
+Conseguenza operativa: `supabase/migrations.test.ts` verifica che la dichiarazione ci sia, sia nell'ordine giusto e cominci con `sì` o `no`. Non verifica che l'SQL di annullamento sia corretto, perché nessun programma può saperlo: quello resta una lettura umana, ed è la ragione per cui la dichiarazione va scritta bene la prima volta. Una dichiarazione sbagliata è peggio di una assente, perché è una promessa sulla sicurezza dei dati su cui qualcuno si fiderà nel momento peggiore.
 
 ---
 
