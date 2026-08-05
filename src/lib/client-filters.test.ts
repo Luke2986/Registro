@@ -94,11 +94,11 @@ test('AC1 — un nome oltre il limite si taglia a quella lunghezza', () => {
   assert.equal(parseClientFilters({ nome: troppoLungo }).name.length, CLIENT_NAME_MAX_LENGTH)
 })
 
-test('AC3 — un tag che romperebbe il letterale di array non filtra', () => {
-  // `.contains('tags', [tag])` diventa `cs.{tag}`, e postgrest-js unisce gli elementi con la
-  // virgola senza virgolettarli. Una virgola cambierebbe il filtro in «ha entrambi i tag»; una
-  // graffa, una virgoletta o una barra rovesciata darebbero un letterale malformato, cioè un
-  // 400 e la schermata d'errore da un indirizzo battuto a mano. Vale nessun filtro, non errore.
+test('AC3 — un tag che romperebbe il filtro per tag non filtra', () => {
+  // `.contains('tags', [tag])` diventa `cs.{tag}`, che legge Postgres con le sue regole di
+  // letterale di array — misurate, vedi TAG_BREAKS_ARRAY_LITERAL. La virgola cambia il filtro in
+  // «ha entrambi i tag», graffe e virgolette danno un 400, la barra rovesciata sfugge il carattere
+  // che segue e fa cercare un valore diverso senza dirlo. Vale nessun filtro, non errore.
   for (const storto of ['a,b', 'a}b', 'a{b', 'dell"anno', 'a\\b']) {
     assert.equal(parseClientFilters({ tag: storto }).tag, '', storto)
   }

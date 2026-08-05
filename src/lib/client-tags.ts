@@ -37,12 +37,19 @@ export const CLIENT_TAG_REMOVE_MAX_LENGTH = 1000
  * I caratteri che rompono il filtro per tag, e il motivo per cui un tag non può contenerli.
  *
  * Il filtro dell'elenco usa `.contains('tags', [tag])`, che `postgrest-js` serializza come
- * `cs.{valore}` unendo gli elementi con la virgola e **senza virgolettarli**. Dentro quel
- * letterale di array la virgola separa due elementi, e graffe, virgolette e barre rovesciate ne
- * cambiano la struttura: `cs.{dell"anno}` non è un letterale valido, PostgREST risponde 400 e la
- * schermata cade in errore su un tag che l'interfaccia stessa ha offerto.
+ * `cs.{valore}` unendo gli elementi con la virgola e **senza virgolettarli**. A leggere quel
+ * letterale è Postgres, quindi valgono le sue regole. Misurate contro PostgREST il 5 agosto 2026,
+ * non dedotte, perché si comportano in tre modi diversi:
  *
- * Si vieta qui invece di virgolettare il letterale a valle: la guardia si prova per intero in un
+ * - `,` separa due elementi. `cs.{a,b}` risponde 200 e significa «ha entrambi i tag», cioè un
+ *   filtro multiplo che il perimetro della story esclude.
+ * - `{` `}` `"` rompono la struttura. `cs.{a}b}` e `cs.{dell"anno}` rispondono 400 (`22P02`,
+ *   *malformed array literal*): la schermata cade in errore su un tag che l'interfaccia ha offerto.
+ * - `\` non rompe niente, ed è il caso peggiore dei tre. È il carattere di escape del letterale,
+ *   quindi `cs.{a\b}` risponde 200 e cerca `ab`: un tag salvato come `a\b` non si trova mai, e
+ *   non c'è nessun errore da nessuna parte a dirlo.
+ *
+ * Si vieta qui invece di sfuggire il letterale a valle: la guardia si prova per intero in un
  * modulo puro, mentre un quoter di letterali Postgres scritto a mano andrebbe provato contro
  * PostgREST, che da qui non si esercita. D17 dice che i tag sono liberi nel senso di «nessun
  * vocabolario chiuso», non «qualsiasi sequenza di byte»: è la stessa ragione per cui la virgola
@@ -91,7 +98,8 @@ export function parseTag(raw: unknown): TagResult {
   }
 
   // Prima il caso della virgola, che ha un motivo suo e merita di dirlo; qui restano gli altri
-  // quattro caratteri di TAG_BREAKS_ARRAY_LITERAL, che rompono il filtro invece dell'elenco.
+  // quattro caratteri di TAG_BREAKS_ARRAY_LITERAL: tre fanno cadere il filtro in errore, la barra
+  // rovesciata lo fa fallire in silenzio.
   if (TAG_BREAKS_ARRAY_LITERAL.test(value)) {
     return { ok: false, message: 'Un tag non contiene " { } o \\. Riscrivilo senza.' }
   }

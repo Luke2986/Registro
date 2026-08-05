@@ -306,14 +306,22 @@ In entrambi i casi la navigazione era client-side, verificato con un marcatore s
 - *375px:* nessuno scorrimento orizzontale, né di pagina né dentro la card; la barra va a capo; i tre controlli sono alti 48. I pulsanti restano a 40, che è la voce già rimandata alla 5.2.
 - *Tastiera:* Tab entra nei campi in ordine, ogni controllo ha la sua etichetta collegata, `:focus-visible` risponde con l'alone da 3px. La tinta è `#E6F3F4`, quella di prequalifica: è la voce già rimandata alla 5.2, non una regressione di questa story.
 
-**Cosa resta e richiede una sessione vera.** Quello che dipende dal database, e che nessuna anteprima con dati finti può dire:
+### Verifica contro il database vero, 5 agosto 2026
 
-- [ ] Se PostgREST converta davvero `*` in `%`: battere `*` nel campo nome e guardare se l'elenco risponde tutto. Se non lo facesse, cambia il commento di `likePattern` e non il codice.
-- [ ] Che l'indice trigram entri in gioco e la ricerca per parte di nome trovi quello che deve (AC1).
-- [ ] Che il filtro per tag usi l'indice gin e che la guardia sui metacaratteri eviti davvero il 400 (AC3).
+Tre delle sei voci non avevano bisogno di una sessione, e l'ipotesi era sbagliata: un 400 di PostgREST arriva **prima** del filtro per proprietario, quindi si vede anche da una richiesta anonima; e il pianificatore risponde a `explain` senza leggere una riga.
+
+- [x] **La guardia sui metacaratteri evita davvero il 400 (AC3).** Richieste anonime a `/rest/v1/clients`: `cs.{referral}` → 200; `cs.{a}b}` → 400 `22P02`, *Junk after closing right brace*; `cs.{dell"anno}` → 400 `22P02`, *Incorrectly quoted array element*; `cs.{a,b}` → 200, ma con il significato «ha entrambi i tag».
+- [x] **La barra rovesciata era vietata per un motivo sbagliato.** `cs.{a\b}` risponde **200**: `\` è il carattere di *escape* del letterale, non uno che lo rompe, e `cs.{a\}b}` lo conferma — è valido, e cerca `a}b`. Vietarla resta giusto, per una ragione diversa e peggiore delle altre: un tag salvato come `a\b` verrebbe cercato come `ab` e non si troverebbe mai, senza nessun errore a dirlo. Corretto il motivo scritto in `client-tags.ts` e nel test; il comportamento non cambia.
+- [x] **L'indice trigram serve la ricerca per parte di nome (AC1), l'indice gin serve il filtro per tag (AC3).** `explain` con `enable_seqscan = off`: `name ilike '%acme%'` → `Bitmap Index Scan on clients_name_trgm_idx`; `tags @> '{referral}'` → `Bitmap Index Scan on clients_tags_idx`; in entrambi con la condizione dentro `Index Cond`, non in un filtro dopo. La scansione sequenziale si è dovuta togliere a mano perché la tabella ha due righe: a quella misura il pianificatore preferisce leggerle tutte, ed è la scelta giusta. Quindi questo prova che la forma della query *sa* usare l'indice, non che oggi lo usi.
+
+**Cosa resta e richiede una sessione vera.** Quello che dipende dai dati, e che né un'anteprima né una richiesta anonima possono dire:
+
+- [ ] Se PostgREST converta davvero `*` in `%`: battere `*` nel campo nome e guardare se l'elenco risponde tutto. Il piano di esecuzione lo direbbe, ma `application/vnd.pgrst.plan` è disattivato su questo progetto (406), e con la sicurezza a livello di riga una richiesta anonima risponde `[]` in entrambi i casi. Se non convertisse, cambia il commento di `likePattern` e non il codice.
 - [ ] Che l'ordinamento per ultima attività regga su righe vere, filtrate e non (AC5, non regressione della 1.6).
 - [ ] Che un cliente salvato con due spazi nel nome si trovi copiandone il nome dall'elenco.
 - [ ] Che aggiungendo un tag con `"` o `}` compaia il messaggio di rifiuto invece del salvataggio.
+
+Le righe di prova che chiuderebbero le ultime tre non si scrivono in produzione (kb-0.md §5): si compilano usando il software.
 
 ## Dev Notes
 
@@ -607,3 +615,4 @@ Nessuna strada resta dentro il perimetro: riscrivere `normalizeTag` è vietato d
 | 5 agosto 2026 | 0.3 | Revisione a tre strati. 11 correzioni applicate, fra cui i `<select>` che non si risincronizzavano, i metacaratteri dei tag che rompevano la query e la ricerca che comprimeva spazi che la colonna non comprime. 2 decisioni prese su delega, 1 voce rimandata, 2 respinte. 47 test verdi. | Claude Code (code-review) |
 | 5 agosto 2026 | 0.4 | `ClientsTable` estratta in `clients-table.tsx` su decisione di Luca: `page.tsx` da 213 a 172, un componente per file. Contenuto della tabella identico a `4ac1646`. | Claude Code (code-review) |
 | 5 agosto 2026 | 0.5 | Verifica resa con una rotta di anteprima temporanea, senza toccare il controllo d'accesso. Rimontaggio dei `<select>` provato in entrambi i sensi, salto dello scheletro da 26px a 0, quattro stati e 375px verificati. Trovata e corretta una dodicesima cosa: le tre etichette della barra non erano allineate. Restano sei verifiche che richiedono una sessione vera. | Claude Code (code-review) |
+| 5 agosto 2026 | 0.6 | Tre delle sei verifiche chiuse senza sessione: un 400 di PostgREST precede il filtro per proprietario, e `explain` non legge righe. I due indici servono le due query. La barra rovesciata non rompe il letterale — lo sfugge — quindi il divieto resta e il motivo scritto cambia: fallisce in silenzio invece che con un errore. | Claude Code (code-review) |
