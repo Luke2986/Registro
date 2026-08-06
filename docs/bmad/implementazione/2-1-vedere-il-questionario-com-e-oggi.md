@@ -4,7 +4,7 @@ baseline_commit: 20afc72
 
 # Story 2.1: Vedere il questionario com'è oggi
 
-Status: in-progress
+Status: done
 
 Epic: 2 — Questionario che si cambia senza un rilascio
 Data di creazione: 5 agosto 2026
@@ -140,7 +140,7 @@ so that prima di una call so cosa sto per chiedere e in che sequenza.
   - [x] **`deferred-work.md`, la voce del 5 agosto** *«`database.md` §8 contraddice il commento nuovo di `0004`»*, che si chiude con «Da chiudere alla prima story che apre §8 — cioè l'Epic 2». Questa è quella story, e **la chiude**: si marca chiusa con la data e il motivo, con la barratura, come è stato fatto per le due voci già chiuse in quel file. Nessun'altra voce di `deferred-work.md` viene toccata.
   - [x] Niente in `00-contesto-e-decisioni.md`: questa story non prende nessuna decisione strutturale nuova. Vedi la domanda 4.
 
-- [ ] **Task 7 — La verifica a mano** (AC: 1, 2, 3, 4)
+- [x] **Task 7 — La verifica a mano** (AC: 1, 2, 3, 4)
 
   Verificabile dall'agente:
   - [x] `npm run typecheck` passa. Nessun `any`, nessun `as` aggiunto.
@@ -154,21 +154,21 @@ so that prima di una call so cosa sto per chiedere e in che sequenza.
   - [x] `globals.css` non contiene nessun valore esadecimale nuovo e nessun numero fuori dalla scala di 4.
   - [x] I file toccati sono quelli di «Cosa cambia questa story» e nessun altro, a parte le scritture di metodo (`sprint-status.yaml`, questo file, `deferred-work.md`, `database.md`), che vanno dichiarate nel File List. **Con una deviazione, dichiarata in revisione il 6 agosto 2026:** `block-card.tsx` era condizionato a `page.tsx` sopra le 200 righe, e al momento dell'implementazione la condizione non si era presentata — 115 righe più 75, uniti circa 188. Il file è stato creato lo stesso. La scelta reggeva comunque, perché `kb-0.md` §2 chiede un componente per file e con la resa in linea `page.tsx` ne conterrebbe due, ma era una deviazione da una regola condizionale scritta e andava letta come tale invece che assorbita in silenzio. *Dopo i patch di revisione la condizione si è avverata da sé:* `page.tsx` è a 135 righe e `block-card.tsx` a 85, che uniti superano le 200. La deviazione resta scritta perché quando è stata fatta non era ancora giustificata dal conteggio.
 
-  Richiede una sessione, la fa Luca:
-  - [ ] Apro `/questionario`: vedo 8 card nell'ordine `Contesto`, `Obiettivo`, `Costo di restare come si è`, `Dove si rompe`, `Conoscenza e misura`, `Strumenti già in uso`, `Decisione, tempo, denaro`, `Solo sopra le 50 persone…` (AC1).
-  - [ ] Le domande dentro i blocchi sono 3, 3, 3, 2, 4, 1, 4, 3 e sono nell'ordine giusto: la prima è `Raccontami in due minuti cosa fate e a chi lo vendete.`, l'ultima è `Da quando dite sì a quando si parte davvero, di solito quanto passa?` (AC1).
-  - [ ] Ricarico due volte: l'ordine è lo stesso. Un ordine che cambia fra due caricamenti è il secondo criterio che manca.
-  - [ ] Su ogni domanda leggo testo, testo di aiuto e tipo. Le quattro non-`testo_lungo` sono la 5 e la 19 (`testo breve`), la 10 (`scelta singola`, con le sue quattro opzioni) e la 23 (`testo breve`) (AC2).
-  - [ ] Le due domande senza testo di aiuto (le ultime del blocco 8) non lasciano un buco che sembra un difetto.
-  - [ ] Tutte e ventitré risultano attive, e la parola che dice se lo sono si vede senza doverla cercare (AC2).
-  - [ ] Nella barra a sinistra ci sono due voci; su `/questionario` è accesa `Questionario`, con la barra viola; su `/clienti` è accesa `Clienti`, con la barra blu (AC3).
-  - [ ] Su `/clienti/<id>` e su `/clienti/nuovo` resta accesa `Clienti`. Non regressione: prima era accesa perché scritta a mano.
-  - [ ] Dentro la pagina del questionario **non c'è niente di viola** (AC3).
-  - [ ] I quattro stati reggono: pieno, in caricamento (gli scheletri hanno la forma del contenuto e la pagina non salta quando arriva), in errore. Il vuoto si legge nel codice e non si prova cancellando dati.
-  - [ ] Larghezza 375px: le card non scorrono di lato, il testo delle domande resta leggibile, la barra a sinistra diventa una fascia in alto come già fa (`globals.css:831-844`).
-  - [ ] Da tastiera: Tab entra nelle due voci di navigazione, il focus si vede, Invio ci va.
-  - [ ] Nessun errore in console, nessun avviso di idratazione.
-  - [ ] Esco e rientro dall'accesso: `/questionario` non è raggiungibile senza sessione e rimanda a `/accedi`.
+  Richiede una sessione, la fa Luca. **Fatta e confermata da Luca il 6 agosto 2026**, dopo i patch di revisione: le caselle qui sotto sono spuntate sulla sua parola, non su un'osservazione dell'agente, che una sessione non ce l'ha.
+  - [x] Apro `/questionario`: vedo 8 card nell'ordine `Contesto`, `Obiettivo`, `Costo di restare come si è`, `Dove si rompe`, `Conoscenza e misura`, `Strumenti già in uso`, `Decisione, tempo, denaro`, `Solo sopra le 50 persone…` (AC1).
+  - [x] Le domande dentro i blocchi sono 3, 3, 3, 2, 4, 1, 4, 3 e sono nell'ordine giusto: la prima è `Raccontami in due minuti cosa fate e a chi lo vendete.`, l'ultima è `Da quando dite sì a quando si parte davvero, di solito quanto passa?` (AC1).
+  - [x] Ricarico due volte: l'ordine è lo stesso. Un ordine che cambia fra due caricamenti è il secondo criterio che manca.
+  - [x] Su ogni domanda leggo testo, testo di aiuto e tipo. Le quattro non-`testo_lungo` sono la 5 e la 19 (`testo breve`), la 10 (`scelta singola`, con le sue quattro opzioni) e la 23 (`testo breve`) (AC2).
+  - [x] Le due domande senza testo di aiuto (le ultime del blocco 8) non lasciano un buco che sembra un difetto.
+  - [x] Tutte e ventitré risultano attive, e la parola che dice se lo sono si vede senza doverla cercare (AC2).
+  - [x] Nella barra a sinistra ci sono due voci; su `/questionario` è accesa `Questionario`, con la barra viola; su `/clienti` è accesa `Clienti`, con la barra blu (AC3).
+  - [x] Su `/clienti/<id>` e su `/clienti/nuovo` resta accesa `Clienti`. Non regressione: prima era accesa perché scritta a mano.
+  - [x] Dentro la pagina del questionario **non c'è niente di viola** (AC3).
+  - [x] I quattro stati reggono: pieno, in caricamento (gli scheletri hanno la forma del contenuto e la pagina non salta quando arriva), in errore. Il vuoto si legge nel codice e non si prova cancellando dati.
+  - [x] Larghezza 375px: le card non scorrono di lato, il testo delle domande resta leggibile, la barra a sinistra diventa una fascia in alto come già fa (`globals.css:831-844`).
+  - [x] Da tastiera: Tab entra nelle due voci di navigazione, il focus si vede, Invio ci va.
+  - [x] Nessun errore in console, nessun avviso di idratazione.
+  - [x] Esco e rientro dall'accesso: `/questionario` non è raggiungibile senza sessione e rimanda a `/accedi`.
 
 ### Review Findings
 
@@ -176,7 +176,7 @@ Revisione del 6 agosto 2026, skill `bmad-code-review`, tre strati in parallelo (
 
 Dopo i patch: `npm run typecheck` pulito, `npm test` 81 verdi su 81, `npm run build` pulita con `/questionario` fra le rotte dinamiche, `/questionario` e `/clienti` rispondono `307` verso `/accedi`, nessun errore del server. Nessun esadecimale e nessun `--sec-questionario` sotto `questionario/`, nessun `any` e nessun `as`, tutti i file sotto le 200 righe.
 
-**La pagina vera non è stata aperta nemmeno in revisione**, per la stessa ragione dell'implementazione: l'accesso è un collegamento via email e non c'è una sessione. In particolare la parola `attiva` su ventitré domande — che è la correzione più visibile di questa revisione — non è mai stata vista resa. Task 7, seconda metà, resta la condizione per andare a `done`.
+**La pagina vera non è stata aperta né in implementazione né in revisione**, per la stessa ragione: l'accesso è un collegamento via email e nessuna delle due sessioni di lavoro ne aveva una. **L'ha aperta Luca il 6 agosto 2026**, dopo i patch, e ha confermato che regge — parola `attiva` compresa, che era la correzione più visibile di questa passata e la sola cosa che nessuna verifica automatica poteva vedere. Le caselle della seconda metà di Task 7 sono spuntate su quella conferma.
 
 - [x] [Review][Patch] **AC2 non è soddisfatto: a schermo niente dice che una domanda è attiva** [src/app/(app)/questionario/block-card.tsx:52] — rende qualcosa solo nel ramo negativo (`question.is_active ? null : <span>non attiva</span>`). Con 23 domande su 23 attive l'indicatore non compare mai, quindi oggi il 100% del contenuto della schermata non porta nessuna informazione sull'attività e la riga di Task 7 «la parola che dice se lo sono si vede senza doverla cercare» non si può spuntare guardando. Il Dev Agent Record dichiara la contraddizione e la chiude scegliendo «l'elenco chiuso delle parole» di Task 3; l'argomento non è stato applicato in modo coerente, perché quello stesso elenco è già superato a `block-card.tsx:71` con `Nessuna domanda in questo blocco.`, che nessun task chiede. **Deciso da Luca il 6 agosto 2026 in revisione: ogni domanda porta la sua parola, `attiva` o `non attiva`.** AC2 si legge alla lettera e la riga di Task 7 si può spuntare guardando; i ventitré `attiva` identici sono il costo accettato. L'elenco delle parole della schermata in Task 3 e nel Contratto visivo cresce di conseguenza.
 - [x] [Review][Patch] **Il secondo criterio d'ordinamento non rompe nessun pareggio: tutte le righe del seed hanno lo stesso `created_at`** [src/app/(app)/questionario/page.tsx:56,58,60] — `supabase/seed.sql` è un unico `do $$ … end $$`, cioè una sola transazione, e `default now()` in Postgres è il timestamp *di transazione*. Verificato sul progetto: `count(distinct created_at)` vale 1 su 8 blocchi, 1 su 23 domande e 1 sul questionario. Quindi `(position, created_at)` è una parità identica a `position` da solo su ogni riga esistente, e il commento a `:39-42` dichiara chiuso un problema che resta aperto. L'unica colonna che rompe davvero i pareggi è `id`. Oggi non si vede — 23 posizioni distinte su 23 — e si vedrebbe alla prima collisione, cioè lo scenario che questa stessa story descrive per la 2.3 e per la 2.5.
@@ -540,5 +540,6 @@ Non creati, perché il ripiego di Task 2 non è servito: `src/lib/questionnaire-
 |---|---|---|---|
 | 5 agosto 2026 | 0.1 | Story creata | Claude Opus 5, skill `bmad-create-story` |
 | 5 agosto 2026 | 0.2 | Le cinque domande chiuse da Luca, sì a tutti i default. Il divieto sulla `version` a schermo passa dalle domande al perimetro | Claude Opus 5 |
+| 6 agosto 2026 | 1.0 | Verifica di sessione fatta da Luca sulla pagina vera, dopo i patch: la schermata regge, parola `attiva` compresa. Task 7 chiuso, story `done` | Luca |
 | 6 agosto 2026 | 0.4 | Revisione del codice, tre strati. Otto scoperte corrette: la parola `attiva` su ogni domanda (decisione di Luca, AC2 non era soddisfatto), `id` come criterio finale d'ordinamento perché tutte le righe del seed condividono lo stesso `created_at`, le opzioni rese solo per `scelta_singola`, `database.md` §8 che dichiarava `owner_id` su tre tabelle invece che su una, `overflow-wrap` sulle classi nuove, due commenti che dicevano il falso, il motivo del non-conteggio portato nel codice, due caselle di Task 7 corrette. Sei voci rimandate in `deferred-work.md`. Status a `in-progress`: la pagina vera non è ancora stata aperta | Claude Opus 5, skill `bmad-code-review` |
 | 5 agosto 2026 | 0.3 | Task 1-6 eseguiti. L'ordinamento a due livelli verificato con quattro richieste al progetto vero, ripiego in memoria non entrato. La `select` concatenata perdeva il tipo delle righe: sostituita con un letterale unico. Etichette viste fallire su due rotture. Scheletri misurati su un banco di prova statico, salto zero. `database.md` §8 riscritta, una voce di `deferred-work.md` chiusa. Task 7 resta a Luca: la pagina vera non è mai stata aperta, perché non c'è una sessione | Claude Opus 5, skill `bmad-dev-story` |
