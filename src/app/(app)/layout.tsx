@@ -1,17 +1,13 @@
-import Link from 'next/link'
-
 import { SignOutButton } from '@/components/sign-out-button'
+
+import { Nav } from './nav'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="shell">
       <aside className="sidebar">
         <div className="sidebar__brand">Registro</div>
-        <nav className="nav">
-          <Link href="/clienti" className="nav__item nav__item--active">
-            Clienti
-          </Link>
-        </nav>
+        <Nav />
         <div className="sidebar__foot">
           <SignOutButton />
         </div>

@@ -150,6 +150,18 @@ a {
   font-weight: 500;
 }
 
+/* Il colore della barra arriva dalla sezione, non è più fisso: con una voce sola `--sec-clienti`
+   scritto qui era una scorciatoia senza conseguenze, con due è un difetto. Una sezione aggiunta
+   senza il proprio modificatore resta senza barra — si vede, invece di prendere il colore di
+   un'altra sezione. */
+.nav__item--clienti {
+  --nav-accent: var(--sec-clienti);
+}
+
+.nav__item--questionario {
+  --nav-accent: var(--sec-questionario);
+}
+
 .nav__item--active::before {
   content: '';
   position: absolute;
@@ -158,7 +170,7 @@ a {
   bottom: 10px;
   width: 3px;
   border-radius: var(--r-full);
-  background: var(--sec-clienti);
+  background: var(--nav-accent);
 }
 
 .sidebar__foot {
@@ -762,6 +774,89 @@ a {
   gap: 8px;
   min-height: 44px;
   cursor: pointer;
+}
+
+/* questionario */
+
+.questions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Nessuna cornice e nessuno sfondo intorno alla domanda: la separazione la fa la riga, come in
+   `.person` e come nella tabella dell'elenco. La densità sta nella tipografia e
+   nell'allineamento, non nelle cornici. */
+.question {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.questions .question:first-child {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* Gli stessi tre valori di `.card__title`, che è `--t-heading`, su un elemento che non è il
+   titolo di una card: la domanda si legge da lontano, l'aiuto solo se lo cerchi
+   (design-system.md §3). Un `card__title` fuori posto direbbe un'altra cosa nel markup. */
+.question__text {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  margin: 0;
+  /* Stessa ragione già scritta su `.tag__text`: a 375px lo spazio dentro la card è circa 295px, e
+     un token senza spazi più largo di così — un dominio, un codice — uscirebbe dalla card e
+     farebbe scorrere la pagina di lato. Le 23 domande del seed non ne hanno, quindi il difetto
+     non si vedrebbe provando i dati veri. */
+  overflow-wrap: anywhere;
+}
+
+/* `flex-wrap` perché a 375px il tipo e la parola non stanno sempre su una riga sola. */
+.question__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-muted);
+}
+
+/* Le opzioni della scelta singola, come testo semplice sotto. Il punto elenco nativo, perché
+   unirle con una virgola le renderebbe ambigue il giorno che un'opzione ne contiene una. */
+.question__options {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}
+
+/* Una domanda disattivata è una scelta di Luca, non un errore e non un avviso: niente `--bad` e
+   niente `--warn`, che significano un esito (design-system.md §2). Il colore non basta da solo e
+   accanto c'è sempre la parola `non attiva`.
+   `--ink-muted` e non `--ink-faint`: il testo della domanda deve restare leggibile a 4.5:1, e
+   `--ink-faint` su `--surface` sta sotto (design-system.md §8).
+   La regola sul contenitore muove **solo** `.question__text`, che è l'unica cosa qui dentro a non
+   dichiarare un colore proprio: l'aiuto (`.meta`) e la riga dei metadati (`.question__meta`) sono
+   già `--ink-muted` per conto loro, e oggi coincidono per caso. Chi volesse spegnere una domanda
+   di più o di meno deve toccare anche quelle due, altrimenti non si muovono. */
+.question--inactive {
+  color: var(--ink-muted);
+}
+
+/* `.badge` fissa `--ink` per conto suo: senza questa riga sarebbe l'unica cosa a piena intensità
+   dentro una domanda spenta. */
+.question--inactive .badge {
+  color: var(--ink-muted);
 }
 
 /* i quattro stati di ogni schermata */

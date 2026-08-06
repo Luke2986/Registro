@@ -366,7 +366,16 @@ Il controllo che se ne accorge quando la dichiarazione manca è `supabase/migrat
 
 ## 8. Dati iniziali
 
-Il seed crea un questionario attivo, i suoi blocchi e le domande approvate. Finché le domande non sono state riviste, il seed crea il questionario vuoto e le domande si inseriscono dall'interfaccia: è l'unico modo di verificare che la gestione del questionario funzioni davvero.
+`supabase/seed.sql` crea il questionario di prequalifica per intero: un questionario attivo `Prequalifica` alla versione 1, **8 blocchi e 23 domande**, che sono quelle approvate con D19. Non crea nessun cliente e nessun dato finto.
+
+Il paragrafo diceva fino al 5 agosto 2026 che il seed crea il questionario *vuoto* e che le domande si inseriscono dall'interfaccia. Era vero quando le domande non erano ancora state riviste, e non lo è più: la revisione è la decisione D19, e il seed le porta tutte e ventitré. Restano comunque modificabili dall'interfaccia, che è il punto dell'Epic 2 — solo che il punto di partenza non è il vuoto.
+
+Due cose del seed che non si deducono guardandolo di sfuggita:
+
+- **Si esegue dopo il primo accesso**, non prima: `questionnaires.owner_id` fa riferimento a `auth.users`, e senza un utente il file esce con una `notice` senza scrivere niente. Le altre due tabelle non hanno un `owner_id` proprio — la loro protezione risale al questionario con un `exists`, §6 — quindi il proprietario si scrive una volta sola, sulla riga del questionario.
+- **È rieseguibile.** Se un questionario esiste già per quell'utente, non tocca niente. Per questo non è una migrazione e non riceve la dichiarazione di reversibilità della §7: contiene dati, non schema.
+
+**`position` è il numero della domanda nel questionario intero, non dentro il blocco.** Il blocco `Contesto` ha le posizioni 1-3, `Obiettivo` le 4-6, e così via fino a 21-23 nell'ottavo. È la stessa numerazione che `answers.position` copia per tenere l'ordine di una scheda. Ordinare le domande per `position` dentro il loro blocco dà l'ordine giusto in entrambe le convenzioni, perché le posizioni sono comunque crescenti dentro ogni blocco; la differenza conta il giorno che una domanda si aggiunge o si sposta, ed è la Story 2.5 a doverla chiudere.
 
 ---
 
