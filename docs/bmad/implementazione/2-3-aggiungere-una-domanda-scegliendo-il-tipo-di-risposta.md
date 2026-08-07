@@ -4,7 +4,7 @@ baseline_commit: 9ecf54d
 
 # Story 2.3: Aggiungere una domanda scegliendo il tipo di risposta
 
-Status: review
+Status: done
 
 Epic: 2 — Questionario che si cambia senza un rilascio
 Data di creazione: 7 agosto 2026
@@ -147,7 +147,7 @@ so that il campo che mi trovo davanti in call è già quello giusto.
     - la voce della revisione 2.2 sul quirk di `apply_migration` si chiude se il capoverso di §7 entra davvero; la chiusura si scrive per esteso, con il riferimento a §7.
   - [x] Nessun'altra voce si tocca. Se ne emergono di nuove, si aggiungono sotto un'intestazione della revisione, non di questa story. Niente in `00-contesto-e-decisioni.md`, salvo esito diverso dai default delle domande 1 e 2, che sono le due strutturali.
 
-- [ ] **Task 6 — La verifica** (AC: 1, 2, 3)
+- [x] **Task 6 — La verifica** (AC: 1, 2, 3)
 
   Verificabile dall'agente:
   - [x] `npm run typecheck` passa. Nessun `any`, nessun `as`.
@@ -162,21 +162,21 @@ so that il campo che mi trovo davanti in call è già quello giusto.
   - [x] Il grep delle scritture: nessun `update` in `question-actions.ts`; `.from('questions')` sotto `questionario/` compare **due volte, tutte e due in `question-actions.ts`** (la lettura della posizione e l'`insert`) — la stringa `questions(` dentro la `select` di `page.tsx` è un innesto, non un `.from`, e non si conta; `.from('question_blocks')` compare **quattro volte**: le tre pre-esistenti di `actions.ts` (lettura della posizione, insert, update della rinomina) più la lettura di controllo nuova; `.from('questionnaires')` resta a **due**, entrambe letture pre-esistenti (`actions.ts:61`, `page.tsx:56`); zero `.from('answers')`, zero `.from('assessments')`.
   - [x] I file toccati sono quelli di «Cosa cambia questa story» e nessun altro, a parte le scritture di metodo (`sprint-status.yaml`, questo file, `deferred-work.md`, `database.md`), dichiarate nel File List.
 
-  Richiede una sessione, la fa Luca:
-  - [ ] Apro `/questionario`: in fondo a ogni card di blocco c'è `Aggiungi domanda`, discreto, e la pagina si legge come prima.
-  - [ ] Aggiungo una domanda `testo lungo` con testo e «cosa serve capire» a un blocco in mezzo alla pagina: compare **in fondo a quel blocco**, marcata `attiva`, con il badge `testo lungo` (AC1).
-  - [ ] Ricarico: la domanda è ancora lì, in fondo al suo blocco, non altrove.
-  - [ ] Ne aggiungo una seconda allo stesso blocco: va dopo la prima.
-  - [ ] Aggiungo una domanda al blocco senza domande creato durante la verifica della 2.2: il messaggio «Nessuna domanda in questo blocco» sparisce e la domanda c'è.
-  - [ ] Scelgo `scelta singola`: compare il campo delle opzioni. Salvo senza opzioni: rifiutato con il messaggio, e quello che avevo scritto resta dov'è (AC2). Aggiungo due opzioni su due righe: salvata, e le opzioni si leggono sotto la domanda.
-  - [ ] Torno su `testo breve` dopo aver scritto opzioni: il campo sparisce, salvo, e la domanda non ha nessuna opzione.
-  - [ ] Provo un testo vuoto e uno di soli spazi: rifiutati con il messaggio sotto il modulo.
-  - [ ] `Annulla` chiude il modulo, quello che avevo scritto non viene salvato, il fuoco torna su `Aggiungi domanda`.
-  - [ ] Il testo di aiuto lasciato vuoto: la domanda si salva e sotto il testo non c'è nessun contenitore vuoto.
-  - [ ] Larghezza 375px: il modulo non scorre di lato, il select si usa, i bersagli si toccano.
-  - [ ] Da tastiera: Tab arriva a `Aggiungi domanda`, Invio apre il modulo, il fuoco entra nel primo campo, `Annulla` lo riporta sul pulsante.
-  - [ ] Nessun errore in console, nessun avviso di idratazione.
-  - [ ] Le domande di prova aggiunte durante la verifica: decisione presa in sessione. **Se si tolgono, si tolgono da SQL** — l'interfaccia non cancella domande, ed è voluto (Story 2.6: si disattiva, non si cancella).
+  Richiede una sessione, la fa Luca — **fatta il 7 agosto 2026, dopo le patch di revisione**:
+  - [x] Apro `/questionario`: in fondo a ogni card di blocco c'è `Aggiungi domanda`, discreto, e la pagina si legge come prima.
+  - [x] Aggiungo una domanda `testo lungo` con testo e «cosa serve capire» a un blocco in mezzo alla pagina: compare **in fondo a quel blocco**, marcata `attiva`, con il badge `testo lungo` (AC1).
+  - [x] Ricarico: la domanda è ancora lì, in fondo al suo blocco, non altrove.
+  - [x] Ne aggiungo una seconda allo stesso blocco: va dopo la prima.
+  - [x] Aggiungo una domanda al blocco senza domande creato durante la verifica della 2.2: il messaggio «Nessuna domanda in questo blocco» sparisce e la domanda c'è.
+  - [x] Scelgo `scelta singola`: compare il campo delle opzioni. Salvo senza opzioni: rifiutato con il messaggio, e quello che avevo scritto resta dov'è (AC2). Aggiungo due opzioni su due righe: salvata, e le opzioni si leggono sotto la domanda.
+  - [x] Torno su `testo breve` dopo aver scritto opzioni: il campo sparisce, salvo, e la domanda non ha nessuna opzione.
+  - [x] Provo un testo vuoto e uno di soli spazi: rifiutati con il messaggio sotto il modulo.
+  - [x] `Annulla` chiude il modulo, quello che avevo scritto non viene salvato, il fuoco torna su `Aggiungi domanda`.
+  - [x] Il testo di aiuto lasciato vuoto: la domanda si salva e sotto il testo non c'è nessun contenitore vuoto.
+  - [x] Larghezza 375px: il modulo non scorre di lato, il select si usa, i bersagli si toccano.
+  - [x] Da tastiera: Tab arriva a `Aggiungi domanda`, Invio apre il modulo, il fuoco entra nel primo campo, `Annulla` lo riporta sul pulsante.
+  - [x] Nessun errore in console, nessun avviso di idratazione.
+  - [x] Le domande di prova aggiunte durante la verifica: decisione presa in sessione. **Se si tolgono, si tolgono da SQL** — l'interfaccia non cancella domande, ed è voluto (Story 2.6: si disattiva, non si cancella).
 
 ### Review Findings
 
@@ -457,3 +457,4 @@ Modificati:
 | 7 agosto 2026 | 0.2 | Le quattro domande chiuse da Luca: default confermati, nessun task cambiato | Claude Fable 5, skill `bmad-create-story` |
 | 7 agosto 2026 | 0.3 | Story implementata: migrazione 0009, modulo puro con test, azione `createQuestion`, modulo a schermo nelle card. Verifica agente completa, resta la sessione di Luca | Claude Fable 5, skill `bmad-dev-story` |
 | 7 agosto 2026 | 0.4 | Code review a tre livelli: audit AC senza violazioni; tre decisioni chiuse da Luca (opzioni controllate, tetto a 20, normalizzazione del whitespace) e applicate insieme a tre patch; sei rimandi annotati in `deferred-work.md`. 115 test verdi | Claude Fable 5, skill `bmad-code-review` |
+| 7 agosto 2026 | 0.5 | Sessione di verifica fatta da Luca sulla pagina vera, dopo le patch: le quattordici prove spuntate. Story done | Claude Fable 5, skill `bmad-code-review` |
