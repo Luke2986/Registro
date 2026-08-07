@@ -139,7 +139,15 @@ create table questions (
   position     integer not null,
   is_active    boolean not null default true,
   created_at   timestamptz not null default now(),
-  updated_at   timestamptz not null default now()
+  updated_at   timestamptz not null default now(),
+
+  -- 0009, con la scrittura delle domande
+  constraint questions_text_not_blank check (length(trim(text)) > 0),
+  -- Una direzione sola, di proposito: rifiuta la scelta singola senza opzioni, non le opzioni
+  -- su un tipo che non le usa — quella metà appartiene alla Story 2.4, che decide cosa succede
+  -- riscrivendo il tipo. Il coalesce perché array_length su un array vuoto risponde null.
+  constraint questions_single_choice_has_options
+    check (answer_type <> 'scelta_singola' or coalesce(array_length(options, 1), 0) > 0)
 );
 
 create index questions_block_position_idx on questions (block_id, position);
@@ -337,11 +345,14 @@ supabase/migrations/
   0006_triggers.sql
   0007_rls.sql          -- solo variante A
   0008_block_title_check.sql
+  0009_question_checks.sql
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```
 
 Ordine obbligato: estensioni, tabelle senza dipendenze, tabelle dipendenti, trigger, policy.
+
+**Dopo ogni `apply_migration` si verifica il registro con `list_migrations`.** Lo strumento può registrare il nome senza il prefisso numerico — è successo alla 0008, registrata come `block_title_check` — e un registro senza prefisso non corrisponde più ai file di questa cartella. Il rimedio in due passi: passare allo strumento il nome **con** il prefisso (`0009_question_checks`), che così lo conserva — verificato con la 0009 il 7 agosto 2026 — e, se un nome è comunque entrato spoglio, allineare il registro con un `update` su `supabase_migrations.schema_migrations`, che è metadato dello strumento e non schema applicativo, dichiarandolo nel Dev Agent Record della story.
 
 ### Come si dichiara la reversibilità (D24)
 
@@ -379,6 +390,8 @@ Due cose del seed che non si deducono guardandolo di sfuggita:
 - **È rieseguibile.** Se un questionario esiste già per quell'utente, non tocca niente. Per questo non è una migrazione e non riceve la dichiarazione di reversibilità della §7: contiene dati, non schema.
 
 **`position` è il numero della domanda nel questionario intero, non dentro il blocco.** Il blocco `Contesto` ha le posizioni 1-3, `Obiettivo` le 4-6, e così via fino a 21-23 nell'ottavo. È la stessa numerazione che `answers.position` copia per tenere l'ordine di una scheda. Ordinare le domande per `position` dentro il loro blocco dà l'ordine giusto in entrambe le convenzioni, perché le posizioni sono comunque crescenti dentro ogni blocco; la differenza conta il giorno che una domanda si aggiunge o si sposta, ed è la Story 2.5 a doverla chiudere.
+
+**Dalla Story 2.3 (7 agosto 2026) una domanda nuova nasce al massimo globale del questionario, più uno**, qualunque sia il suo blocco. Le alternative perdevano di più: il massimo del blocco + 1 duplicherebbe la posizione della prima domanda del blocco successivo, e rinumerare tutto a ogni aggiunta sarebbe una scrittura su molte righe senza transazione — PostgREST non ne offre una — cioè la Story 2.5 costruita male in anticipo. La domanda nasce comunque in fondo al suo blocco, perché dentro ogni blocco le posizioni restano crescenti e la pagina ordina per `position` dentro il blocco. Quello che si sospende è la promessa che `position` sia il numero d'ordine dell'intervista attraverso i blocchi: aggiungere una domanda al blocco 2 oggi le dà la posizione 24, non la 7. La semantica torna con la rinumerazione della Story 2.5, che nell'ordine dello sprint viene prima della 3.1, cioè prima che `answers.position` copi questi numeri dentro una scheda.
 
 ---
 

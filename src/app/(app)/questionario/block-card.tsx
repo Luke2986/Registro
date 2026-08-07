@@ -2,6 +2,7 @@ import { answerTypeLabel } from '@/lib/answer-types'
 import type { Database } from '@/lib/database.types'
 
 import { BlockTitleForm } from './block-title-form'
+import { NewQuestionForm } from './new-question-form'
 
 type BlockRow = Database['public']['Tables']['question_blocks']['Row']
 type QuestionRow = Database['public']['Tables']['questions']['Row']
@@ -81,6 +82,10 @@ export function BlockCard({ block }: { block: QuestionnaireBlock }) {
         // Story 2.2 sarà raggiungibile, e una card col solo titolo sembrerebbe un guasto.
         <p className="meta">Nessuna domanda in questo blocco.</p>
       )}
+
+      {/* Un solo punto di montaggio che serve tutti e due i rami, in fondo alla card, dove la
+          domanda nuova nascerà — stessa regola del pulsante unico di `Aggiungi blocco`. */}
+      <NewQuestionForm blockId={block.id} />
     </section>
   )
 }

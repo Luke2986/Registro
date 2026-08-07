@@ -784,6 +784,13 @@ a {
   margin-bottom: 20px;
 }
 
+/* Lo stacco fra l'elenco delle domande e `Aggiungi domanda`: senza, il pulsante — e il modulo
+   quando è aperto — si legge attaccato all'ultima domanda, perché la lista e i suoi paragrafi
+   hanno margine zero. Una proprietà sola, come `.block-rename` qui sopra. */
+.block-add-question {
+  margin-top: 20px;
+}
+
 .questions {
   list-style: none;
   margin: 0;
