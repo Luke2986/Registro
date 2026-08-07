@@ -4,7 +4,7 @@ baseline_commit: b7a5b2a
 
 # Story 2.2: Aggiungere e rinominare un blocco
 
-Status: in-progress
+Status: done
 
 Epic: 2 — Questionario che si cambia senza un rilascio
 Data di creazione: 6 agosto 2026
@@ -159,7 +159,7 @@ so that posso riorganizzare l'intervista quando cambio il modo di condurla.
   - [x] Nessun'altra voce di `deferred-work.md` viene toccata. Se ne emergono di nuove, si aggiungono sotto una intestazione della revisione, non di questa story.
   - [x] Niente in `00-contesto-e-decisioni.md`, salvo l'esito delle domande 1 e 2: quelle due, se rispondono `sì`, sono decisioni strutturali e si scrivono dove sono state prese (`kb-0.md` §8).
 
-- [ ] **Task 7 — La verifica** (AC: 1, 2, 3)
+- [x] **Task 7 — La verifica** (AC: 1, 2, 3)
 
   Verificabile dall'agente:
   - [x] `npm run typecheck` passa. Nessun `any`, nessun `as`.
@@ -174,19 +174,19 @@ so that posso riorganizzare l'intervista quando cambio il modo di condurla.
   - [x] Nessuna scrittura verso `questions`, `answers` o `questionnaires` in tutto il codice della story: `grep` su `.from('questions')`, `.from('answers')` e `.from('questionnaires')` sotto `questionario/` deve trovare **due sole** occorrenze di `questionnaires`, tutte e due letture — la `select` di controllo di `createBlock` e la lettura di `page.tsx` pre-esistente dalla Story 2.1, che la prima stesura di questa riga non contava. Corretta in revisione il 7 agosto 2026: la condizione originale diceva «una sola» ed era letteralmente falsa.
   - [x] I file toccati sono quelli di «Cosa cambia questa story» e nessun altro, a parte le scritture di metodo (`sprint-status.yaml`, questo file, `deferred-work.md`, `database.md`), che vanno dichiarate nel File List.
 
-  Richiede una sessione, la fa Luca:
-  - [ ] Apro `/questionario`: sotto l'ottava card c'è una card con `Aggiungi blocco`.
-  - [ ] Aggiungo un blocco con un titolo: compare **in fondo**, dopo `Solo sopra le 50 persone…`, e dentro dice che non ha ancora nessuna domanda (AC1).
-  - [ ] Ricarico: il blocco nuovo è ancora in fondo, non altrove. Se salta di posto, la posizione non è quella che credeva.
-  - [ ] Ne aggiungo un secondo: va dopo il primo, non prima.
-  - [ ] Provo a salvare un titolo vuoto, e poi uno di soli spazi: tutti e due rifiutati, con un messaggio sotto il campo, e quello che avevo scritto resta dov'è (AC3).
-  - [ ] Rinomino un blocco esistente: il titolo cambia, le sue domande non si muovono e non cambiano (AC2).
-  - [ ] Rinomino con un titolo vuoto: rifiutato allo stesso modo (AC3).
-  - [ ] `Annulla` sulla rinomina riporta il titolo di prima e chiude il modulo.
-  - [ ] Larghezza 375px: la card del modulo non scorre di lato, il campo si usa, i pulsanti si toccano.
-  - [ ] Da tastiera: Tab arriva a `Rinomina` e ad `Aggiungi blocco`, il fuoco si vede, Invio apre il modulo, il fuoco entra nel campo, `Annulla` lo riporta sul pulsante.
-  - [ ] Nessun errore in console, nessun avviso di idratazione.
-  - [ ] I blocchi di prova aggiunti durante la verifica: decidere se restano o si tolgono. **Se si tolgono, si tolgono da SQL** — l'interfaccia non cancella blocchi, ed è voluto.
+  Richiede una sessione, la fa Luca — **fatta il 7 agosto 2026, dopo i patch di revisione**:
+  - [x] Apro `/questionario`: sotto l'ottava card c'è una card con `Aggiungi blocco`.
+  - [x] Aggiungo un blocco con un titolo: compare **in fondo**, dopo `Solo sopra le 50 persone…`, e dentro dice che non ha ancora nessuna domanda (AC1).
+  - [x] Ricarico: il blocco nuovo è ancora in fondo, non altrove. Se salta di posto, la posizione non è quella che credeva.
+  - [x] Ne aggiungo un secondo: va dopo il primo, non prima.
+  - [x] Provo a salvare un titolo vuoto, e poi uno di soli spazi: tutti e due rifiutati, con un messaggio sotto il campo, e quello che avevo scritto resta dov'è (AC3).
+  - [x] Rinomino un blocco esistente: il titolo cambia, le sue domande non si muovono e non cambiano (AC2).
+  - [x] Rinomino con un titolo vuoto: rifiutato allo stesso modo (AC3).
+  - [x] `Annulla` sulla rinomina riporta il titolo di prima e chiude il modulo.
+  - [x] Larghezza 375px: la card del modulo non scorre di lato, il campo si usa, i pulsanti si toccano.
+  - [x] Da tastiera: Tab arriva a `Rinomina` e ad `Aggiungi blocco`, il fuoco si vede, Invio apre il modulo, il fuoco entra nel campo, `Annulla` lo riporta sul pulsante.
+  - [x] Nessun errore in console, nessun avviso di idratazione.
+  - [x] I blocchi di prova aggiunti durante la verifica: decisione presa in sessione. **Se si tolgono, si tolgono da SQL** — l'interfaccia non cancella blocchi, ed è voluto.
 
 ### Review Findings
 
@@ -495,3 +495,4 @@ Scritture di metodo:
 | 6 agosto 2026 | 0.1 | Story creata | Claude Opus 5, skill `bmad-create-story` |
 | 7 agosto 2026 | 0.2 | Story implementata: migrazione 0008 applicata, validazione del titolo, due Server Action, i due moduli a schermo, documenti allineati. Quattro domande chiuse da Luca con i default. Status a review | Claude Fable 5, skill `bmad-dev-story` |
 | 7 agosto 2026 | 0.3 | Revisione a tre layer applicata: 8 patch (fra cui `disabled={pending}` sulla rinomina, deciso da Luca, e `23514` mappato in `renameBlock`), 3 voci rimandate, 4 rilievi scartati. Verifiche rieseguite: typecheck, build, 91/91. Status a in-progress: resta la sessione di Task 7 | Claude Fable 5, skill `bmad-code-review` |
+| 7 agosto 2026 | 0.4 | Verifica di sessione fatta da Luca sulla pagina vera: le dodici prove di Task 7 spuntate. Status a done | Claude Fable 5, skill `bmad-code-review` |
