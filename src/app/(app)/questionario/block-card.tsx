@@ -1,6 +1,8 @@
 import { answerTypeLabel } from '@/lib/answer-types'
 import type { Database } from '@/lib/database.types'
 
+import { BlockTitleForm } from './block-title-form'
+
 type BlockRow = Database['public']['Tables']['question_blocks']['Row']
 type QuestionRow = Database['public']['Tables']['questions']['Row']
 
@@ -22,14 +24,13 @@ export type QuestionnaireBlock = Pick<BlockRow, 'id' | 'title'> & {
  * porta un titolo e nient'altro, salvo un'azione allineata a destra (design-system.md §5), ed è
  * lì che le Story 2.2 e 2.5 metteranno la loro. Una card sola andrebbe smontata fra due story.
  *
- * Nessun `'use client'`: qui non c'è niente di interattivo.
+ * Nessun `'use client'`: la resa delle domande è testo fermo e resta sul server. L'unica parte
+ * interattiva è l'intestazione, che è il componente client montato qui sotto.
  */
 export function BlockCard({ block }: { block: QuestionnaireBlock }) {
   return (
     <section className="card">
-      <div className="card__header">
-        <h2 className="card__title">{block.title}</h2>
-      </div>
+      <BlockTitleForm blockId={block.id} title={block.title} />
 
       {block.questions.length > 0 ? (
         <ul className="questions">

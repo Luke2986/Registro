@@ -4,6 +4,7 @@ import { ErrorState } from '@/components/error-state'
 import { createClient } from '@/lib/supabase/server'
 
 import { BlockCard } from './block-card'
+import { NewBlockForm } from './new-block-form'
 
 export default async function QuestionnairePage() {
   const supabase = await createClient()
@@ -110,9 +111,10 @@ export default async function QuestionnairePage() {
       ) : questionnaire === null ? (
         <div className="card">
           <div className="empty">
-            {/* Nessun pulsante: creare blocchi è la Story 2.2 e qui non esiste ancora niente che
-                lo faccia. Nominare un file SQL dentro l'interfaccia sarebbe di solito un difetto;
-                qui l'unico utente è chi quel file lo esegue, quindi è l'informazione giusta. */}
+            {/* Nessun pulsante: senza un questionario non esiste nessun questionnaire_id a cui
+                agganciare un blocco. Nominare un file SQL dentro l'interfaccia sarebbe di solito
+                un difetto; qui l'unico utente è chi quel file lo esegue, quindi è l'informazione
+                giusta. */}
             <p style={{ margin: 0 }}>
               Il questionario non è ancora stato caricato. Si carica eseguendo supabase/seed.sql
               sul progetto Supabase.
@@ -123,12 +125,26 @@ export default async function QuestionnairePage() {
         <div className="card">
           <div className="empty">
             {/* Un questionario che esiste e non ha blocchi non è lo stesso stato di un
-                questionario che non c'è, e le due frasi non sono la stessa frase. */}
+                questionario che non c'è, e le due frasi non sono la stessa frase. Qui il
+                pulsante c'è (UX-DR11), nell'altro vuoto no: senza un questionario non esiste
+                nessun questionnaire_id a cui agganciare un blocco. */}
             <p style={{ margin: 0 }}>Il questionario non ha ancora nessun blocco.</p>
+            <NewBlockForm questionnaireId={questionnaire.id} />
           </div>
         </div>
       ) : (
-        questionnaire.question_blocks.map((block) => <BlockCard key={block.id} block={block} />)
+        <>
+          {questionnaire.question_blocks.map((block) => (
+            <BlockCard key={block.id} block={block} />
+          ))}
+
+          {/* Un solo `Aggiungi blocco`, in fondo, dove il blocco nuovo nascerà: anche
+              nell'intestazione vorrebbe dire due pulsanti identici nello stato vuoto, e con i
+              blocchi presenti un'azione lontana dal punto in cui il suo risultato compare. */}
+          <div className="card">
+            <NewBlockForm questionnaireId={questionnaire.id} />
+          </div>
+        </>
       )}
     </>
   )

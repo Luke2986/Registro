@@ -778,6 +778,12 @@ a {
 
 /* questionario */
 
+/* Il modulo di rinomina sostituisce l'intestazione della card: stesso stacco dei 20 di
+   `.card__header`, così le domande sotto non salgono quando il titolo diventa un campo. */
+.block-rename {
+  margin-bottom: 20px;
+}
+
 .questions {
   list-style: none;
   margin: 0;
@@ -867,6 +873,13 @@ a {
   align-items: flex-start;
   gap: 16px;
   padding: 32px 0;
+}
+
+/* `align-items: flex-start` restringe i figli al loro contenuto: giusto per pulsanti e frasi,
+   ma un modulo dentro lo stato vuoto collasserebbe alla larghezza intrinseca dell'input,
+   mentre lo stesso modulo dentro una card si stende a tutta larghezza. */
+.empty .field {
+  align-self: stretch;
 }
 
 .error-box {

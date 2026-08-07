@@ -123,7 +123,7 @@ create table questionnaires (
 create table question_blocks (
   id                uuid primary key default gen_random_uuid(),
   questionnaire_id  uuid not null references questionnaires(id) on delete cascade,
-  title             text not null,
+  title             text not null check (length(trim(title)) > 0),  -- 0008, con la scrittura dei blocchi
   position          integer not null,
   created_at        timestamptz not null default now()
 );
@@ -146,6 +146,8 @@ create index questions_block_position_idx on questions (block_id, position);
 ```
 
 `version` cresce quando si modifica la struttura, ed è informativo: non serve a ricostruire nulla, perché la ricostruzione avviene tramite le copie salvate nelle risposte.
+
+Dalla Story 2.2 (7 agosto 2026) esistono le prime scritture sui blocchi, e **nessuna fa crescere `version`**: la decisione su che cosa conti come modifica strutturale è rimandata alla fine dell'Epic 2, quando esistono tutte e cinque le scritture e si decide una volta sola. Farla crescere a ogni story sarebbe una seconda scrittura su una seconda tabella senza transazione, cioè uno stato incoerente raggiungibile per un numero che oggi nessuno legge. La voce sta anche in `deferred-work.md`.
 
 Le domande non si cancellano, si disattivano: una domanda disattivata sparisce dalle schede nuove e resta in quelle vecchie.
 
@@ -334,6 +336,7 @@ supabase/migrations/
   0005_assessments_answers.sql
   0006_triggers.sql
   0007_rls.sql          -- solo variante A
+  0008_block_title_check.sql
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```
