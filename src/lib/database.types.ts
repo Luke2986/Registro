@@ -380,7 +380,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      move_block: {
+        Args: { p_block_id: string; p_direction: string }
+        Returns: boolean
+      }
+      move_question: {
+        Args: { p_direction: string; p_question_id: string }
+        Returns: boolean
+      }
+      renumber_questions: {
+        Args: { p_questionnaire_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

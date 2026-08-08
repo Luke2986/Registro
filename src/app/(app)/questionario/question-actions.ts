@@ -17,9 +17,11 @@ import { isUuid } from '@/lib/uuid'
  * che è a 177 righe e con questa azione supererebbe le 200 (kb-0.md §2): le azioni dei blocchi
  * e quelle delle domande sono due cose, come clienti/actions.ts e people-actions.ts.
  *
- * Nessun update da nessuna parte: riscrivere una domanda è la Story 2.4, riordinare la 2.5,
- * disattivare la 2.6. E nessuna scrittura su questionnaires: `version` resta 1 fino alla fine
- * dell'Epic 2, per la decisione registrata in deferred-work.md e database.md §3.
+ * Nessun update diretto da qui: riscrivere una domanda è la Story 2.4, disattivare la 2.6.
+ * La rinumerazione dopo l'insert passa dalla funzione della 0011 — mai da un update di
+ * position in TypeScript, che senza transazione lascerebbe posizioni incoerenti. E nessuna
+ * scrittura su questionnaires: `version` resta 1 fino alla fine dell'Epic 2, per la decisione
+ * registrata in deferred-work.md e database.md §3.
  */
 
 const QUESTION_NOT_SAVED = 'La domanda non è stata salvata. Riprova fra un momento.'
@@ -95,8 +97,9 @@ export async function createQuestion(
 
   // L'ultima posizione fra le domande DEL QUESTIONARIO, non del blocco: le posizioni delle
   // domande sono globali (database.md §8), e il massimo del blocco + 1 colliderebbe con la
-  // prima domanda del blocco successivo. Con il massimo globale la domanda nasce comunque in
-  // fondo al suo blocco, perché la pagina ordina per position dentro il blocco.
+  // prima domanda del blocco successivo. Il massimo globale + 1 è solo il valore di nascita —
+  // non collide con niente — e la rinumerazione dopo l'insert lo ricolloca nel numero
+  // d'intervista vero. La domanda nasce comunque in fondo al suo blocco.
   //
   // `!inner` non è decorativo: senza, il filtro sull'innesto svuota l'innesto invece di
   // filtrare le domande, e il massimo diventerebbe quello di tutti i questionari del
@@ -144,6 +147,23 @@ export async function createQuestion(
     if (error.code === '23514') return { error: checkViolationMessage(error.message, QUESTION_NOT_SAVED) }
 
     return { error: QUESTION_NOT_SAVED }
+  }
+
+  // La domanda è nata a max globale + 1: la rinumerazione (0011) la ricolloca subito nel suo
+  // numero d'intervista. Sono due chiamate separate: se questa fallisce, il valore di nascita
+  // resta finché una scrittura successiva non rinumera — la 3.1 copierebbe quel numero in una
+  // scheda aperta in quella finestra. Su errore la creazione NON fallisce: l'intento
+  // dell'utente è riuscito, e lo stato è quello benigno pre-2.5, che si sana alla prossima
+  // rinumerazione. Log e basta.
+  const renumber = await session.supabase.rpc('renumber_questions', {
+    p_questionnaire_id: block.data.questionnaire_id,
+  })
+
+  if (renumber.error) {
+    console.error('createQuestion: rinumerazione fallita', {
+      code: renumber.error.code,
+      message: renumber.error.message,
+    })
   }
 
   // Solo il questionario: le domande non compaiono nell'elenco dei clienti, e questa scrittura

@@ -169,8 +169,8 @@ Revisione dell'8 agosto 2026, tre livelli (avversariale, casi limite, audit degl
 
 Da vedere a schermo nella prossima sessione (i due comportamenti nuovi non sono verificabili senza sessione, come da pattern della story):
 
-- [ ] Sulla `scelta_singola`: cambio tipo → sotto il select compare «Questo tipo non usa opzioni: salvando, quelle scritte si perdono»; torno su scelta singola → la riga sparisce.
-- [ ] `Annulla` su modulo intonso chiude senza chiedere; su modulo riscritto chiede, e rifiutando la conferma il digitato è ancora lì.
+- [x] Sulla `scelta_singola`: cambio tipo → sotto il select compare «Questo tipo non usa opzioni: salvando, quelle scritte si perdono»; torno su scelta singola → la riga sparisce. Verificato da Luca l'8 agosto 2026, nella sessione di verifica della 2.5.
+- [x] `Annulla` su modulo intonso chiude senza chiedere; su modulo riscritto chiede, e rifiutando la conferma il digitato è ancora lì. Verificato da Luca l'8 agosto 2026, nella sessione di verifica della 2.5.
 
 ## Dev Notes
 

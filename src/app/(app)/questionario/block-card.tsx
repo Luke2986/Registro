@@ -1,6 +1,7 @@
 import type { Database } from '@/lib/database.types'
 
 import { BlockTitleForm } from './block-title-form'
+import { MoveButtons } from './move-buttons'
 import { NewQuestionForm } from './new-question-form'
 import { QuestionItem } from './question-item'
 
@@ -28,18 +29,37 @@ export type QuestionnaireBlock = Pick<BlockRow, 'id' | 'title'> & {
  * Nessun `'use client'`: la resa delle domande è testo fermo e resta sul server. L'unica parte
  * interattiva è l'intestazione, che è il componente client montato qui sotto.
  */
-export function BlockCard({ block }: { block: QuestionnaireBlock }) {
+export function BlockCard({
+  block,
+  isFirst,
+  isLast,
+}: {
+  block: QuestionnaireBlock
+  isFirst: boolean
+  isLast: boolean
+}) {
+  // isFirst/isLast arrivano dalla pagina, che è l'unica a conoscere l'elenco intero: servono
+  // solo a spegnere la freccia al bordo — il no-op della funzione resta l'ultima difesa.
   return (
     <section className="card">
-      <BlockTitleForm blockId={block.id} title={block.title} />
+      <BlockTitleForm
+        blockId={block.id}
+        title={block.title}
+        actions={<MoveButtons kind="block" id={block.id} isFirst={isFirst} isLast={isLast} />}
+      />
 
       {block.questions.length > 0 ? (
         <ul className="questions">
           {/* La resa della domanda — display, `Modifica` e modulo — sta nel componente foglia,
               con il suo stato `editing`: così questa card resta un Server Component, come
               l'intestazione con BlockTitleForm. */}
-          {block.questions.map((question) => (
-            <QuestionItem key={question.id} question={question} />
+          {block.questions.map((question, index) => (
+            <QuestionItem
+              key={question.id}
+              question={question}
+              isFirst={index === 0}
+              isLast={index === block.questions.length - 1}
+            />
           ))}
         </ul>
       ) : (

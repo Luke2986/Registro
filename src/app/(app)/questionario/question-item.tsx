@@ -6,6 +6,7 @@ import { answerTypeLabel } from '@/lib/answer-types'
 
 import type { QuestionnaireQuestion } from './block-card'
 import { EditQuestionForm } from './edit-question-form'
+import { MoveButtons } from './move-buttons'
 
 /**
  * La singola domanda dentro la card di blocco: a riposo il display con il suo `Modifica`,
@@ -18,7 +19,15 @@ import { EditQuestionForm } from './edit-question-form'
  * argomento di `Rinomina` e `Aggiungi domanda`. E c'è anche sulle domande non attive: nessuno
  * stato blocca nessuna azione (D14).
  */
-export function QuestionItem({ question }: { question: QuestionnaireQuestion }) {
+export function QuestionItem({
+  question,
+  isFirst,
+  isLast,
+}: {
+  question: QuestionnaireQuestion
+  isFirst: boolean
+  isLast: boolean
+}) {
   const [editing, setEditing] = useState(false)
   const [returning, setReturning] = useState(false)
 
@@ -46,14 +55,24 @@ export function QuestionItem({ question }: { question: QuestionnaireQuestion }) 
         <>
           <div className="question__header">
             <p className="question__text">{question.text}</p>
-            <button
-              type="button"
-              ref={editButton}
-              className="btn btn--quiet"
-              onClick={() => setEditing(true)}
-            >
-              Modifica
-            </button>
+            {/* Le frecce ci sono anche sulle domande non attive: nessuno stato blocca nessuna
+                azione (D14) — una domanda spenta si può ancora mettere nell'ordine giusto. */}
+            <div className="question__actions">
+              <MoveButtons
+                kind="question"
+                id={question.id}
+                isFirst={isFirst}
+                isLast={isLast}
+              />
+              <button
+                type="button"
+                ref={editButton}
+                className="btn btn--quiet"
+                onClick={() => setEditing(true)}
+              >
+                Modifica
+              </button>
+            </div>
           </div>
 
           {/* Due domande su ventitré hanno l'aiuto vuoto: un contenitore reso comunque

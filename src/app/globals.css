@@ -234,8 +234,28 @@ a {
   margin-bottom: 20px;
 }
 
-.card__header .btn {
+/* `>` e non discendente: dentro `.card__actions` un margin-left auto su ogni pulsante li
+   sparpaglierebbe per l'intestazione invece di raggrupparli a destra. Il gruppo si comporta
+   come l'azione sola di design-system.md §5. */
+.card__header > .btn,
+.card__header > .card__actions {
   margin-left: auto;
+}
+
+/* Il gruppo di azioni di una intestazione: le frecce della 2.5 accanto a `Rinomina` (card)
+   e a `Modifica` (domanda). Gemelle dichiarate: tre righe valgono più di un'astrazione. Il
+   wrap serve alla riga d'errore delle frecce, che a piena larghezza va a capo da sola. */
+.card__actions,
+.question__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card__actions .field__error,
+.question__actions .field__error {
+  flex-basis: 100%;
 }
 
 /* `--t-heading` di design-system.md §3. */

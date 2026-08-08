@@ -134,8 +134,13 @@ export default async function QuestionnairePage() {
         </div>
       ) : (
         <>
-          {questionnaire.question_blocks.map((block) => (
-            <BlockCard key={block.id} block={block} />
+          {questionnaire.question_blocks.map((block, index) => (
+            <BlockCard
+              key={block.id}
+              block={block}
+              isFirst={index === 0}
+              isLast={index === questionnaire.question_blocks.length - 1}
+            />
           ))}
 
           {/* Un solo `Aggiungi blocco`, in fondo, dove il blocco nuovo nascerà: anche

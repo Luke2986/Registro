@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 
 import { useEditableField, type SaveResult } from '@/lib/use-editable-field'
 
@@ -21,7 +21,16 @@ import { renameBlock } from './actions'
  * Il campo è corto e si conferma (D21): `autosave: false`, nessun SaveIndicator, che è la
  * seconda metà della regola del campo lungo.
  */
-export function BlockTitleForm({ blockId, title }: { blockId: string; title: string }) {
+export function BlockTitleForm({
+  blockId,
+  title,
+  actions,
+}: {
+  blockId: string
+  title: string
+  /** Le azioni della card oltre a `Rinomina` (le frecce della 2.5), rese solo a riposo. */
+  actions?: ReactNode
+}) {
   const [renaming, setRenaming] = useState(false)
   const [returning, setReturning] = useState(false)
 
@@ -68,17 +77,22 @@ export function BlockTitleForm({ blockId, title }: { blockId: string; title: str
   const errorId = `${id}-errore`
 
   if (!renaming) {
+    // Il gruppo sta a destra come stava l'azione sola: in rinomina il modulo sostituisce
+    // l'intestazione intera, frecce comprese, com'è già per il titolo.
     return (
       <div className="card__header">
         <h2 className="card__title">{title}</h2>
-        <button
-          type="button"
-          ref={renameButton}
-          className="btn btn--quiet"
-          onClick={() => setRenaming(true)}
-        >
-          Rinomina
-        </button>
+        <div className="card__actions">
+          {actions}
+          <button
+            type="button"
+            ref={renameButton}
+            className="btn btn--quiet"
+            onClick={() => setRenaming(true)}
+          >
+            Rinomina
+          </button>
+        </div>
       </div>
     )
   }
