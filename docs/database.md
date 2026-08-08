@@ -143,11 +143,17 @@ create table questions (
 
   -- 0009, con la scrittura delle domande
   constraint questions_text_not_blank check (length(trim(text)) > 0),
-  -- Una direzione sola, di proposito: rifiuta la scelta singola senza opzioni, non le opzioni
-  -- su un tipo che non le usa — quella metà appartiene alla Story 2.4, che decide cosa succede
-  -- riscrivendo il tipo. Il coalesce perché array_length su un array vuoto risponde null.
+  -- Le due direzioni sono arrivate in due tempi. La 0009 rifiuta la scelta singola senza
+  -- opzioni; il coalesce perché array_length su un array vuoto risponde null. La 0010 rifiuta
+  -- le opzioni su un tipo che non le usa, ed è la decisione della Story 2.4 (7 agosto 2026) su
+  -- cosa succede riscrivendo il tipo: via dalla scelta singola le opzioni si azzerano sul
+  -- server, e il database lo pretende. `options is null` e non array_length: null è come il
+  -- server scrive «niente opzioni» (D13).
   constraint questions_single_choice_has_options
-    check (answer_type <> 'scelta_singola' or coalesce(array_length(options, 1), 0) > 0)
+    check (answer_type <> 'scelta_singola' or coalesce(array_length(options, 1), 0) > 0),
+  -- 0010, con la riscrittura delle domande
+  constraint questions_options_only_single_choice
+    check (answer_type = 'scelta_singola' or options is null)
 );
 
 create index questions_block_position_idx on questions (block_id, position);
@@ -346,6 +352,7 @@ supabase/migrations/
   0007_rls.sql          -- solo variante A
   0008_block_title_check.sql
   0009_question_checks.sql
+  0010_question_options_check.sql
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```

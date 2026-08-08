@@ -6,6 +6,7 @@ import {
   QUESTION_OPTION_MAX_LENGTH,
   QUESTION_OPTIONS_MAX_COUNT,
   QUESTION_TEXT_MAX_LENGTH,
+  checkViolationMessage,
   parseOptions,
   validateHelpText,
   validateQuestionText,
@@ -142,4 +143,48 @@ test('parseOptions non deduplica: due opzioni identiche restano due', () => {
   const result = parseOptions('uguale\nuguale')
 
   assert.deepEqual(result, { ok: true, options: ['uguale', 'uguale'] })
+})
+
+// Un fallback riconoscibile e diverso da ogni frase dei validatori: se un test lo vede
+// tornare, è davvero il parametro passato e non una costante rimasta dentro la funzione.
+const FALLBACK = 'frase di ripiego del chiamante'
+
+test('checkViolationMessage riconosce questions_text_not_blank e risponde la frase del validatore', () => {
+  const blank = validateQuestionText('')
+
+  assert.equal(blank.ok, false)
+  if (!blank.ok) {
+    assert.equal(
+      checkViolationMessage('new row violates check constraint "questions_text_not_blank"', FALLBACK),
+      blank.message,
+    )
+  }
+})
+
+test('checkViolationMessage riconosce questions_single_choice_has_options e risponde la frase del validatore', () => {
+  const empty = parseOptions('')
+
+  assert.equal(empty.ok, false)
+  if (!empty.ok) {
+    assert.equal(
+      checkViolationMessage('new row violates check constraint "questions_single_choice_has_options"', FALLBACK),
+      empty.message,
+    )
+  }
+})
+
+test('checkViolationMessage risponde il fallback sul vincolo della 0010', () => {
+  // Di proposito: il vincolo non è raggiungibile dall'interfaccia, perché il server azzera
+  // le opzioni prima di scrivere. Se scatta, arriva da SQL o da una richiesta forgiata, e
+  // una frase dedicata sarebbe un messaggio per nessuno.
+  assert.equal(
+    checkViolationMessage('new row violates check constraint "questions_options_only_single_choice"', FALLBACK),
+    FALLBACK,
+  )
+})
+
+test('checkViolationMessage su un messaggio qualunque ritorna proprio il fallback passato, non una costante interna', () => {
+  const other = 'un’altra frase di ripiego'
+
+  assert.equal(checkViolationMessage('deadlock detected', other), other)
 })

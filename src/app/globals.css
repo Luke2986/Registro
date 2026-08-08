@@ -815,6 +815,16 @@ a {
   margin-top: 0;
 }
 
+/* Testo e `Modifica` sulla stessa riga, come `.card__header` allinea titolo e `Rinomina`: la
+   domanda è il «titolo» della sua voce. `flex-start` e non `center`: il testo va a capo già
+   a 1280 sulle domande lunghe, e il pulsante deve restare in alto, non galleggiare a metà. */
+.question__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
 /* Gli stessi tre valori di `.card__title`, che è `--t-heading`, su un elemento che non è il
    titolo di una card: la domanda si legge da lontano, l'aiuto solo se lo cerchi
    (design-system.md §3). Un `card__title` fuori posto direbbe un'altra cosa nel markup. */

@@ -2,9 +2,9 @@
 import { INVISIBLE } from './validate-client-name.ts'
 
 /**
- * I campi di una domanda del questionario: validazioni e limiti in un posto solo, perché la
- * Story 2.4 riuserà queste stesse funzioni per la riscrittura. Nessun React e nessun Supabase,
- * così ci si mette un test sopra senza impalcatura (kb-0.md §7).
+ * I campi di una domanda del questionario: validazioni, limiti e il messaggio per i 23514 in
+ * un posto solo, perché creazione e riscrittura (Story 2.3 e 2.4) usano le stesse funzioni.
+ * Nessun React e nessun Supabase, così ci si mette un test sopra senza impalcatura (kb-0.md §7).
  *
  * Il database non pone massimi di lunghezza: senza un limite qui un incolla accidentale
  * diventa una domanda. I massimi del seed sono 119 (testo), 166 (aiuto) e 25 (opzione):
@@ -105,4 +105,33 @@ export function parseOptions(raw: unknown): { ok: true; options: string[] } | { 
   }
 
   return { ok: true, options }
+}
+
+/**
+ * Il messaggio per un 23514 sulle domande, dal nome del vincolo dentro il messaggio di
+ * Postgres — i nomi sono nostri e stabili. È l'ultima difesa e non dovrebbe scattare mai,
+ * perché la validazione rifiuta prima; se scatta, il messaggio resta il nostro, preso dal
+ * validatore che copre la stessa condizione, così la frase vive in un posto solo.
+ *
+ * Sta qui e non nei file d'azione perché serve a due di loro, e un file 'use server' non può
+ * esportare una funzione sincrona: ogni suo export dev'essere una Server Action. Il fallback
+ * arriva dal chiamante, così le costanti dei messaggi restano una copia per file d'azione.
+ *
+ * Il vincolo della 0010 (questions_options_only_single_choice) non riceve una frase dedicata,
+ * di proposito: dall'interfaccia non è raggiungibile, perché il server azzera le opzioni prima
+ * di scrivere. Se scatta, arriva da SQL o da una richiesta forgiata, e il fallback generico è
+ * la risposta giusta.
+ */
+export function checkViolationMessage(pgMessage: string, fallback: string): string {
+  if (pgMessage.includes('questions_text_not_blank')) {
+    const blank = validateQuestionText('')
+    return blank.ok ? fallback : blank.message
+  }
+
+  if (pgMessage.includes('questions_single_choice_has_options')) {
+    const empty = parseOptions('')
+    return empty.ok ? fallback : empty.message
+  }
+
+  return fallback
 }

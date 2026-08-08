@@ -3,7 +3,12 @@
 import { revalidatePath } from 'next/cache'
 
 import { isAnswerType } from '@/lib/answer-types'
-import { parseOptions, validateHelpText, validateQuestionText } from '@/lib/question-fields'
+import {
+  checkViolationMessage,
+  parseOptions,
+  validateHelpText,
+  validateQuestionText,
+} from '@/lib/question-fields'
 import { openSession } from '@/lib/supabase/session'
 import { isUuid } from '@/lib/uuid'
 
@@ -19,27 +24,6 @@ import { isUuid } from '@/lib/uuid'
 
 const QUESTION_NOT_SAVED = 'La domanda non è stata salvata. Riprova fra un momento.'
 const BLOCK_GONE = 'Questo blocco non è più disponibile. Ricarica la pagina.'
-
-/**
- * 23514 qui può essere uno di tre vincoli: i due della 0009 più questions_answer_type_check
- * della 0004. Si distinguono dal nome dentro il messaggio di Postgres — i nomi sono nostri e
- * stabili. È l'ultima difesa e non dovrebbe scattare mai, perché la validazione rifiuta prima;
- * se scatta, il messaggio resta il nostro, preso dal validatore che copre la stessa condizione,
- * così la frase vive in un posto solo.
- */
-function checkViolationMessage(pgMessage: string): string {
-  if (pgMessage.includes('questions_text_not_blank')) {
-    const blank = validateQuestionText('')
-    return blank.ok ? QUESTION_NOT_SAVED : blank.message
-  }
-
-  if (pgMessage.includes('questions_single_choice_has_options')) {
-    const empty = parseOptions('')
-    return empty.ok ? QUESTION_NOT_SAVED : empty.message
-  }
-
-  return QUESTION_NOT_SAVED
-}
 
 export type CreateQuestionState = { error?: string }
 
@@ -157,7 +141,7 @@ export async function createQuestion(
     // la scrittura. Non è un guasto passeggero, e invitare a riprovare manderebbe a insistere
     // su una cosa che non riuscirà mai più.
     if (error.code === '23503') return { error: BLOCK_GONE }
-    if (error.code === '23514') return { error: checkViolationMessage(error.message) }
+    if (error.code === '23514') return { error: checkViolationMessage(error.message, QUESTION_NOT_SAVED) }
 
     return { error: QUESTION_NOT_SAVED }
   }

@@ -1,8 +1,8 @@
-import { answerTypeLabel } from '@/lib/answer-types'
 import type { Database } from '@/lib/database.types'
 
 import { BlockTitleForm } from './block-title-form'
 import { NewQuestionForm } from './new-question-form'
+import { QuestionItem } from './question-item'
 
 type BlockRow = Database['public']['Tables']['question_blocks']['Row']
 type QuestionRow = Database['public']['Tables']['questions']['Row']
@@ -35,46 +35,11 @@ export function BlockCard({ block }: { block: QuestionnaireBlock }) {
 
       {block.questions.length > 0 ? (
         <ul className="questions">
+          {/* La resa della domanda — display, `Modifica` e modulo — sta nel componente foglia,
+              con il suo stato `editing`: così questa card resta un Server Component, come
+              l'intestazione con BlockTitleForm. */}
           {block.questions.map((question) => (
-            <li
-              key={question.id}
-              className={`question${question.is_active ? '' : ' question--inactive'}`}
-            >
-              <p className="question__text">{question.text}</p>
-
-              {/* Due domande su ventitré hanno l'aiuto vuoto: un contenitore reso comunque
-                  lascerebbe un buco che sembra un difetto. */}
-              {question.help_text ? <p className="meta">{question.help_text}</p> : null}
-
-              <p className="question__meta">
-                <span className="badge">{answerTypeLabel(question.answer_type)}</span>
-                {/* La parola c'è sempre, anche sulle attive: AC2 chiede di vedere *se* una domanda
-                    è attiva, e con ventitré domande attive su ventitré una parola che compare solo
-                    nel caso negativo non direbbe niente a nessuno. Una parola e non solo un colore,
-                    perché il colore non è mai l'unico portatore di significato (design-system.md
-                    §2); e una domanda disattivata non è né un errore né un avviso — è una scelta —
-                    quindi niente rosso e niente ambra. */}
-                <span>{question.is_active ? 'attiva' : 'non attiva'}</span>
-              </p>
-
-              {/* Solo per `scelta_singola`, e non per qualsiasi domanda che abbia `options`
-                  valorizzato: lo schema non lega le due colonne — `options text[]` non ha nessun
-                  `check` e «valorizzato solo per scelta_singola» è un commento — quindi una
-                  domanda riscritta da `scelta_singola` a un altro tipo senza svuotare `options`
-                  annuncerebbe scelte che in call non ci saranno. */}
-              {question.answer_type === 'scelta_singola' &&
-              question.options &&
-              question.options.length > 0 ? (
-                <ul className="question__options">
-                  {question.options.map((option, index) => (
-                    // La posizione e non il testo: due opzioni identiche sono un contenuto
-                    // strano, non un motivo per far cadere la resa. L'elenco è di sola lettura
-                    // e non si riordina, quindi l'indice è stabile.
-                    <li key={index}>{option}</li>
-                  ))}
-                </ul>
-              ) : null}
-            </li>
+            <QuestionItem key={question.id} question={question} />
           ))}
         </ul>
       ) : (
