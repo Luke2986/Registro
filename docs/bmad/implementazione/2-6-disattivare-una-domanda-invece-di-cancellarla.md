@@ -4,7 +4,7 @@ baseline_commit: a444030
 
 # Story 2.6: Disattivare una domanda invece di cancellarla
 
-Status: review
+Status: done
 
 Epic: 2 — Questionario che si cambia senza un rilascio
 Data di creazione: 8 agosto 2026
@@ -83,7 +83,7 @@ so that non devo scegliere fra un questionario pulito e la storia dei clienti pa
     - la voce sul **questionario con `is_active = false` mostrato come «non ancora caricato»** (revisione 2.1) si annota: l'Epic 2 si chiude senza che nessun codice scriva `questionnaires.is_active` — il punto di ripresa resta «appena qualcosa scrive `questionnaires`», invariato. L'annotazione esiste perché chi rileggesse «da riprendere appena l'Epic 2 tocca…» a epica chiusa deve trovare l'esito, non dedurlo.
   - [x] In `database.md` §3, tabella `questions`: nessuna modifica allo schema documentato — la riga «Le domande non si cancellano, si disattivano» c'è già e da questa story è vera anche dall'interfaccia. Non serve scrivere altro.
 
-- [ ] **Task 5 — La verifica** (AC: 1, 2, 3, 4)
+- [x] **Task 5 — La verifica** (AC: 1, 2, 3, 4)
 
   Verificabile dall'agente:
   - [x] `npm run typecheck` passa. Nessun `any`, nessun `as`.
@@ -98,15 +98,15 @@ so that non devo scegliere fra un questionario pulito e la storia dei clienti pa
   - [x] I file toccati sono quelli di «Cosa cambia questa story» e nessun altro, a parte le scritture di metodo (`sprint-status.yaml`, questo file, `deferred-work.md`, `database.md`, `00-contesto-e-decisioni.md`), dichiarate nel File List.
 
   Richiede una sessione, la fa Luca — è la condizione per `done`. Avvertenza: la disattivazione è su domande vere, ed è reversibile con `Riattiva`, quindi niente dati di prova necessari — basta rimettere a posto:
-  - [ ] Apro `/questionario`: ogni domanda ha `Disattiva` dopo `Modifica`, e la pagina si legge come prima.
-  - [ ] Disattivo una domanda in mezzo a un blocco: la parola diventa `non attiva`, il testo si spegne su `--ink-muted` (la resa che esiste dalla 2.1, mai vista con un dato vero), il pulsante ora dice `Riattiva`. Nessuna conferma chiesta, nessun avviso.
-  - [ ] Ricarico: la domanda è ancora lì, ancora spenta, **allo stesso posto** — disattivare non sposta niente.
-  - [ ] `Riattiva`: la domanda torna attiva, identica, dov'era.
-  - [ ] Su una domanda spenta, `Modifica` funziona e `Sposta su`/`Sposta giù` funzionano: nessuno stato blocca nessuna azione (D14).
-  - [ ] Cerco in tutta la schermata un comando che cancelli una domanda: non esiste (AC4).
-  - [ ] Da tastiera: Tab raggiunge il pulsante, Invio disattiva, l'etichetta gira. Il caso noto: durante il volo il pulsante si spegne e il fuoco cade sul body — annotato per la 5.2, non si corregge qui.
-  - [ ] Larghezza 375px: la riga delle azioni della domanda — quattro pulsanti ora — non trabocca e non fa scorrere la pagina di lato; se serve, va a capo.
-  - [ ] Nessun errore in console, nessun avviso di idratazione.
+  - [x] Apro `/questionario`: ogni domanda ha `Disattiva` dopo `Modifica`, e la pagina si legge come prima.
+  - [x] Disattivo una domanda in mezzo a un blocco: la parola diventa `non attiva`, il testo si spegne su `--ink-muted` (la resa che esiste dalla 2.1, mai vista con un dato vero), il pulsante ora dice `Riattiva`. Nessuna conferma chiesta, nessun avviso.
+  - [x] Ricarico: la domanda è ancora lì, ancora spenta, **allo stesso posto** — disattivare non sposta niente.
+  - [x] `Riattiva`: la domanda torna attiva, identica, dov'era.
+  - [x] Su una domanda spenta, `Modifica` funziona e `Sposta su`/`Sposta giù` funzionano: nessuno stato blocca nessuna azione (D14).
+  - [x] Cerco in tutta la schermata un comando che cancelli una domanda: non esiste (AC4).
+  - [x] Da tastiera: Tab raggiunge il pulsante, Invio disattiva, l'etichetta gira. Il caso noto: durante il volo il pulsante si spegne e il fuoco cade sul body — annotato per la 5.2, non si corregge qui.
+  - [x] Larghezza 375px: la riga delle azioni della domanda — quattro pulsanti ora — non trabocca e non fa scorrere la pagina di lato; se serve, va a capo.
+  - [x] Nessun errore in console, nessun avviso di idratazione.
 
 ### Review Findings
 
@@ -296,7 +296,7 @@ Nessun ostacolo. Implementazione lineare sui pattern esistenti (`move-actions.ts
 - **Task 3** — Default confermato da Luca (8 agosto 2026): `questionnaires.version` resta `1`, nessuna scrittura la muove. Registrato come **D25**.
 - **Task 4** — `database.md` §3 riscritto con l'esito (Epic 2 chiusa, cinque scritture, D25); `00-contesto-e-decisioni.md` con la voce D25 e «Ultimo aggiornamento» aggiornato; `deferred-work.md`: chiusa (barrata) la voce su `version`, estesa la voce sui nomi accessibili identici (`Disattiva`/`Riattiva`, fino a 23), annotata la sesta istanza del fuoco perso durante `pending`, annotato l'esito a epica chiusa sulla voce del questionario con `is_active = false`.
 - **Task 5, metà agente** — `npm run typecheck` ✓; `npm run build` ✓; `npm test` **131/131**, numero fermo come previsto (nessuna migrazione); `list_migrations` risponde **dodici** righe col prefisso, `0012_reorder_guards` in fondo. Sonda di scrittura in transazione annullata: 23 righe restano, 1 non attiva in posizione 2, `updated_at` mosso dal trigger, **23 posizioni distinte** (nessuna rinumerazione), dopo il `rollback` 23/0 identico alla partenza. Sonda senza sessione: `PATCH /rest/v1/questions` con la sola chiave pubblicabile risponde `[]` — zero righe toccate, `questions_owner_all` regge; riconteggio post-sonda 23/0. Grep di perimetro: `.delete(` zero sotto `questionario/` (unico in `src/` resta `people-actions.ts:113`); `.from('questions')` **4**; `.update(` sotto `questionario/` **3**; `.rpc(` **3**; `question_blocks` 4, `questionnaires` 2; zero `answers`/`assessments` (solo commenti); nessuna scrittura su `position` (restano i due valori di nascita di 2.2/2.3, dichiarati); nessun esadecimale né `--sec-questionario`; tutti i file toccati sotto le 200 righe; `edit-question-form.tsx` non aperto.
-- **Task 5, sessione** — resta a Luca, condizione per `done`: caselle lasciate vuote perché non verificate. Da guardare in particolare la resa di `.question--inactive` su un dato vero (prima volta) e i quattro pulsanti a 375px.
+- **Task 5, sessione** — fatta da Luca il 9 agosto 2026: nove caselle confermate, «ho controllato tutto e ogni cosa funziona». Comprese le due che nessun controllo automatico poteva vedere: la resa di `.question--inactive` su un dato vero — la colonna non aveva mai avuto un `false` in tre story che la sapevano già disegnare — e i quattro pulsanti a 375px, larghezza a cui il quarto non era mai esistito.
 - AC2 e AC3 onorati senza dichiararli verificati: tabelle `answers`/`assessments` vuote, il filtro delle attive è della 3.1; nessuna scrittura di questa story può contraddirli (le risposte portano copie).
 
 ### File List
@@ -319,3 +319,4 @@ Nessun ostacolo. Implementazione lineare sui pattern esistenti (`move-actions.ts
 | 8 agosto 2026 | 0.2 | Le tre domande chiuse da Luca: default confermati, nessun task cambiato | Claude Fable 5, skill `bmad-create-story` |
 | 8 agosto 2026 | 0.3 | Implementazione completa: azione e pulsante Disattiva/Riattiva, D25 registrata, documenti aggiornati, verifica agente passata. Status a review; la sessione di Luca resta la condizione per done | Claude Fable 5, skill `bmad-dev-story` |
 | 9 agosto 2026 | 0.4 | Revisione applicata: nessun difetto nel codice, cinque correzioni documentali, `prd-v1.md` marcato come superato da D25 (perimetro allargato di un file, decisione di Luca), tre voci rimandate a ledger. Status resta review: la sessione di Luca è ancora la condizione per done | Claude Opus 5, skill `bmad-code-review` |
+| 9 agosto 2026 | 1.0 | Verifica di sessione fatta da Luca: nove caselle confermate, tutto funziona. Story done, e con lei l'Epic 2 ha tutte le sue sei story chiuse | Claude Opus 5, skill `bmad-code-review` |
