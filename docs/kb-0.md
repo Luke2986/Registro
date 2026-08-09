@@ -126,7 +126,6 @@ Da riconoscere e fermare, perché sono il modo tipico in cui un progetto costrui
 
 ## 10. Rilascio
 
-- Si rilascia da un branch che è passato dall'anteprima, mai direttamente.
 - Le migrazioni si applicano prima del codice che le usa.
 - Prima di ogni rilascio che tocchi i dati: esiste un modo di tornare indietro?
 - Un rilascio venerdì sera è un rilascio lunedì mattina.
