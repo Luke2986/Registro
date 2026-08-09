@@ -159,9 +159,9 @@ create table questions (
 create index questions_block_position_idx on questions (block_id, position);
 ```
 
-`version` cresce quando si modifica la struttura, ed è informativo: non serve a ricostruire nulla, perché la ricostruzione avviene tramite le copie salvate nelle risposte.
+~~`version` cresce quando si modifica la struttura, ed è informativo: non serve a ricostruire nulla, perché la ricostruzione avviene tramite le copie salvate nelle risposte.~~
 
-Dalla Story 2.2 (7 agosto 2026) esistono le prime scritture sui blocchi, e **nessuna fa crescere `version`**: la decisione su che cosa conti come modifica strutturale è rimandata alla fine dell'Epic 2, quando esistono tutte e cinque le scritture e si decide una volta sola. Farla crescere a ogni story sarebbe una seconda scrittura su una seconda tabella senza transazione, cioè uno stato incoerente raggiungibile per un numero che oggi nessuno legge. La voce sta anche in `deferred-work.md`.
+**Superata l'8 agosto 2026, con la decisione D25.** La frase qui sopra resta scritta perché la colonna esiste ancora, ma la prima metà non è più vera. Con la Story 2.6 l'Epic 2 è chiusa e le cinque scritture del questionario esistono tutte — blocchi (2.2), domande nuove (2.3), riscrittura (2.4), riordino (2.5), disattivazione (2.6) — e **nessuna fa crescere `version`**, che resta `1` finché nessuno la legge. La seconda metà invece regge, ed è il motivo: la ricostruzione delle schede vecchie passa dalle copie dentro `answers` (`question_text`, `block_title`, `position`), mai da qui. La colonna non si toglie, perché le esportazioni future potrebbero volerla, e la Story 3.1 vi copierà `1`. Le alternative valutate e scartate, e la strada da prendere il giorno che «modifica strutturale» avesse una definizione operativa, stanno in D25.
 
 Le domande non si cancellano, si disattivano: una domanda disattivata sparisce dalle schede nuove e resta in quelle vecchie.
 

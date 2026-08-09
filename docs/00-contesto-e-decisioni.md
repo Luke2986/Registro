@@ -2,7 +2,7 @@
 
 **Owner:** Luca Versilia
 **Aperto il:** 2 agosto 2026
-**Ultimo aggiornamento:** 5 agosto 2026, D24
+**Ultimo aggiornamento:** 8 agosto 2026, D25
 
 Questo file è la memoria del progetto. Va portato in ogni nuova chat o strumento per ricostruire il contesto senza ripartire da zero. Si aggiorna solo quando una decisione è confermata, non quando è ipotizzata.
 
@@ -238,6 +238,15 @@ Conseguenza da tenere: lo script dei test esegue con `TZ=UTC`, così il fuso del
 **Le istruzioni di annullamento si scrivono senza `cascade`.** È la parte meno ovvia e la più utile, e il motivo va ricordato perché fra tre mesi la regola sembrerà solo scomoda. `drop table clients cascade` **non** porta via `people` e `assessments`: porta via i loro vincoli di chiave esterna e lascia le righe dentro, orfane, che puntano a un cliente che non esiste più. Non tace del tutto — annuncia con una `notice` i vincoli che si porta via — ma una `notice` non è un errore, non ferma niente, e finisce in un registro che nessuno rilegge. La forma senza `cascade` invece rifiuta finché qualcosa dipende dalla tabella, e quel rifiuto è esattamente l'informazione che serve: c'è una migrazione più recente da annullare prima. **Un annullamento che fallisce è migliore di uno che riesce a metà**, perché il primo si legge e il secondo si scopre mesi dopo.
 
 Conseguenza operativa: `supabase/migrations.test.ts` verifica che la dichiarazione ci sia, sia nell'ordine giusto e cominci con `sì` o `no`. Non verifica che l'SQL di annullamento sia corretto, perché nessun programma può saperlo: quello resta una lettura umana, ed è la ragione per cui la dichiarazione va scritta bene la prima volta. Una dichiarazione sbagliata è peggio di una assente, perché è una promessa sulla sicurezza dei dati su cui qualcuno si fiderà nel momento peggiore.
+
+### D25. `questionnaires.version` resta 1: nessuna scrittura la fa crescere, finché nessuno la legge
+*8 agosto 2026*
+
+Chiude la decisione rimandata dalla Story 2.2 (7 agosto 2026), il cui punto di chiusura era dichiarato: la fine dell'Epic 2, quando esistono tutte e cinque le scritture del questionario. Con la Story 2.6 esistono — blocchi, domande nuove, riscrittura, riordino, disattivazione — e la decisione è che **nessuna fa crescere `version`**.
+
+Il PRD §3 diceva «cresce a ogni modifica strutturale, a scopo informativo»: questa decisione ne supera la lettera. Il motivo: la ricostruzione delle schede vecchie non passa e non passerà mai da `version` — passa dalle copie salvate dentro `answers` (`question_text`, `block_title`, `position`), che è la scelta centrale dello schema. Farla crescere costerebbe o una seconda scrittura senza transazione da ogni azione — lo stato incoerente già rifiutato due volte durante l'Epic 2 — o un trigger di database che conta *ogni* scrittura, e un contatore di scritture non è una «versione strutturale», è rumore col nome sbagliato.
+
+La colonna resta com'è, senza migrazione: toglierla sarebbe una migrazione per cancellare un'informazione che le esportazioni future potrebbero volere. La Story 3.1 copierà `1` in `assessments.questionnaire_version`: vero oggi, e pronto a diventare significativo il giorno che una definizione operativa di «modifica strutturale» esistesse davvero. Quel giorno la strada è un trigger di database con la sua migrazione, e comincia dalla definizione, non dal contatore.
 
 ---
 

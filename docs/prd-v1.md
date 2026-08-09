@@ -63,6 +63,8 @@ Sotto il cliente, anche quando ce n'è una sola.
 | `blocchi` | elenco | titolo e ordine |
 | `domande` | elenco | testo, testo di aiuto ("cosa serve capire"), tipo di risposta, ordine, attiva sì/no |
 
+**La riga `versione` è superata dall'8 agosto 2026, con la decisione D25.** Nessuna delle cinque scritture del questionario la fa crescere — blocchi, domande nuove, riscrittura, riordino, disattivazione — e `version` resta `1` finché nessuno la legge: la ricostruzione delle schede vecchie passa dalle copie salvate dentro le risposte, non da qui. La riga resta scritta perché la colonna esiste ancora e le esportazioni future potrebbero volerla. Il motivo per esteso sta in `00-contesto-e-decisioni.md` (D25), la conseguenza sullo schema in `database.md` §3.
+
 Tipi di risposta previsti: testo lungo, testo breve, numero, scelta singola. Le domande si aggiungono, si riordinano, si riscrivono e si disattivano dall'interfaccia, senza toccare il codice.
 
 Una domanda disattivata non compare nelle nuove schede ma resta leggibile in quelle vecchie.

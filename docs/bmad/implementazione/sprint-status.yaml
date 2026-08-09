@@ -65,7 +65,7 @@ development_status:
   2-3-aggiungere-una-domanda-scegliendo-il-tipo-di-risposta: done
   2-4-riscrivere-una-domanda: done
   2-5-riordinare-blocchi-e-domande: done
-  2-6-disattivare-una-domanda-invece-di-cancellarla: backlog
+  2-6-disattivare-una-domanda-invece-di-cancellarla: review
   epic-2-retrospective: optional
 
   epic-3: backlog

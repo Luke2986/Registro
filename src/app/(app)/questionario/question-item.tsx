@@ -7,6 +7,7 @@ import { answerTypeLabel } from '@/lib/answer-types'
 import type { QuestionnaireQuestion } from './block-card'
 import { EditQuestionForm } from './edit-question-form'
 import { MoveButtons } from './move-buttons'
+import { QuestionActiveButton } from './question-active-button'
 
 /**
  * La singola domanda dentro la card di blocco: a riposo il display con il suo `Modifica`,
@@ -72,6 +73,9 @@ export function QuestionItem({
               >
                 Modifica
               </button>
+              {/* Anche sulle domande spente, dove dice `Riattiva`: nessuno stato blocca
+                  nessuna azione (D14). */}
+              <QuestionActiveButton questionId={question.id} isActive={question.is_active} />
             </div>
           </div>
 
