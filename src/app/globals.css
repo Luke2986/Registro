@@ -1068,6 +1068,25 @@ a {
   visibility: hidden;
 }
 
+/* La riga ancorata in fondo alla compilazione, con l'indicatore a sinistra e il comando a destra.
+   `sticky` e non `fixed`: un elemento appiccicato occupa il proprio spazio nel flusso, quindi non
+   copre mai l'ultima risposta, mentre uno fisso la nasconderebbe e nessuno se ne accorgerebbe
+   finché non serve rispondere all'ultima domanda.
+   Il fondo dev'essere opaco perché il contenuto scorre dietro, ed è `--bg`, il colore su cui la
+   pagina galleggia già. L'altezza minima arriva da `.save-indicator`, che porta i suoi 44px. */
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 8px 0;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+
 /* i quattro stati di ogni schermata */
 
 .empty {

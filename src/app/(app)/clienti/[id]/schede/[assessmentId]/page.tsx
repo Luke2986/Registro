@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import { isUuid } from '@/lib/uuid'
 
 import { AnswerBlocks } from './answer-blocks'
+import { SaveBoundary } from './save-boundary'
 
 /**
  * Le colonne di AnswerDetail, e sono esattamente quelle che la schermata rende. `position` si
@@ -124,21 +125,14 @@ export default async function AssessmentPage({
           </div>
         </div>
       ) : (
-        <>
-          {/* **Questa riga sparisce con la Story 3.3**, quando il salvataggio arriva davvero: da
-              lì in poi sarebbe una bugia. Finché non c'è, va detto a schermo e non solo nel file
-              della story — «il lavoro dell'utente non si perde mai» è una regola non negoziabile
-              (AGENTS.md, kb-0.md §6), e una schermata che accetta ventiquattro campi e li getta
-              alla ricarica senza dirlo è indistinguibile da una che salva.
-              È un avviso e non un errore: non usa `--bad`, non impedisce niente, e non porta
-              `role="alert"` perché non annuncia un fatto appena successo — c'è dall'inizio e si
-              legge nell'ordine. Il margine è in linea e non una classe: una regola in
-              `globals.css` sopravviverebbe alla riga che descrive, e resterebbe morta. */}
-          <p className="warn-box" style={{ margin: '0 0 24px' }}>
-            Qui ancora non si salva: quello che scrivi resta finché non ricarichi la pagina.
-          </p>
+        /* Il confine è client e i blocchi no: restano un componente server passato come figli, e
+           il contesto raggiunge lo stesso i campi, che sono client anche loro. La barra si rende
+           solo qui, nello stato pieno: dove non c'è nessun campo non c'è niente da salvare e
+           niente da dire, e un indicatore fermo su una schermata senza campi è la stessa bugia di
+           un indicatore fermo su una schermata che non salva. */
+        <SaveBoundary>
           <AnswerBlocks groups={groupAnswersByBlock(answers)} />
-        </>
+        </SaveBoundary>
       )}
     </>
   )

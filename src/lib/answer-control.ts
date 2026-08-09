@@ -32,7 +32,13 @@ export function answerControl(answerType: string, options: string[] | null): Ans
   if (answerType === 'numero') return { kind: 'numero' }
 
   if (answerType === 'scelta_singola') {
-    return options !== null && options.length > 0 ? { kind: 'scelta', options } : { kind: 'breve' }
+    // Le opzioni bianche si scartano prima di decidere: un elemento vuoto darebbe due
+    // `<option value="">` nello stesso selettore, React associa il valore alla prima —
+    // `Nessuna risposta` — e quella risposta diventerebbe irraggiungibile. Restando senza
+    // opzioni si cade sul ripiego che c'è già, senza aggiungere un ramo.
+    const usable = options === null ? [] : options.filter((option) => option.trim() !== '')
+
+    return usable.length > 0 ? { kind: 'scelta', options: usable } : { kind: 'breve' }
   }
 
   if (answerType === 'testo_breve') return { kind: 'breve' }
@@ -49,5 +55,13 @@ export function answerControl(answerType: string, options: string[] | null): Ans
  * stessa cosa.
  */
 export function orphanOption(content: string | null, options: string[]): string | null {
-  return content !== null && content !== '' && !options.includes(content) ? content : null
+  // Vuoto si giudica sul testo ripulito: con un contenuto di soli spazi la forma senza `trim`
+  // genererebbe `<option value="   ">   </option>`, cioè una riga vuota nel menu che da
+  // selezionata si legge identica a `Nessuna risposta` — la confusione che l'opzione orfana
+  // esiste per evitare. È la stessa definizione di vuoto di `normalizeTextValue`.
+  if (content === null || content.trim() === '') return null
+
+  // L'appartenenza invece si giudica sul contenuto com'è: l'opzione in coda esiste per tenere
+  // selezionabile *quel* testo, e renderne una versione ripulita lo cambierebbe scegliendolo.
+  return options.includes(content) ? null : content
 }

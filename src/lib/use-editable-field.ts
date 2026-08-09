@@ -85,9 +85,11 @@ export function useEditableField({
       if (autosave) setSaveState({ kind: 'saving' })
 
       // L'azione parte anche da un timer, quindi fuori da un gestore di evento, e ogni scrittura
-      // riuscita rivalida la scheda e l'elenco: dentro startTransition quella rivalidazione
-      // arriva come aggiornamento non urgente, che è il modo in cui una Server Action chiamata
-      // a mano va lanciata.
+      // riuscita rivalida qualcosa: dentro startTransition quella rivalidazione arriva come
+      // aggiornamento non urgente, che è il modo in cui una Server Action chiamata a mano va
+      // lanciata. *Cosa* rivalidi lo decide l'azione e non questo file: la scheda cliente rivalida
+      // anche l'elenco, la compilazione solo la propria rotta, perché scrivere una risposta non
+      // muove la chiave con cui l'elenco ordina (decisione 3 della Story 3.3).
       startTransition(() => {
         void run(next)
           .catch((): SaveResult => ({ error: UNREACHABLE }))

@@ -21,8 +21,16 @@ export function ChoiceField({
   options: string[]
   content: string | null
 }) {
-  // L'opzione in coda tiene il contenuto scelto *e* raggiungibile, così tornarci indietro resta
-  // possibile dopo averlo cambiato. Il perché sta in `answer-control.ts`, insieme ai suoi test.
+  // L'opzione in coda tiene raggiungibile la risposta memorizzata quando è fuori dalle opzioni di
+  // oggi — una domanda riscritta dopo che qualcuno aveva già risposto. Il perché sta in
+  // `answer-control.ts`, insieme ai suoi test.
+  //
+  // Fin dove arriva, e da quando: `content` è la risposta **sul server**, non quella nel campo.
+  // Finché la 3.2 non salvava, l'opzione restava lì per sempre e tornarci indietro era possibile
+  // in qualsiasi momento. Dalla 3.3 il salvataggio la sostituisce: scelta un'altra opzione, tre
+  // secondi dopo la scrittura passa, la rivalidazione riporta il `content` nuovo e la vecchia
+  // sparisce dal menu. È coerente — non è più la risposta memorizzata, quindi non è più orfana —
+  // ma il ritorno indietro dura quanto quella finestra, non per sempre.
   const orphan = orphanOption(content, options)
 
   return (

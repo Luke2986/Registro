@@ -10,12 +10,13 @@ import { AnswerField } from './answer-field'
  * scheda a linguette: una schermata che si scorre è quella che segue una conversazione.
  *
  * Nessun `'use client'`: qui è tutto testo fermo. L'unica parte che si tocca è il campo, che è il
- * componente client montato qui sotto — e che tiene il proprio stato, così la Story 3.3 sostituirà
- * un `useState` senza toccare né questo file né la pagina.
+ * componente client montato qui sotto e che tiene il proprio stato — è il motivo per cui la Story
+ * 3.3 ha sostituito quel `useState` con `useEditableField` senza aprire questo file.
  *
- * **Nessun elemento `<form>`**, e non è una dimenticanza: senza salvataggio non c'è niente da
- * inviare, e un `<form>` porterebbe l'invio implicito con Invio, cioè un ricaricamento che porta
- * via quello che è stato scritto.
+ * **Nessun elemento `<form>`**, e non è una dimenticanza. La ragione non è più che non ci sia
+ * niente da inviare — dalla 3.3 ogni campo si salva — ma che un `<form>` porterebbe l'invio
+ * implicito con Invio, cioè un ricaricamento che porta via quello che è stato scritto, su una
+ * schermata dove si preme Invio per andare a capo. Il perché per esteso sta in `answer-field.tsx`.
  */
 export function AnswerBlocks({ groups }: { groups: AnswerGroup<AnswerDetail>[] }) {
   return (
