@@ -208,6 +208,18 @@ a {
   gap: 16px;
 }
 
+/* Il ritorno indietro sopra il titolo, come una cosa sola a sinistra. Serve dove l'intestazione
+   porta tutti e tre — ritorno, titolo e un'azione — perché `space-between` con tre figli manda il
+   titolo in mezzo, e su ogni altra pagina il titolo è a filo sinistro: misurato a schermo il
+   9 agosto 2026, non dedotto. `min-width: 0` perché il nome di un cliente lungo deve andare a capo
+   invece di allargare l'intestazione. */
+.page-header__lead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
 /* nome del cliente nella sua scheda, che è un campo e non un titolo */
 .input--display {
   font-size: 32px;
@@ -798,6 +810,23 @@ a {
   padding-top: 0;
 }
 
+/* Il collegamento alla schermata di compilazione, che è **l'unica** via per arrivarci. `.data` da
+   sola sarebbe un bersaglio alto 18px, cioè meno della metà dei 44 di design-system.md §8, e su
+   tablet — dove le call si fanno — non c'è nemmeno il cursore a rivelare che è un collegamento. È
+   la stessa ricetta e lo stesso motivo di `.back-link`.
+   La sottolineatura al passaggio e non sempre: la riga porta anche il nome dell'interlocutore, che
+   collegamento non è, e due testi sottolineati diversamente si leggono peggio di uno neutro che si
+   rivela quando lo cerchi. Il fuoco da tastiera lo dà già `:focus-visible` globale. */
+.assessment__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.assessment__link:hover {
+  text-decoration: underline;
+}
+
 /* È un <fieldset>: il browser gli mette bordo, padding e margini suoi. */
 .field--group {
   display: flex;
@@ -930,6 +959,113 @@ a {
    dentro una domanda spenta. */
 .question--inactive .badge {
   color: var(--ink-muted);
+}
+
+/* compilazione della scheda di prequalifica */
+
+/* Il fuoco dei campi non si scrive qui, ed è già quello giusto: `.input:focus` dichiara da sempre
+   `--sec-prequalifica` e il suo alone da 3px. Su ogni altra schermata quella tinta è la tinta
+   sbagliata — è la voce rimandata del 2 agosto, assegnata alla Story 5.2 — e **questa è la sola
+   schermata del progetto dove è quella giusta** (design-system.md §5 la assegna esattamente al
+   campo di risposta). Chi chiuderà quella voce deve saperlo, altrimenti la toglie anche di qui. */
+
+.answers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Nessuna cornice intorno alla risposta: la separazione la fa la riga, come in `.question` e in
+   `.person`. Il respiro è quello di `.question`, perché è la stessa cosa vista dall'altro lato —
+   là la domanda si scrive, qui si risponde. */
+.answer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.answers .answer:first-child {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* Gemella di `.question__text`, e oggi porta gli stessi valori: `--t-heading` su un elemento che
+   non è il titolo di una card (design-system.md §3). Non la riusa di proposito — là la domanda sta
+   in una riga flex accanto a quattro pulsanti, qui è l'etichetta di un campo, e le due schermate
+   divergeranno. Una classe condivisa fra due sezioni è il modo in cui una modifica di là rompe di
+   qua senza che nessuno se ne accorga.
+   `overflow-wrap` per la stessa ragione già scritta là: a 375px un token senza spazi più largo
+   dello spazio dentro la card farebbe scorrere la pagina di lato. */
+.answer__text {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* L'aiuto sotto la domanda, con lo stesso `overflow-wrap` di `.answer__text` e per lo stesso
+   motivo: a 375px un token senza spazi più largo dello spazio dentro la card farebbe scorrere la
+   pagina di lato. `validateHelpText` collassa gli spazi e taglia a 300 caratteri, ma non spezza un
+   token unico, e `answers.help_text` è una copia senza nessun controllo. Sta qui e non su `.meta`,
+   che è una classe globale: le altre schermate rendono metadati corti e scelti dal software, non
+   testo che qualcuno può aver incollato. */
+.answer__help {
+  overflow-wrap: anywhere;
+}
+
+/* Il campo lungo cresce col contenuto (AC3). Una griglia di una cella sola con dentro il campo e
+   una copia invisibile del testo: la copia detta l'altezza, il campo la riempie. Nessun `ref` e
+   nessuna lettura del DOM — `data-replica` porta lo stesso stato che alimenta il campo.
+   `field-sizing: content` farebbe lo stesso in una riga, e si adotta il giorno che è supportato
+   dove serve: senza quella verifica AC3 cadrebbe in silenzio sui browser che non ce l'hanno. */
+.answer__grow {
+  display: grid;
+}
+
+/* La copia e il campo devono avere la **stessa scatola**, altrimenti l'altezza calcolata non è
+   quella del testo. `font: inherit` su tutti e due e non i valori di `.input`: quello che conta è
+   che i due siano identici fra loro, e prenderli dalla stessa sorgente lo garantisce.
+   `border-width`/`border-style` e non la scorciatoia `border`: il campo tiene il colore che gli dà
+   `.input`, che qui non si riscrive. */
+.answer__grow > textarea,
+.answer__grow::after {
+  grid-area: 1 / 1;
+  font: inherit;
+  padding: 12px 16px;
+  line-height: 24px;
+  border-width: 1px;
+  border-style: solid;
+  min-height: 98px;
+  overflow-wrap: anywhere;
+}
+
+/* La maniglia di ridimensionamento a mano che `.input--long` porta si contenderebbe l'altezza con
+   la crescita automatica: qui si toglie, invece di lasciarla a metà. `.input--long` non si tocca —
+   è quella dei due campi lunghi della scheda cliente, che è un'altra schermata.
+   `overflow: auto` e non `hidden`, ed è la differenza fra due modi di cedere. L'altezza la detta
+   la copia in `::after`, e il campo non ne ha una propria legata al contenuto: se le due scatole
+   si disallineassero — un `letter-spacing` ereditato, uno zoom del testo, un ripiego di font con
+   metriche diverse su una sola delle due — con `hidden` il testo scritto resterebbe nel `value` e
+   sparirebbe dallo schermo, senza barra e senza maniglia per ritrovarlo. Con `auto` compare una
+   barra, che è brutto e recuperabile. Quando la misura è giusta non cambia niente, perché non c'è
+   niente da scorrere. */
+.answer__grow > textarea {
+  resize: none;
+  overflow: auto;
+}
+
+/* Lo spazio dentro `attr()` non è un refuso: senza, l'ultima riga vuota non conta e il campo non
+   cresce quando si va a capo. */
+.answer__grow::after {
+  content: attr(data-replica) ' ';
+  white-space: pre-wrap;
+  border-color: transparent;
+  visibility: hidden;
 }
 
 /* i quattro stati di ogni schermata */

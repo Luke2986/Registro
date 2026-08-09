@@ -19,11 +19,14 @@ export type Database = {
     Tables: {
       answers: {
         Row: {
+          answer_type: string
           assessment_id: string
           block_title: string
           content: string | null
           created_at: string
+          help_text: string | null
           id: string
+          options: string[] | null
           owner_id: string
           position: number
           question_id: string | null
@@ -31,11 +34,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          answer_type: string
           assessment_id: string
           block_title: string
           content?: string | null
           created_at?: string
+          help_text?: string | null
           id?: string
+          options?: string[] | null
           owner_id: string
           position: number
           question_id?: string | null
@@ -43,11 +49,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          answer_type?: string
           assessment_id?: string
           block_title?: string
           content?: string | null
           created_at?: string
+          help_text?: string | null
           id?: string
+          options?: string[] | null
           owner_id?: string
           position?: number
           question_id?: string | null

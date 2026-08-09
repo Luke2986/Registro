@@ -92,10 +92,15 @@ Una compilazione, riferita a un cliente e a una data.
 | `domanda_id` | riferimento | |
 | `testo_domanda_al_momento` | testo | **copia del testo della domanda com'era quando è stata posta** |
 | `blocco_al_momento` | testo | idem per il blocco |
+| `tipo_al_momento` | scelta | idem per il tipo di risposta: è quello che decide il controllo da mostrare |
+| `opzioni_al_momento` | elenco di testi | idem per le opzioni, valorizzato solo se il tipo era scelta singola |
+| `aiuto_al_momento` | testo | idem per il "cosa serve capire" |
 | `contenuto` | testo | la risposta |
 | `aggiornato_il` | data e ora | |
 
-**Scelta tecnica, e conta più di quanto sembri:** salvare insieme alla risposta una copia del testo della domanda evita tutta la macchina del versionamento relazionale. Il giorno che riscrivi o cancelli una domanda, le schede vecchie restano leggibili così com'erano, senza migrazioni e senza risposte orfane. Costa una colonna di testo in più per riga.
+**Le tre righe del tipo, delle opzioni e dell'aiuto sono state aggiunte il 9 agosto 2026, con la Story 3.2.** Il documento ne elencava cinque e il tipo si sarebbe risalito da `domanda_id`: ma allora una domanda riscritta cambierebbe le schede vecchie sotto gli occhi. La schermata di compilazione le legge tutte e tre da qui e non tocca mai il questionario. Lo schema in `database.md` §3, il motivo per esteso in testa a `supabase/migrations/0015_answer_question_copy.sql`.
+
+**Scelta tecnica, e conta più di quanto sembri:** salvare insieme alla risposta una copia della domanda — il testo, il blocco, e dalla 3.2 anche il tipo, le opzioni e l'aiuto — evita tutta la macchina del versionamento relazionale. Il giorno che riscrivi o cancelli una domanda, le schede vecchie restano leggibili così com'erano, senza migrazioni e senza risposte orfane. Costa qualche colonna in più per riga.
 
 ## 4. Schermate
 

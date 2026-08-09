@@ -5,6 +5,7 @@ import type { Database } from './database.types'
 export type ClientRow = Database['public']['Tables']['clients']['Row']
 export type PersonRow = Database['public']['Tables']['people']['Row']
 export type AssessmentRow = Database['public']['Tables']['assessments']['Row']
+export type AnswerRow = Database['public']['Tables']['answers']['Row']
 
 /**
  * Quello che la scheda legge di una persona: i sei campi più le tre colonne che hanno una loro
@@ -22,3 +23,18 @@ export type PersonDetail = Pick<PersonRow, 'id' | 'decision_roles' | 'is_primary
  * che qualcuno mostrerà per sbaglio.
  */
 export type AssessmentSummary = Pick<AssessmentRow, 'id' | 'call_date' | 'interviewee_id'>
+
+/**
+ * Quello che la schermata di compilazione legge di una risposta, e sono esattamente le colonne che
+ * rende. `position` non c'è: serve alla lettura come chiave d'ordine e non arriva mai a schermo,
+ * e un dato letto e non mostrato è una colonna che qualcuno mostrerà per sbaglio — è l'argomento
+ * già scritto su AssessmentSummary.
+ *
+ * Le tre copie che la 0015 ha aggiunto — `answer_type`, `options`, `help_text` — stanno qui e non
+ * si risalgono da `questions`: una scheda resta leggibile com'era anche quando la domanda viva è
+ * cambiata (database.md §3).
+ */
+export type AnswerDetail = Pick<
+  AnswerRow,
+  'id' | 'block_title' | 'question_text' | 'help_text' | 'answer_type' | 'options' | 'content'
+>

@@ -210,6 +210,10 @@ create table answers (
   block_title           text not null,   -- copia del blocco
   position              integer not null,
   content               text,
+  -- 0015, con la schermata di compilazione
+  answer_type           text not null,   -- copia del tipo: senza default e senza check, perché copia
+  options               text[],          -- copia delle opzioni della scelta singola
+  help_text             text,            -- copia del «cosa serve capire»
   created_at            timestamptz not null default now(),
   updated_at            timestamptz not null default now()
 );
@@ -218,6 +222,8 @@ create unique index answers_assessment_question_idx
   on answers (assessment_id, question_id) where question_id is not null;
 create index answers_assessment_position_idx on answers (assessment_id, position);
 ```
+
+**Le tre colonne della 0015 sono copie per la stessa ragione delle prime tre, e chiudono la promessa che era applicata a metà** (Story 3.2, 9 agosto 2026): risalire a `questions` per il tipo renderebbe una scheda vecchia con il questionario di oggi, e una `scelta_singola` diventata `numero` mostrerebbe per sempre una risposta scritta a parole dentro un campo numerico. Applicate con `answers` vuota, quindi `not null` senza default e senza riempimento.
 
 **È la scelta centrale dello schema.** `question_text` e `block_title` sono copie, non riferimenti. Costano una colonna di testo per riga ed eliminano un'intera categoria di problemi: nessuna migrazione quando il questionario cambia, nessuna risposta orfana, nessun sistema di versioni da mantenere. `question_id` resta come collegamento utile finché la domanda esiste, e diventa `null` se viene eliminata, senza portarsi via la risposta.
 
@@ -359,6 +365,7 @@ supabase/migrations/
   0012_reorder_guards.sql
   0013_open_assessment.sql   -- l'apertura di una scheda, in transazione
   0014_open_assessment_total.sql -- il totale dalle righe scritte, e «oggi» nel fuso dichiarato
+  0015_answer_question_copy.sql  -- la risposta copia anche tipo, opzioni e aiuto
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```

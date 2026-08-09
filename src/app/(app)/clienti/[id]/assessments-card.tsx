@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 import { ErrorState } from '@/components/error-state'
@@ -22,8 +23,12 @@ import { NewAssessmentForm } from './new-assessment-form'
  *
  * **La riga porta data e interlocutore, e basta.** Nessuna pillola di verdetto (Story 3.5 e 4.2),
  * nessun contatore e nessuna barra (Story 4.1), nessuno stato di compilazione: oggi vale `bozza`
- * per tutte, e un dato che non varia non informa. Nessun collegamento: la schermata di
- * compilazione è la Story 3.2 e non esiste ancora.
+ * per tutte, e un dato che non varia non informa.
+ *
+ * Il collegamento sta **sulla data** e non su tutta la riga: la riga porta anche il nome
+ * dell'interlocutore, che non è un bersaglio, e l'alone del fuoco su una riga intera è un'altra
+ * decisione. La data è anche il nome accessibile del collegamento, ed è l'informazione che
+ * distingue davvero due schede dello stesso cliente.
  */
 export function AssessmentsCard({
   clientId,
@@ -113,7 +118,12 @@ export function AssessmentsCard({
 
             return (
               <li className="assessment" key={assessment.id}>
-                <span className="data">{formatCallDate(assessment.call_date)}</span>
+                <Link
+                  href={`/clienti/${clientId}/schede/${assessment.id}`}
+                  className="data assessment__link"
+                >
+                  {formatCallDate(assessment.call_date)}
+                </Link>
                 {name === undefined ? null : <span className="meta">{name}</span>}
                 {unnamed ? <span className="meta">Interlocutore non caricato</span> : null}
               </li>
