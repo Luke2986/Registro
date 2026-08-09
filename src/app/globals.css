@@ -768,6 +768,32 @@ a {
   gap: 12px;
 }
 
+/* schede di prequalifica del cliente */
+
+.assessments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Una riga sola, non un blocco di campi: `.person` non si riusa perché il suo respiro — 24px di
+   stacco e 20px fra i figli — è quello di una griglia di campi, e qui la riga è una data e un
+   nome. La linea separa, come nella tabella dell'elenco. Va a capo su schermo stretto invece di
+   far scorrere la card di lato. */
+.assessment {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+}
+
+.assessments .assessment:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
 /* È un <fieldset>: il browser gli mette bordo, padding e margini suoi. */
 .field--group {
   display: flex;

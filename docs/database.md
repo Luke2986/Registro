@@ -194,6 +194,8 @@ create index assessments_client_date_idx on assessments (client_id, call_date de
 
 `total_questions` è il denominatore dell'avanzamento (D16) e si scrive una volta sola, quando la scheda viene creata: contiene il numero di domande attive in quel momento. Non si aggiorna mai, altrimenti aggiungere una domanda oggi farebbe tornare incomplete le schede chiuse ieri.
 
+**Chi lo scrive: `open_assessment` della 0013, riscritta dalla 0014, dalla Story 3.1 (9 agosto 2026), e nessun altro** — il perché sta in testa ai due file, e il numero che finisce qui è quello delle righe di `answers` scritte davvero, non un conteggio letto un istante prima.
+
 `verdict` parte da `non_deciso` e si può cambiare sempre. Nessun vincolo lo lega a `completion_status`: una scheda si può chiudere senza verdetto, perché è Luca a decidere e il software non blocca (D14).
 
 ### answers
@@ -355,6 +357,8 @@ supabase/migrations/
   0010_question_options_check.sql
   0011_reorder_functions.sql
   0012_reorder_guards.sql
+  0013_open_assessment.sql   -- l'apertura di una scheda, in transazione
+  0014_open_assessment_total.sql -- il totale dalle righe scritte, e «oggi» nel fuso dichiarato
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```

@@ -4,6 +4,7 @@ import type { Database } from './database.types'
 
 export type ClientRow = Database['public']['Tables']['clients']['Row']
 export type PersonRow = Database['public']['Tables']['people']['Row']
+export type AssessmentRow = Database['public']['Tables']['assessments']['Row']
 
 /**
  * Quello che la scheda legge di una persona: i sei campi più le tre colonne che hanno una loro
@@ -14,3 +15,10 @@ export type PersonRow = Database['public']['Tables']['people']['Row']
  * importato da un modulo di pagina sarebbe una dipendenza al contrario.
  */
 export type PersonDetail = Pick<PersonRow, 'id' | 'decision_roles' | 'is_primary' | PersonFieldKey>
+
+/**
+ * Quello che la scheda cliente legge di una scheda di prequalifica, e non una riga in più: il
+ * verdetto è della Story 3.5, l'avanzamento della 4.1. Un dato letto e non mostrato è una colonna
+ * che qualcuno mostrerà per sbaglio.
+ */
+export type AssessmentSummary = Pick<AssessmentRow, 'id' | 'call_date' | 'interviewee_id'>

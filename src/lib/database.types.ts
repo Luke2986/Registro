@@ -388,6 +388,14 @@ export type Database = {
         Args: { p_direction: string; p_question_id: string }
         Returns: boolean
       }
+      open_assessment: {
+        Args: {
+          p_call_date?: string
+          p_client_id: string
+          p_interviewee_id?: string
+        }
+        Returns: string
+      }
       renumber_questions: {
         Args: { p_questionnaire_id: string }
         Returns: undefined

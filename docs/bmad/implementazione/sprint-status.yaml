@@ -68,8 +68,8 @@ development_status:
   2-6-disattivare-una-domanda-invece-di-cancellarla: done
   epic-2-retrospective: optional
 
-  epic-3: backlog
-  3-1-aprire-una-scheda-di-prequalifica-su-un-cliente: backlog
+  epic-3: in-progress
+  3-1-aprire-una-scheda-di-prequalifica-su-un-cliente: done
   3-2-compilare-le-risposte-durante-la-call: backlog
   3-3-non-pensare-mai-al-salvataggio: backlog
   3-4-riprendere-una-scheda-interrotta: backlog

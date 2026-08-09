@@ -28,23 +28,34 @@ const clockFormat = new Intl.DateTimeFormat('it-IT', {
 })
 
 /**
- * Il giorno civile come numero: due istanti dello stesso giorno a Roma danno lo stesso numero,
- * e la differenza fra due numeri è la differenza in giorni. Si ricava dalle parti formattate nel
- * fuso dichiarato e non da getDate(), che risponde nel fuso della macchina.
+ * Anno, mese e giorno di un istante nel fuso dichiarato, non in quello della macchina. Le due
+ * funzioni che ne hanno bisogno lo chiedono qui invece di ripetere le tre `find`.
  *
  * Il controllo sulle tre parti non è difensivo: `noUncheckedIndexedAccess` rende `find` un
  * `| undefined`, e la regola è gestirlo con un controllo e mai con un `as`. Su una data valida
  * le tre parti ci sono sempre, perché stanno nelle opzioni risolte.
  */
-function civilDay(date: Date): number {
+function civilParts(date: Date): { year: string; month: string; day: string } | null {
   const parts = absoluteFormat.formatToParts(date)
   const year = parts.find((part) => part.type === 'year')
   const month = parts.find((part) => part.type === 'month')
   const day = parts.find((part) => part.type === 'day')
 
-  if (!year || !month || !day) return Number.NaN
+  if (!year || !month || !day) return null
 
-  return Date.UTC(Number(year.value), Number(month.value) - 1, Number(day.value)) / MS_PER_DAY
+  return { year: year.value, month: month.value, day: day.value }
+}
+
+/**
+ * Il giorno civile come numero: due istanti dello stesso giorno a Roma danno lo stesso numero,
+ * e la differenza fra due numeri è la differenza in giorni.
+ */
+function civilDay(date: Date): number {
+  const parts = civilParts(date)
+
+  if (parts === null) return Number.NaN
+
+  return Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)) / MS_PER_DAY
 }
 
 /**
@@ -86,4 +97,42 @@ export function formatLastActivity(iso: string, now: Date = new Date()): string 
  */
 export function formatClockTime(date: Date): string {
   return clockFormat.format(date)
+}
+
+/**
+ * Oggi come `AAAA-MM-GG`, che è la forma di una colonna `date` e quella che `<input type="date">`
+ * legge e manda. Sta in questo file perché è questo file a possedere TIME_ZONE, e la costante non
+ * si esporta per non farla comparire in due posti.
+ *
+ * Serve perché oggi a Roma non è oggi in UTC, e su Vercel il fuso è UTC (D23): senza, una scheda
+ * aperta alle 00:30 nascerebbe con la data di ieri. Si calcola sul server e arriva al modulo come
+ * prop: calcolarla nel browser darebbe due valori diversi a server e client, ed è la stessa
+ * ragione già scritta per formatClockTime, al contrario.
+ */
+export function todayIsoDate(now: Date = new Date()): string {
+  const parts = civilParts(now)
+
+  if (parts === null) return ''
+
+  return `${parts.year}-${parts.month}-${parts.day}`
+}
+
+/**
+ * Il giorno di una call in forma `gg/mm/aaaa`. Non passa da formatLastActivity, che legge un
+ * istante e dice «3 giorni fa»: `call_date` è un giorno civile, e va reso come giorno e non come
+ * distanza.
+ *
+ * Si compone dalle tre parti della stringa senza passare da `new Date`, che leggerebbe una data
+ * senza fuso come UTC e a Roma potrebbe renderla come il giorno prima. Nessun fuso da dichiarare
+ * qui, quindi: un giorno civile non ne ha uno.
+ *
+ * Una stringa di altra forma rende vuoto e non un'eccezione, come formatLastActivity: questa
+ * funzione gira in un componente server, dove un'eccezione è la pagina intera che non si rende.
+ */
+export function formatCallDate(iso: string): string {
+  const [year, month, day] = iso.split('-')
+
+  if (!year || !month || !day) return ''
+
+  return `${day}/${month}/${year}`
 }

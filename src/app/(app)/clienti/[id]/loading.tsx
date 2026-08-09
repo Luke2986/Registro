@@ -68,6 +68,14 @@ export default function ClientLoading() {
           <div className="skeleton" style={{ width: 72, height: 24 }} />
         </div>
       </div>
+
+      {/* La card delle schede, con la stessa regola: solo il titolo. Il badge e `Nuova scheda`
+          compaiono solo con almeno una scheda, e le righe nemmeno. */}
+      <div className="card">
+        <div className="card__header">
+          <div className="skeleton" style={{ width: 64, height: 24 }} />
+        </div>
+      </div>
     </>
   )
 }
