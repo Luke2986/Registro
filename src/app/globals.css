@@ -1,38 +1,42 @@
 /* Design system, unico posto dove compaiono valori esadecimali (design-system.md §9, §10).
-   Se serve un colore che non c'è, si aggiunge qui. */
+   Se serve un colore che non c'è, si aggiunge qui.
+
+   Revisione «viva», 9 agosto 2026 (D26). La base resta greige: quello che cambia è il contrasto
+   degli inchiostri intermedi e la saturazione degli accenti, che su un fondo caldo perdevano
+   forza. L'ombra non si alza — le superfici si separano di più e la card si stacca da sola. */
 
 :root {
   /* base */
-  --bg: #f4f2ef;
+  --bg: #f5f2ec;
   --surface: #ffffff;
-  --surface-sunken: #edeae6;
-  --ink: #1b1917;
-  --ink-muted: #6e6862;
-  --ink-faint: #9c958d;
-  --line: #e5e0da;
+  --surface-sunken: #eae5dc;
+  --ink: #141210;
+  --ink-muted: #58524b;
+  --ink-faint: #8b8379;
+  --line: #e1dace;
   --line-strong: #d3ccc4;
 
   /* sezioni: vivono nella navigazione, mai nel contenuto */
-  --sec-clienti: #4c5fd5;
-  --sec-clienti-tint: #edeffc;
-  --sec-prequalifica: #0f7b8a;
-  --sec-prequalifica-tint: #e6f3f4;
-  --sec-questionario: #7a4fcb;
-  --sec-questionario-tint: #f1ebfb;
-  --sec-audit: #b4416e;
-  --sec-audit-tint: #fbeaf1;
-  --sec-documenti: #46688f;
-  --sec-documenti-tint: #eaeff5;
+  --sec-clienti: #3a4fde;
+  --sec-clienti-tint: #e8eafd;
+  --sec-prequalifica: #0a7e90;
+  --sec-prequalifica-tint: #dff1f3;
+  --sec-questionario: #7440da;
+  --sec-questionario-tint: #efe7fc;
+  --sec-audit: #c13a6e;
+  --sec-audit-tint: #fce6ef;
+  --sec-documenti: #3b6a9b;
+  --sec-documenti-tint: #e6edf4;
 
   /* semantici: vivono nel contenuto, mai nella navigazione */
-  --ok: #17825a;
-  --ok-tint: #e6f4ee;
-  --warn: #b4771a;
-  --warn-tint: #faf0df;
-  --bad: #be4a3c;
-  --bad-tint: #faebe8;
+  --ok: #0e8a5b;
+  --ok-tint: #dff3e9;
+  --warn: #a9690a;
+  --warn-tint: #fbedd4;
+  --bad: #ce4632;
+  --bad-tint: #fbe6e1;
   --neutral: #8a857f;
-  --neutral-tint: #efedea;
+  --neutral-tint: #ede9e2;
 
   /* forma */
   --r-sm: 8px;

@@ -25,16 +25,18 @@ Modalità chiara per la prima versione. I token sono già strutturati per accogl
 
 | Token | Valore | Uso |
 |---|---|---|
-| `--bg` | `#F4F2EF` | Sfondo dell'applicazione |
+| `--bg` | `#F5F2EC` | Sfondo dell'applicazione |
 | `--surface` | `#FFFFFF` | Card, pannelli, campi |
-| `--surface-sunken` | `#EDEAE6` | Righe alternate, stati vuoti, campi disabilitati |
-| `--ink` | `#1B1917` | Testo principale |
-| `--ink-muted` | `#6E6862` | Testo secondario, etichette |
-| `--ink-faint` | `#9C958D` | Segnaposto, metadati |
-| `--line` | `#E5E0DA` | Bordi e separatori |
+| `--surface-sunken` | `#EAE5DC` | Righe alternate, stati vuoti, campi disabilitati |
+| `--ink` | `#141210` | Testo principale |
+| `--ink-muted` | `#58524B` | Testo secondario, etichette |
+| `--ink-faint` | `#8B8379` | Segnaposto, metadati |
+| `--line` | `#E1DACE` | Bordi e separatori |
 | `--line-strong` | `#D3CCC4` | Bordi dei campi al passaggio del mouse |
 
-Il nero non è nero: `#1B1917` ha una punta di caldo che lo tiene coerente con la base. Usarlo anche per gli elementi scuri pieni (suggerimenti, pillola attiva).
+Il nero non è nero: `#141210` ha una punta di caldo che lo tiene coerente con la base. Usarlo anche per gli elementi scuri pieni (suggerimenti, pillola attiva).
+
+**I sette valori della base e tutti gli accenti sono cambiati il 9 agosto 2026, con la revisione «viva» (D26).** Il fondo si è scaldato di un passo e le superfici si separano di più; i due inchiostri intermedi si sono approfonditi, perché era lì che la gerarchia si appiattiva — `--ink-muted` su `--surface-sunken` passa da 4,9:1 a 6,1:1. La direzione della §1 non cambia: la base resta greige e calda, e l'ombra non si alza (§4), perché la card si stacca dallo stacco fra le superfici.
 
 ### Colori di sezione
 
@@ -42,11 +44,11 @@ Ogni area del software ha il suo colore. Serve a orientarsi, quindi resta costan
 
 | Sezione | Token | Valore | Tinta di fondo |
 |---|---|---|---|
-| Clienti | `--sec-clienti` | `#4C5FD5` | `#EDEFFC` |
-| Prequalifica | `--sec-prequalifica` | `#0F7B8A` | `#E6F3F4` |
-| Questionario | `--sec-questionario` | `#7A4FCB` | `#F1EBFB` |
-| Audit (seconda versione) | `--sec-audit` | `#B4416E` | `#FBEAF1` |
-| Documenti (seconda versione) | `--sec-documenti` | `#46688F` | `#EAEFF5` |
+| Clienti | `--sec-clienti` | `#3A4FDE` | `#E8EAFD` |
+| Prequalifica | `--sec-prequalifica` | `#0A7E90` | `#DFF1F3` |
+| Questionario | `--sec-questionario` | `#7440DA` | `#EFE7FC` |
+| Audit (seconda versione) | `--sec-audit` | `#C13A6E` | `#FCE6EF` |
+| Documenti (seconda versione) | `--sec-documenti` | `#3B6A9B` | `#E6EDF4` |
 
 ### Colori semantici
 
@@ -54,10 +56,14 @@ Riservati agli esiti e agli stati. Non compaiono mai nella navigazione.
 
 | Significato | Token | Valore | Tinta di fondo |
 |---|---|---|---|
-| Positivo, verdetto sì | `--ok` | `#17825A` | `#E6F4EE` |
-| Attenzione, verdetto condizionato | `--warn` | `#B4771A` | `#FAF0DF` |
-| Negativo, verdetto no | `--bad` | `#BE4A3C` | `#FAEBE8` |
-| Neutro, non deciso | `--neutral` | `#8A857F` | `#EFEDEA` |
+| Positivo, verdetto sì | `--ok` | `#0E8A5B` | `#DFF3E9` |
+| Attenzione, verdetto condizionato | `--warn` | `#A9690A` | `#FBEDD4` |
+| Negativo, verdetto no | `--bad` | `#CE4632` | `#FBE6E1` |
+| Neutro, non deciso | `--neutral` | `#8A857F` | `#EDE9E2` |
+
+`--neutral` è l'unico valore che la revisione «viva» non ha toccato: il fondo delle cinque pillole di stato è cambiato con la base, il punto no.
+
+**Voce aperta, e va guardata prima di chiudere la prima versione:** un colore pieno sulla propria tinta di fondo non arriva a 4,5:1, che è il minimo che la §8 chiede sul testo. Il verdetto `sì` è il caso peggiore, 3,8:1, e non è una novità della revisione «viva» — la coppia precedente stava a 4,2:1, anche quella sotto. Il testo delle pillole è a 12px peso 500, quindi non rientra nell'eccezione del testo grande. Si chiude scurendo i quattro colori pieni **solo dentro le pillole**, non i token, perché quegli stessi token servono anche come testo su bianco, dove il contrasto c'è.
 
 ### Regola di governo del colore
 
@@ -237,22 +243,22 @@ Obbligatori, come da `kb-0.md`.
 ```css
 :root {
   /* base */
-  --bg:#F4F2EF; --surface:#FFFFFF; --surface-sunken:#EDEAE6;
-  --ink:#1B1917; --ink-muted:#6E6862; --ink-faint:#9C958D;
-  --line:#E5E0DA; --line-strong:#D3CCC4;
+  --bg:#F5F2EC; --surface:#FFFFFF; --surface-sunken:#EAE5DC;
+  --ink:#141210; --ink-muted:#58524B; --ink-faint:#8B8379;
+  --line:#E1DACE; --line-strong:#D3CCC4;
 
   /* sezioni */
-  --sec-clienti:#4C5FD5;       --sec-clienti-tint:#EDEFFC;
-  --sec-prequalifica:#0F7B8A;  --sec-prequalifica-tint:#E6F3F4;
-  --sec-questionario:#7A4FCB;  --sec-questionario-tint:#F1EBFB;
-  --sec-audit:#B4416E;         --sec-audit-tint:#FBEAF1;
-  --sec-documenti:#46688F;     --sec-documenti-tint:#EAEFF5;
+  --sec-clienti:#3A4FDE;       --sec-clienti-tint:#E8EAFD;
+  --sec-prequalifica:#0A7E90;  --sec-prequalifica-tint:#DFF1F3;
+  --sec-questionario:#7440DA;  --sec-questionario-tint:#EFE7FC;
+  --sec-audit:#C13A6E;         --sec-audit-tint:#FCE6EF;
+  --sec-documenti:#3B6A9B;     --sec-documenti-tint:#E6EDF4;
 
   /* semantici */
-  --ok:#17825A;      --ok-tint:#E6F4EE;
-  --warn:#B4771A;    --warn-tint:#FAF0DF;
-  --bad:#BE4A3C;     --bad-tint:#FAEBE8;
-  --neutral:#8A857F; --neutral-tint:#EFEDEA;
+  --ok:#0E8A5B;      --ok-tint:#DFF3E9;
+  --warn:#A9690A;    --warn-tint:#FBEDD4;
+  --bad:#CE4632;     --bad-tint:#FBE6E1;
+  --neutral:#8A857F; --neutral-tint:#EDE9E2;
 
   /* forma */
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px; --r-full:999px;

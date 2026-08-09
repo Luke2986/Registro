@@ -2,7 +2,7 @@
 
 **Owner:** Luca Versilia
 **Aperto il:** 2 agosto 2026
-**Ultimo aggiornamento:** 8 agosto 2026, D25
+**Ultimo aggiornamento:** 9 agosto 2026, D26
 
 Questo file è la memoria del progetto. Va portato in ogni nuova chat o strumento per ricostruire il contesto senza ripartire da zero. Si aggiorna solo quando una decisione è confermata, non quando è ipotizzata.
 
@@ -175,6 +175,8 @@ Elemento firma: l'indicatore di salvataggio, in monospaziato, sempre visibile du
 
 Dettagli e token in `design-system.md`.
 
+**I valori dei token sono superati dal 9 agosto 2026, con la decisione D26.** La direzione, la regola di governo e l'elemento firma restano quelli di qui: cambiano i numeri, non l'impianto.
+
 ### D19. Questionario della fase 1, prima versione
 *2 agosto 2026*
 
@@ -247,6 +249,21 @@ Chiude la decisione rimandata dalla Story 2.2 (7 agosto 2026), il cui punto di c
 Il PRD §3 diceva «cresce a ogni modifica strutturale, a scopo informativo»: questa decisione ne supera la lettera. Il motivo: la ricostruzione delle schede vecchie non passa e non passerà mai da `version` — passa dalle copie salvate dentro `answers` (`question_text`, `block_title`, `position`), che è la scelta centrale dello schema. Farla crescere costerebbe o una seconda scrittura senza transazione da ogni azione — lo stato incoerente già rifiutato due volte durante l'Epic 2 — o un trigger di database che conta *ogni* scrittura, e un contatore di scritture non è una «versione strutturale», è rumore col nome sbagliato.
 
 La colonna resta com'è, senza migrazione: toglierla sarebbe una migrazione per cancellare un'informazione che le esportazioni future potrebbero volere. La Story 3.1 copierà `1` in `assessments.questionnaire_version`: vero oggi, e pronto a diventare significativo il giorno che una definizione operativa di «modifica strutturale» esistesse davvero. Quel giorno la strada è un trigger di database con la sua migrazione, e comincia dalla definizione, non dal contatore.
+
+### D26. La base resta greige, cambia quanto è viva: nuovi valori dei token, impianto invariato
+*9 agosto 2026*
+
+Supera i valori di D18, non le sue regole. L'interfaccia leggeva piatta e spenta, e la diagnosi non era il fondo: erano gli inchiostri intermedi troppo chiari, che appiattivano la gerarchia, e gli accenti desaturati, che su un fondo caldo perdono forza. Il fondo cambia di un passo; a cambiare davvero sono contrasto del testo e saturazione degli accenti.
+
+**Cosa cambia:** i sette valori del gruppo base, i cinque colori di sezione con le loro tinte, i tre colori semantici degli esiti con le loro tinte, e la tinta neutra. Valori esatti in `design-system.md` §2 e §9, che è l'unico posto dove stanno scritti insieme a `src/app/globals.css`.
+
+**Cosa non cambia, ed è il punto:** la direzione della §1 — base neutra e calda, card bianche, colore che riconosce le sezioni — la regola di governo del colore, i pulsanti, la scala tipografica, le forme e le tre ombre. Nessun componente si tocca: tutto il software legge già i token e nessun valore esadecimale vive fuori da `globals.css`, che è la ragione per cui una revisione della tavolozza è una modifica a un file solo.
+
+**L'ombra non si alza,** benché la card debba staccarsi di più: lo stacco arriva dalla distanza fra `--bg` e `--surface-sunken`, che si allarga. Alzare `--sh-1` avrebbe dato lo stesso effetto contraddicendo la §1, dove le ombre sono «appena percettibili».
+
+**Perché non la base «salvia».** Sono state disegnate cinque basi davvero diverse — ardesia, salvia, cipria, nebbia lilla, e un'inversione scura — e la salvia è la migliore delle cinque: nessuna collisione con blu, viola e magenta. Ha però un attrito che le altre non hanno, e cade nel punto peggiore: su un verde grigio il verde del verdetto «sì» legge meno come segnale. In uno strumento il cui unico scopo è portare a un verdetto, il colore del sì non è un dettaglio. La base greige resta.
+
+**Voce che resta aperta:** un colore pieno sulla propria tinta di fondo non arriva a 4,5:1, e il verdetto «sì» è il caso peggiore. Non è un difetto introdotto qui — la coppia precedente era anch'essa sotto — ma va chiuso prima della fine della prima versione, e si chiude nelle pillole e non nei token. Motivo e strada in `design-system.md` §2.
 
 ---
 
