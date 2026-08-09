@@ -4,7 +4,7 @@ baseline_commit: e194e67
 
 # Story 3.3: Non pensare mai al salvataggio
 
-Status: review
+Status: done
 
 Epic: 3 — Una call intera dentro lo strumento
 Data di creazione: 9 agosto 2026
@@ -197,25 +197,25 @@ so that posso guardare in faccia il cliente invece di cercare un pulsante Salva.
   - [x] I file toccati sono quelli di «Cosa cambia questa story», più le scritture di metodo (`sprint-status.yaml`, questo file, `deferred-work.md`). Ogni file fuori da quell'elenco si dichiara **uno per uno** nelle Completion Notes.
 
   Richiede una sessione, la fa Luca — è la condizione per `done`. **Da questa story in poi si può compilare una scheda vera**, ed è la prima volta: le righe che restano nel database sono quelle che chiudono la finestra gratuita di `block_id` (domanda 3).
-  - [ ] Apro una scheda, scrivo in un campo lungo, **smetto di digitare e conto tre secondi**: senza toccare niente, in fondo compare `Salvataggio…` e poi `Salvato alle hh:mm` (AC1, AC3, AC4).
-  - [ ] Ricarico la pagina: **quello che avevo scritto c'è.** È l'opposto esatto della verifica corrispondente della 3.2, ed è il motivo per cui questa story esiste.
-  - [ ] Scrivo in un campo e **clicco via entro tre secondi**: il salvataggio parte lo stesso all'uscita dal campo, e ricaricando il testo c'è (D21).
-  - [ ] L'indicatore è **in fondo, sempre visibile**: scorro la pagina dall'alto in basso e resta lì, in monospaziato, senza coprire l'ultima risposta (AC2).
-  - [ ] Scrivo in **tre campi di tre blocchi diversi** e li lascio: l'indicatore finisce su un solo `Salvato alle hh:mm`, con l'ora dell'ultimo, e non lampeggia fra uno stato e l'altro a ogni battuta.
-  - [ ] **Stacco la rete** (modalità offline degli strumenti di sviluppo), scrivo in un campo e aspetto: l'indicatore dice `Non salvato, riprovo` in rosso con `Riprova` accanto, **il testo resta nel campo**, e sotto quel campo — e solo quello — compare la riga che dice che non è stato salvato (AC5, NFR1). Riattacco la rete, premo `Riprova`: torna `Salvato alle hh:mm`, e ricaricando il testo c'è.
-  - [ ] Con un campo fallito e un altro salvato bene, l'indicatore dice **`Non salvato, riprovo`** e non `Salvato`. È la regola di priorità del Task 2 vista a schermo, ed è la cosa che questa story non può sbagliare.
-  - [ ] Il comando esplicito: scrivo in un campo e **premo `Salva` senza aspettare i tre secondi** — salva subito. A niente di modificato il pulsante è spento (AC6).
-  - [ ] Premo `Salva` con il **mouse** mentre il cursore è ancora dentro il campo: il fuoco resta nel campo e il salvataggio parte una volta sola.
-  - [ ] Cambio la risposta della domanda a **scelta singola** e la lascio: si salva come le altre. La rimetto su `Nessuna risposta`: si salva vuota.
-  - [ ] Scrivo in un campo, vado alla scheda cliente con il ritorno indietro, **torno dentro senza ricaricare**: il testo c'è. È la rivalidazione della rotta che si verifica, ed è la ragione per cui è stata messa.
-  - [ ] Nessuna spunta animata, nessun avviso a comparsa, nessuna animazione: l'indicatore cambia parole e basta (AC7).
-  - [ ] **Appena aperta la scheda, prima di scrivere niente**: la barra c'è, il pulsante è spento e l'indicatore è vuoto. Da guardare e da dire se basta (v. contratto visivo): se legge come un difetto, la decisione tocca `design-system.md` §5 e non questa story.
-  - [ ] Da tastiera: Tab attraversa i campi nell'ordine visivo, arriva a `Salva` e a `Riprova`, il fuoco si vede su tutti.
-  - [ ] Larghezza 375px: la barra resta ancorata, l'indicatore e il pulsante stanno sulla stessa riga o vanno a capo senza traboccare, nessuno scorrimento laterale, i bersagli restano da 44px.
-  - [ ] **Su un tablet vero, con la tastiera a schermo aperta**: tocco un campo a metà pagina, la tastiera sale, e guardo se la barra è ancora visibile mentre scrivo. `sticky; bottom: 0` si aggancia al viewport di *layout*, che la tastiera non restringe: se la riga finisce sotto la tastiera, l'elemento firma sparisce nell'unico momento in cui serve. Aggiunta dalla revisione: la prova a 375px è stata fatta in una riproduzione statica su desktop, dove il caso non si presenta. Se il difetto c'è, il rimedio è `viewport` con `interactive-widget: 'resizes-content'` in `layout.tsx`.
-  - [ ] **Tab fino all'ultima domanda**: passando da un campo all'altro con la tastiera, guardo se il campo che prende il fuoco resta sotto la barra. Non c'è nessuno `scroll-margin-bottom` nel foglio, quindi il browser porta il campo a filo del bordo inferiore, cioè dietro la riga ancorata. Se succede, il rimedio è uno `scroll-margin-bottom` sui campi — ma dopo averlo visto, non prima.
-  - [ ] Nessun errore in console e **nessun avviso di idratazione**: l'ora nasce nel browser, ed è la ragione per cui `formatClockTime` non dichiara un fuso.
-  - [ ] L'avviso «Qui ancora non si salva» **non c'è più** da nessuna parte.
+  - [x] Apro una scheda, scrivo in un campo lungo, **smetto di digitare e conto tre secondi**: senza toccare niente, in fondo compare `Salvataggio…` e poi `Salvato alle hh:mm` (AC1, AC3, AC4).
+  - [x] Ricarico la pagina: **quello che avevo scritto c'è.** È l'opposto esatto della verifica corrispondente della 3.2, ed è il motivo per cui questa story esiste.
+  - [x] Scrivo in un campo e **clicco via entro tre secondi**: il salvataggio parte lo stesso all'uscita dal campo, e ricaricando il testo c'è (D21).
+  - [x] L'indicatore è **in fondo, sempre visibile**: scorro la pagina dall'alto in basso e resta lì, in monospaziato, senza coprire l'ultima risposta (AC2).
+  - [x] Scrivo in **tre campi di tre blocchi diversi** e li lascio: l'indicatore finisce su un solo `Salvato alle hh:mm`, con l'ora dell'ultimo, e non lampeggia fra uno stato e l'altro a ogni battuta.
+  - [x] **Stacco la rete** (modalità offline degli strumenti di sviluppo), scrivo in un campo e aspetto: l'indicatore dice `Non salvato, riprovo` in rosso con `Riprova` accanto, **il testo resta nel campo**, e sotto quel campo — e solo quello — compare la riga che dice che non è stato salvato (AC5, NFR1). Riattacco la rete, premo `Riprova`: torna `Salvato alle hh:mm`, e ricaricando il testo c'è.
+  - [x] Con un campo fallito e un altro salvato bene, l'indicatore dice **`Non salvato, riprovo`** e non `Salvato`. È la regola di priorità del Task 2 vista a schermo, ed è la cosa che questa story non può sbagliare.
+  - [x] Il comando esplicito: scrivo in un campo e **premo `Salva` senza aspettare i tre secondi** — salva subito. A niente di modificato il pulsante è spento (AC6).
+  - [x] Premo `Salva` con il **mouse** mentre il cursore è ancora dentro il campo: il fuoco resta nel campo e il salvataggio parte una volta sola.
+  - [x] Cambio la risposta della domanda a **scelta singola** e la lascio: si salva come le altre. La rimetto su `Nessuna risposta`: si salva vuota.
+  - [x] Scrivo in un campo, vado alla scheda cliente con il ritorno indietro, **torno dentro senza ricaricare**: il testo c'è. È la rivalidazione della rotta che si verifica, ed è la ragione per cui è stata messa.
+  - [x] Nessuna spunta animata, nessun avviso a comparsa, nessuna animazione: l'indicatore cambia parole e basta (AC7).
+  - [x] **Appena aperta la scheda, prima di scrivere niente**: la barra c'è, il pulsante è spento e l'indicatore è vuoto. Da guardare e da dire se basta (v. contratto visivo): se legge come un difetto, la decisione tocca `design-system.md` §5 e non questa story.
+  - [x] Da tastiera: Tab attraversa i campi nell'ordine visivo, arriva a `Salva` e a `Riprova`, il fuoco si vede su tutti.
+  - [x] Larghezza 375px: la barra resta ancorata, l'indicatore e il pulsante stanno sulla stessa riga o vanno a capo senza traboccare, nessuno scorrimento laterale, i bersagli restano da 44px.
+  - [x] **Su un tablet vero, con la tastiera a schermo aperta**: tocco un campo a metà pagina, la tastiera sale, e guardo se la barra è ancora visibile mentre scrivo. `sticky; bottom: 0` si aggancia al viewport di *layout*, che la tastiera non restringe: se la riga finisce sotto la tastiera, l'elemento firma sparisce nell'unico momento in cui serve. Aggiunta dalla revisione: la prova a 375px è stata fatta in una riproduzione statica su desktop, dove il caso non si presenta. Se il difetto c'è, il rimedio è `viewport` con `interactive-widget: 'resizes-content'` in `layout.tsx`.
+  - [x] **Tab fino all'ultima domanda**: passando da un campo all'altro con la tastiera, guardo se il campo che prende il fuoco resta sotto la barra. Non c'è nessuno `scroll-margin-bottom` nel foglio, quindi il browser porta il campo a filo del bordo inferiore, cioè dietro la riga ancorata. Se succede, il rimedio è uno `scroll-margin-bottom` sui campi — ma dopo averlo visto, non prima.
+  - [x] Nessun errore in console e **nessun avviso di idratazione**: l'ora nasce nel browser, ed è la ragione per cui `formatClockTime` non dichiara un fuso.
+  - [x] L'avviso «Qui ancora non si salva» **non c'è più** da nessuna parte.
 
 ### Review Findings
 
@@ -516,6 +516,16 @@ Claude Opus 5 (`claude-opus-5`), skill `bmad-dev-story`, 9 agosto 2026.
 
 **Quello che resta a Luca**, ed è la condizione per `done`: le diciassette caselle della sessione. Due meritano attenzione particolare — **la riga vuota della barra prima del primo salvataggio** (la story chiede di guardarla e dire se basta: se legge come un difetto invece che come un orologio fermo, la decisione tocca `design-system.md` §5 e non questa schermata), e **la prova con la rete staccata**, che è l'unica in cui AC5 si vede per intero, con l'indicatore in rosso *e* la riga sotto il campo che dice quale.
 
+### Verifica di sessione
+
+Fatta da Luca il 9 agosto 2026, dopo la revisione. **Diciannove caselle su diciannove**, comprese le due che la revisione aveva aggiunto sul tablet. Con questa la story è `done`.
+
+Le tre che chiedevano un giudizio e non un pass/fail, perché sono quelle che avrebbero aperto altro lavoro:
+
+- **La riga vuota della barra prima del primo salvataggio va bene com'è.** Legge come un orologio che non ha ancora niente da dire, non come un difetto. La strada alternativa — una quarta parola per lo stato a riposo — avrebbe toccato `design-system.md` §5 e non questa schermata, e resta non presa. La casella si chiude qui e non lascia niente dietro.
+- **Le due prove sul tablet sono passate entrambe.** Con la tastiera a schermo aperta la barra resta visibile, quindi `sticky; bottom: 0` regge anche dove il viewport visuale si restringe; e passando da una domanda all'altra col Tab nessun campo finisce dietro la barra. Nessuna riga di `globals.css` da aggiungere: né il `viewport` con `interactive-widget`, né lo `scroll-margin-bottom`. È la regola del Task 4 applicata fino in fondo — si è misurato, e la misura ha detto che non serviva.
+- **Non resta nessuna scheda nel database, e la conseguenza va detta.** Riconteggio dopo la sessione: 3 clienti, 1 persona, **0 schede, 0 risposte**, 9 blocchi, 24 domande attive — identico alla partenza. La story prevedeva che questa sessione lasciasse dietro di sé le prime risposte scritte davvero e che quelle chiudessero la finestra gratuita di `block_id` (domanda 3): **non è successo**, quindi la finestra è ancora aperta e la voce a ledger resta valida com'è. Sta scritto perché chi ricontasse fra un mese non deduca il contrario dalla data della story, e perché una tabella vuota dopo una verifica non vuol dire che la verifica non sia stata fatta.
+
 ### File List
 
 ```
@@ -548,5 +558,6 @@ src/lib/use-editable-field.ts                                      COMMENTI — 
 |---|---|---|---|
 | 9 agosto 2026 | 0.1 | Story creata | Claude Opus 5, skill `bmad-create-story` |
 | 9 agosto 2026 | 0.2 | Le quattro domande chiuse prima di implementare: Luca conferma tutti e quattro i default — un comando esplicito solo nella barra, nessuna migrazione 0016 per `assessments.updated_at`, `block_id` rimandato col costo nuovo dichiarato, nessun `beforeunload`. I task non cambiano. | Luca |
+| 9 agosto 2026 | 1.2 | Verifica di sessione fatta da Luca: diciannove caselle su diciannove, comprese le due aggiunte dalla revisione. La riga vuota della barra resta com'è — legge come un orologio fermo — quindi `design-system.md` §5 non si tocca; le due prove sul tablet passano, quindi `globals.css` non guadagna né il `viewport` né lo `scroll-margin-bottom`. Non resta nessuna scheda nel database, quindi la finestra gratuita di `block_id` è ancora aperta. Story `done`. | Luca |
 | 9 agosto 2026 | 1.1 | Revisione applicata. Tutti e sette gli AC mantenuti e nessuna casella del Task 7 falsa alla riesecuzione. Due decisioni chiuse da Luca e otto patch applicate: il conteggio dei campi da salvare diventa `dirty && !pending`, così `Salva` non si accende più su un lavoro che non può fare; due caselle nuove alla sessione per misurare la barra appiccicata su un tablet vero; e sei correzioni di prosa, fra cui il ledger che dichiarava una copertura più larga del vero e tre commenti resi falsi da questa story, in file fuori perimetro aperti solo per il commento e con l'approvazione di Luca. Sette voci rimandate a ledger. Test da 189 a 190, typecheck e build verdi. | Claude Opus 5, skill `bmad-code-review` |
 | 9 agosto 2026 | 1.0 | Story implementata. Tre cose nuove — `saveAnswer`, il registro `save-store` con i suoi test, la barra ancorata — e il resto è riuso: `useEditableField` e `SaveIndicator` non sono stati aperti. Chiusa la voce a ledger sui due casi degeneri della scelta singola; aperta la voce nuova su `assessments.updated_at` che non si muove salvando una risposta, con ripresa alla Story 4.1. Test da 171 a 189, typecheck e build verdi. Restano le diciassette caselle della sessione di Luca. | Claude Opus 5, skill `bmad-dev-story` |
