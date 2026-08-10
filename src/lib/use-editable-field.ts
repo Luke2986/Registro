@@ -52,10 +52,28 @@ export function useEditableField({
   run,
   baseline,
   autosave,
+  deferUntilExit = false,
 }: {
   run: (next: string) => Promise<SaveResult>
   baseline: string
   autosave: boolean
+  /**
+   * Salva da solo, ma **mai a tempo**: solo quando si esce dal campo, o col gesto esplicito.
+   * Facoltativa e falsa per difetto, quindi i quattro campi che c'erano prima non cambiano.
+   *
+   * Esiste per un tipo di controllo solo, ed è `<input type="date">`: finché i tre segmenti non
+   * formano una data valida il controllo restituisce la **stringa vuota**, che è indistinguibile
+   * da un campo svuotato di proposito. Col timer, ribattere l'anno di una data salvata e fermarsi
+   * tre secondi la cancella; senza, l'incompleto non arriva mai al server, perché una data si
+   * finisce di scrivere prima di andarsene. Trovato dalla revisione della Story 3.5, il 10 agosto
+   * 2026, e chiuso qui per decisione di Luca dello stesso giorno.
+   *
+   * Toglie **anche** la scrittura sul passaggio in secondo piano, e non per svista: quella parte
+   * senza nessuna uscita dal campo, quindi manderebbe proprio l'incompleto che questa modalità
+   * esiste per fermare — e cancellare una data salvata è peggio che perdere una data a metà.
+   * L'uscita dal campo, il ricordo di `owedExit` e il gesto esplicito restano tutti e tre.
+   */
+  deferUntilExit?: boolean
 }): EditableFieldState {
   // Campo controllato: un valore rifiutato deve restare dov'è, insieme al suo errore.
   const [value, setValue] = useState(baseline)
@@ -149,14 +167,14 @@ export function useEditableField({
     // ripartirebbe ogni tre secondi all'infinito, e uno riuscito su un testo che il server
     // ripulisce — uno spazio in coda, un a capo — si rimanderebbe da sé per sempre. Riprova
     // resta il modo di insistere, ed è un gesto di chi scrive.
-    if (!autosave || !dirty || pending || attempted.current === value) return
+    if (!autosave || deferUntilExit || !dirty || pending || attempted.current === value) return
 
     const timer = setTimeout(() => write(value), AUTOSAVE_DELAY)
 
     // Si cancella allo smontaggio: senza la pulizia, un salvataggio parte su un componente che
     // non c'è più.
     return () => clearTimeout(timer)
-  }, [autosave, dirty, pending, value, write])
+  }, [autosave, deferUntilExit, dirty, pending, value, write])
 
   // Fra l'ultima battuta e i tre secondi non c'è niente: chiudere la scheda del browser, o
   // passare a un'altra applicazione sul tablet col fuoco ancora nel campo, perde quello che si
@@ -172,7 +190,7 @@ export function useEditableField({
   // quello che ricorda non fa partire niente, e il ricordo si spende solo se il componente è
   // ancora montato quando la scrittura in volo si risolve. Restringe la finestra, non la chiude.
   useEffect(() => {
-    if (!autosave) return
+    if (!autosave || deferUntilExit) return
 
     const onHidden = () => {
       if (document.visibilityState !== 'hidden' || !dirty) return
@@ -188,7 +206,7 @@ export function useEditableField({
     document.addEventListener('visibilitychange', onHidden)
 
     return () => document.removeEventListener('visibilitychange', onHidden)
-  }, [autosave, dirty, pending, value, write])
+  }, [autosave, deferUntilExit, dirty, pending, value, write])
 
   return {
     value,

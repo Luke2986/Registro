@@ -38,6 +38,26 @@
   --neutral: #8a857f;
   --neutral-tint: #ede9e2;
 
+  /* I tre inchiostri della pillola di verdetto, e **solo** di quella: chiudono la voce di
+     contrasto aperta da D26 il 9 agosto 2026 e chiusa il 10 con la Story 3.5. Un colore pieno
+     sulla propria tinta non arriva a 4,5:1 — misurati con la formula WCAG: sì 3,77:1,
+     condizionato 3,86:1, no 3,85:1 — e il testo della pillola è 12px peso 500, quindi non
+     rientra nell'eccezione del testo grande. Questi tre sono circa il 10% più scuri a tinta
+     invariata e stanno a 4,51:1, 4,57:1 e 4,51:1.
+     **Non sono una versione «migliore» dei pieni e non li sostituiscono:** `--ok`, `--warn` e
+     `--bad` restano quelli di D26, e sostituirli sarebbe superare una decisione registrata dentro
+     una story. Il motivo **non** è che su bianco il contrasto ci sia già, come diceva la prima
+     stesura di questo commento: misurati, `--bad` su bianco sta a 4,62:1 e passa, `--warn` a
+     4,46:1 e `--ok` a 4,37:1 no. Nei fatti `--ok` non è usato come testo da nessuna parte, e
+     `--warn` come testo compare solo in `.warn-box`, cioè sulla propria tinta — che è il residuo
+     scritto in `design-system.md` §2.
+     Il neutro non ha il suo `-ink` perché il caso base della pillola — `--ink-muted` su
+     `--neutral-tint`, 6,37:1 — è già sopra soglia, mentre il neutro pieno sarebbe a 3,02:1, il
+     peggiore dei quattro. Anche in `design-system.md` §2 e §9. */
+  --ok-ink: #0d7c52;
+  --warn-ink: #985f09;
+  --bad-ink: #bb402e;
+
   /* forma */
   --r-sm: 8px;
   --r-md: 12px;
@@ -440,6 +460,30 @@ a {
 
 .pill--perso .pill__dot {
   background: var(--neutral);
+}
+
+/* pillole di verdetto */
+
+/* Qui il colore sta nel fondo e non nel punto, ed è la regola di `design-system.md` §5 rimasta in
+   piedi: quella è stata superata il 3 agosto **solo per i cinque stati del cliente**, dove un
+   fondo colorato direbbe che un cliente sta più avanti di un altro. Gli esiti invece sono davvero
+   diversi fra loro. Nessun punto, quindi, e il testo dell'etichetta accanto al colore (AC4,
+   UX-DR2). `non_deciso` non ha modificatore: il caso base è già il suo, ed è anche il più
+   leggibile dei quattro. */
+
+.pill--verdetto-si {
+  background: var(--ok-tint);
+  color: var(--ok-ink);
+}
+
+.pill--verdetto-condizionato {
+  background: var(--warn-tint);
+  color: var(--warn-ink);
+}
+
+.pill--verdetto-no {
+  background: var(--bad-tint);
+  color: var(--bad-ink);
 }
 
 /* pulsanti */

@@ -9,6 +9,7 @@ import { isUuid } from '@/lib/uuid'
 
 import { AnswerBlocks } from './answer-blocks'
 import { SaveBoundary } from './save-boundary'
+import { VerdictCard } from './verdict-card'
 
 /**
  * Le colonne di AnswerDetail, e sono esattamente quelle che la schermata rende. `position` si
@@ -54,9 +55,15 @@ export default async function AssessmentPage({
   //
   // maybeSingle e non single, come sulla scheda cliente: con single una riga assente sarebbe un
   // errore, e «non esiste» e «non si è caricato» chiedono due risposte diverse.
+  //
+  // Le cinque colonne del verdetto si leggono qui e non con una seconda lettura: sono sulla stessa
+  // riga. Il tipo `AssessmentVerdict` le tiene allineate ai descrittori, quindi un campo aggiunto
+  // all'elenco e dimenticato qui ferma il controllo dei tipi invece di arrivare vuoto a schermo.
   const { data: assessment, error } = await supabase
     .from('assessments')
-    .select('id, client_id, call_date, clients(name)')
+    .select(
+      'id, client_id, call_date, verdict, verdict_reason, condition_text, verify_by, next_step, clients(name)',
+    )
     .eq('id', assessmentId)
     .eq('client_id', id)
     .maybeSingle()
@@ -132,6 +139,27 @@ export default async function AssessmentPage({
            un indicatore fermo su una schermata che non salva. */
         <SaveBoundary>
           <AnswerBlocks groups={groupAnswersByBlock(answers)} />
+          {/* Dopo i blocchi e prima della barra, che è «arrivo in fondo» (AC1). Dentro il confine
+              perché i suoi cinque campi si iscrivono allo stesso registro: la barra ne conta ora
+              ventinove. `SaveBoundary` rende `{children}` e poi la barra, quindi due figli bastano
+              e non c'è niente da toccare là dentro.
+              Il ramo è quello pieno e resta l'unico, per decisione di Luca del 10 agosto 2026: se
+              le risposte non si caricano, il rimedio è ricaricare, e scrivere un verdetto durante
+              un guasto del database è la cosa che meno serve in quel momento. */}
+          {/* Le cinque colonne si passano una per una e non riversando la riga intera: `assessment`
+              porta anche `client_id`, `call_date` e il nome del cliente, che finirebbero nel
+              payload del browser senza che la card ne renda nessuno. È il lavoro per cui
+              `AssessmentVerdict` esiste, e passando la riga intera non lo fa. */}
+          <VerdictCard
+            assessmentId={assessment.id}
+            verdict={{
+              verdict: assessment.verdict,
+              verdict_reason: assessment.verdict_reason,
+              condition_text: assessment.condition_text,
+              verify_by: assessment.verify_by,
+              next_step: assessment.next_step,
+            }}
+          />
         </SaveBoundary>
       )}
     </>

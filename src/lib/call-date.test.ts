@@ -1,7 +1,12 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { CALL_DATE_INVALID, validateCallDate } from './call-date.ts'
+import {
+  CALL_DATE_INVALID,
+  VERIFY_BY_INVALID,
+  validateCallDate,
+  validateVerifyBy,
+} from './call-date.ts'
 
 const TODAY = '2026-08-09'
 
@@ -55,4 +60,32 @@ test('nessun limite: il passato lontano e il futuro lontano si accettano', () =>
   // Una call di tre mesi fa si registra adesso, una di domani si prepara oggi (D14).
   assert.deepEqual(validateCallDate('2019-01-01', TODAY), { ok: true, date: '2019-01-01' })
   assert.deepEqual(validateCallDate('2031-12-31', TODAY), { ok: true, date: '2031-12-31' })
+})
+
+test('il campo «verificare entro» svuotato vale null, non oggi', () => {
+  // È il caso che giustifica la seconda funzione: scrivere oggi vorrebbe dire inventare una
+  // scadenza che nessuno ha scritto, dentro una colonna che deve restare vuota.
+  assert.deepEqual(validateVerifyBy(''), { ok: true, date: null })
+  assert.deepEqual(validateVerifyBy(undefined), { ok: true, date: null })
+})
+
+test('null è una chiave assente da una richiesta che il modulo rende sempre', () => {
+  assert.deepEqual(validateVerifyBy(null), { ok: false, message: VERIFY_BY_INVALID })
+  assert.deepEqual(validateVerifyBy(20260930), { ok: false, message: VERIFY_BY_INVALID })
+})
+
+test('«verificare entro» condivide forma, round-trip e primo giorno con la data della call', () => {
+  assert.deepEqual(validateVerifyBy('2026-9-3'), { ok: false, message: VERIFY_BY_INVALID })
+  assert.deepEqual(validateVerifyBy('2026-02-31'), { ok: false, message: VERIFY_BY_INVALID })
+  assert.deepEqual(validateVerifyBy('0000-01-01'), { ok: false, message: VERIFY_BY_INVALID })
+})
+
+test('una data valida torna sé stessa, senza limiti', () => {
+  assert.deepEqual(validateVerifyBy('2026-09-30'), { ok: true, date: '2026-09-30' })
+  assert.deepEqual(validateVerifyBy('2019-01-01'), { ok: true, date: '2019-01-01' })
+})
+
+test('il messaggio del «verificare entro» non nomina la call', () => {
+  // Riusare CALL_DATE_INVALID avrebbe parlato della data sbagliata al posto giusto.
+  assert.notEqual(VERIFY_BY_INVALID, CALL_DATE_INVALID)
 })

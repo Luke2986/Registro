@@ -263,7 +263,13 @@ Supera i valori di D18, non le sue regole. L'interfaccia leggeva piatta e spenta
 
 **Perché non la base «salvia».** Sono state disegnate cinque basi davvero diverse — ardesia, salvia, cipria, nebbia lilla, e un'inversione scura — e la salvia è la migliore delle cinque: nessuna collisione con blu, viola e magenta. Ha però un attrito che le altre non hanno, e cade nel punto peggiore: su un verde grigio il verde del verdetto «sì» legge meno come segnale. In uno strumento il cui unico scopo è portare a un verdetto, il colore del sì non è un dettaglio. La base greige resta.
 
-**Voce che resta aperta:** un colore pieno sulla propria tinta di fondo non arriva a 4,5:1, e il verdetto «sì» è il caso peggiore. Non è un difetto introdotto qui — la coppia precedente era anch'essa sotto — ma va chiuso prima della fine della prima versione, e si chiude nelle pillole e non nei token. Motivo e strada in `design-system.md` §2.
+~~**Voce che resta aperta:** un colore pieno sulla propria tinta di fondo non arriva a 4,5:1, e il verdetto «sì» è il caso peggiore. Non è un difetto introdotto qui — la coppia precedente era anch'essa sotto — ma va chiuso prima della fine della prima versione, e si chiude nelle pillole e non nei token. Motivo e strada in `design-system.md` §2.~~
+
+**Chiusa per le pillole di verdetto il 10 agosto 2026, con la Story 3.5**, nella forma che la voce prescriveva: tre inchiostri nuovi — `--ok-ink`, `--warn-ink`, `--bad-ink` — usati **solo** dentro le pillole, mentre i quattro pieni di questa decisione non si toccano. La riga resta scritta e barrata perché due cose che diceva vanno corrette e non cancellate.
+
+**Il caso peggiore non era il `sì`.** Misurati tutti e quattro con la formula WCAG il 10 agosto 2026, il peggiore a colore pieno è **non deciso**, 3,02:1; il `sì` sta a 3,77:1, il condizionato a 3,86:1, il `no` a 3,85:1. Il non deciso si chiude **non aggiungendo niente**, perché il caso base della pillola — `--ink-muted` su `--neutral-tint` — sta già a 6,37:1: chi cercasse un quarto token non lo trova, e non è una dimenticanza.
+
+**La chiusura copre le pillole e non tutto il caso enunciato.** «Un colore pieno sulla propria tinta di fondo» resta vero per `.error-box` (3,85:1) e `.warn-box` (3,86:1), che nessuno aveva guardato. Non è un difetto di questa decisione né della 3.5 — quei due esistono da prima — ma il residuo è scritto in `docs/bmad/implementazione/deferred-work.md` col punto di ripresa alla Story 5.2, che è la passata di verifica del contrasto. I numeri per esteso in `design-system.md` §2.
 
 ---
 

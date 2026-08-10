@@ -63,7 +63,26 @@ Riservati agli esiti e agli stati. Non compaiono mai nella navigazione.
 
 `--neutral` è l'unico valore che la revisione «viva» non ha toccato: il fondo delle cinque pillole di stato è cambiato con la base, il punto no.
 
-**Voce aperta, e va guardata prima di chiudere la prima versione:** un colore pieno sulla propria tinta di fondo non arriva a 4,5:1, che è il minimo che la §8 chiede sul testo. Il verdetto `sì` è il caso peggiore, 3,8:1, e non è una novità della revisione «viva» — la coppia precedente stava a 4,2:1, anche quella sotto. Il testo delle pillole è a 12px peso 500, quindi non rientra nell'eccezione del testo grande. Si chiude scurendo i quattro colori pieni **solo dentro le pillole**, non i token, perché quegli stessi token servono anche come testo su bianco, dove il contrasto c'è.
+~~**Voce aperta, e va guardata prima di chiudere la prima versione:** un colore pieno sulla propria tinta di fondo non arriva a 4,5:1, che è il minimo che la §8 chiede sul testo. Il verdetto `sì` è il caso peggiore, 3,8:1…~~
+
+**Chiusa il 10 agosto 2026, con la Story 3.5**, che è la story che le pillole di verdetto le crea. Si è chiusa nella forma che la voce stessa prescriveva — scurendo **solo dentro le pillole**, non i token — e va detto *come*, altrimenti fra tre mesi la §2 e la §9 si rileggono come una contraddizione.
+
+**Cosa è cambiato:** tre inchiostri nuovi, usati **soltanto** come testo della pillola di verdetto sulla propria tinta di fondo.
+
+| Pillola | Testo | Su tinta | Rapporto |
+|---|---|---|---|
+| sì | `--ok-ink` `#0D7C52` | `--ok-tint` | 4,51:1 |
+| sì condizionato | `--warn-ink` `#985F09` | `--warn-tint` | 4,57:1 |
+| no | `--bad-ink` `#BB402E` | `--bad-tint` | 4,51:1 |
+| non deciso | `--ink-muted` (caso base) | `--neutral-tint` | 6,37:1 |
+
+**Cosa non è cambiato, ed è il punto:** `--ok`, `--warn` e `--bad` restano quelli di D26, e i tre `-ink` non sono una loro versione «migliore»: il nome dice il ruolo — l'inchiostro che sta sopra la propria tinta — e la pillola è l'unico posto che li usa. La prima stesura di questo capoverso dava però una ragione sbagliata, e la correzione sta qui invece che cancellata: diceva che i tre pieni «continuano a servire come testo su bianco, dove il contrasto c'è già», mentre misurati su bianco `--bad` sta a 4,62:1 e passa, `--warn` a 4,46:1 e `--ok` a 4,37:1 non passano. Nei fatti `--ok` non è usato come testo da nessuna parte e `--warn` come testo compare solo in `.warn-box`, cioè sulla propria tinta. La ragione vera per non toccarli è un'altra: sono i valori di D26, e sostituirli sarebbe superare una decisione registrata dentro una story.
+
+**Il neutro non riceve il quarto token, e non per simmetria mancata:** il caso base della pillola sta già a 6,37:1, mentre il neutro *pieno* starebbe a 3,02:1. Il quarto contrasto si chiude quindi non aggiungendo niente.
+
+**Una correzione alla voce che si chiude:** diceva che «il verdetto `sì` è il caso peggiore, 3,8:1». Misurati tutti e quattro con la formula WCAG il 10 agosto 2026, il peggiore è **non deciso** a colore pieno, 3,02:1; il `sì` sta a 3,77:1, il condizionato a 3,86:1, il `no` a 3,85:1. Chi rileggesse la voce chiusa non deve cercare un quarto token che non esiste.
+
+**Cosa questa chiusura non copre, e va detto perché il testo barrato parlava più largo delle pillole.** La voce enunciava un problema generale — «un colore pieno sulla propria tinta di fondo non arriva a 4,5:1» — e qui si chiude **per le sole pillole di verdetto**. Restano due componenti che sono esattamente quel caso: `.error-box`, `--bad` su `--bad-tint`, **3,85:1**, e `.warn-box`, `--warn` su `--warn-tint`, **3,86:1**. Non sono un difetto introdotto dalla Story 3.5 — esistono da prima e i loro token non cambiano — ma non erano stati guardati, e una voce che sembra chiusa e non lo è è peggio di una aperta. Il residuo sta in `docs/bmad/implementazione/deferred-work.md`, e il punto di ripresa è la **Story 5.2**, che è la passata di verifica del contrasto: i due `-ink` che servirebbero esistono già qui sopra.
 
 ### Regola di governo del colore
 
@@ -164,6 +183,8 @@ Altezza 22, raggio `--r-full`, padding orizzontale 10, testo `--t-meta` peso 500
 
 **Superata per i cinque stati del cliente, il 3 agosto 2026.** Il fondo in tinta e il testo nel colore pieno valgono per i verdetti, non per gli stati: là il colore distingue un esito da un altro, qui direbbe che un cliente sta più avanti di un altro. Per gli stati vale la tabella di §2 — fondo `--neutral-tint` per tutti e cinque, e il colore nel punto. La regola qui sopra resta scritta perché è ancora quella dei verdetti.
 
+**Precisata per i verdetti, il 10 agosto 2026, con la chiusura della voce di contrasto di §2.** Il fondo resta la tinta chiara; il testo non è il colore pieno ma il suo inchiostro — `--ok-ink`, `--warn-ink`, `--bad-ink` — perché il pieno sulla propria tinta non arriva a 4,5:1. `non deciso` non ha un inchiostro suo: è il caso base della pillola, `--ink-muted` su `--neutral-tint`. La forma non cambia — altezza 22, raggio pieno, padding 10, `--t-meta` peso 500, nessun punto — cambia soltanto da quale token viene il testo.
+
 ### Badge numerico
 
 Come nei riferimenti: raggio `--r-sm`, fondo in tinta chiara, cifra in mono peso 500. Usato per contare le persone o le schede.
@@ -259,6 +280,10 @@ Obbligatori, come da `kb-0.md`.
   --warn:#A9690A;    --warn-tint:#FBEDD4;
   --bad:#CE4632;     --bad-tint:#FBE6E1;
   --neutral:#8A857F; --neutral-tint:#EDE9E2;
+
+  /* inchiostri della pillola di verdetto, e solo di quella: §2. Non sostituiscono i tre pieni
+     qui sopra, che restano i valori di D26. Il neutro non ne ha uno, e il perché è in §2. */
+  --ok-ink:#0D7C52;  --warn-ink:#985F09;  --bad-ink:#BB402E;
 
   /* forma */
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px; --r-full:999px;
