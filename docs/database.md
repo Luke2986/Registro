@@ -242,6 +242,12 @@ where a.client_id = $1
 group by a.id;
 ```
 
+**Come è calcolato davvero, dalla Story 4.1 (10 agosto 2026).** Il SQL qui sopra resta la definizione, ma non è quello che gira, ed è la stessa situazione della §5 con l'ultima attività. L'applicazione legge le risposte come righe innestate (`select('… , answers(content)')`, innesto normale e mai `!inner`) e conta in memoria, in `src/lib/assessment-progress.ts`, importando `normalizeTextValue` invece di riscrivere `coalesce(trim(content), '') <> ''`: le due definizioni di «vuoto» sono così la stessa funzione letta da due punti, e non due regole destinate a divergere.
+
+Il motivo è quello di D23: PostgREST non calcola l'aggregato sulle righe innestate in un modo che qui convenga, e ottenerlo dal database vorrebbe dire una vista o una colonna materializzata, cioè una migrazione per rendere due cifre a schermo. **Il denominatore invece non si calcola affatto:** è `total_questions` della riga, letto e mai contato — è quello che rende AC4 vera per costruzione.
+
+**Quando questa scelta smette di valere:** il giorno in cui un cliente ha decine di schede, perché contare in memoria significa trasferire il contenuto di tutte le risposte di tutte le sue schede. Le due strade sono l'aggregato di PostgREST sull'innesto oppure una colonna `answered` mantenuta dal trigger della 0016, e la prima **cambia la definizione di «vuoto»**, perché un filtro PostgREST sa dire `content is not null` ma non `trim(content) <> ''`. Per la stessa ragione l'elenco clienti non può copiare questa soluzione e legge il solo `verdict`.
+
 ---
 
 ## 4. Aggiornamento automatico di `updated_at`
@@ -261,6 +267,8 @@ create trigger clients_set_updated_at
 ```
 
 Serve anche alle esportazioni future: senza `updated_at` affidabile, una sincronizzazione in uscita non sa cosa mandare (D10).
+
+**Un settimo trigger, e non è di questa famiglia: `answers_touch_assessment`, migrazione 0016, dalla Story 4.1 (10 agosto 2026).** Gli altri sei toccano la *propria* riga; questo risale: `after update of content on answers` scrive `assessments.updated_at` sulla scheda a cui la risposta appartiene. Serve alla §5, l'ultima attività del cliente — senza, si compila una scheda per un'ora, si torna all'elenco e il cliente è dov'era, perché `answers_set_updated_at` tocca la riga della risposta e niente risale alla scheda. È `security invoker` come gli altri, quindi le policy della §6 filtrano dentro come fuori. `update of content` e non `insert or update` di proposito: `open_assessment` scrive le righe di `answers` nella stessa transazione della scheda, quindi un trigger sull'`insert` riscriverebbe ventiquattro volte la stessa riga per non cambiare niente. Il valore che scrive è irrilevante — `assessments_set_updated_at` lo riscrive comunque — e il motivo per cui è `now()` lo stesso sta in testa al file della migrazione.
 
 ---
 
@@ -366,6 +374,7 @@ supabase/migrations/
   0013_open_assessment.sql   -- l'apertura di una scheda, in transazione
   0014_open_assessment_total.sql -- il totale dalle righe scritte, e «oggi» nel fuso dichiarato
   0015_answer_question_copy.sql  -- la risposta copia anche tipo, opzioni e aiuto
+  0016_answers_touch_assessment.sql -- salvare una risposta sveglia la sua scheda
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```

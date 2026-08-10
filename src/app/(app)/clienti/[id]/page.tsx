@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 
 import { ErrorState } from '@/components/error-state'
+import { countAnswered } from '@/lib/assessment-progress'
 import { collectTagSuggestions } from '@/lib/client-tags'
 import { todayIsoDate } from '@/lib/format-date'
 import { createClient } from '@/lib/supabase/server'
@@ -96,9 +97,17 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   // giorno pareggerebbero, e `created_at` da solo non è unico per costruzione. `id` chiude:
   // arbitrario a parità di tutto il resto, ma stabile, che è quello che serve — due schede che si
   // scambiano di posto fra un caricamento e l'altro sono un difetto che non produce nessun errore.
-  const { data: assessments, error: assessmentsError } = await supabase
+  //
+  // L'innesto porta il **numeratore** dell'avanzamento e niente di più: nessun secondo `select`,
+  // nessun conteggio chiesto al database, perché PostgREST non calcola l'aggregato sulle righe
+  // innestate in un modo che qui convenga, e ottenerlo costerebbe una vista o una colonna
+  // materializzata per rendere un numero a schermo (D23, la stessa forma dell'ultima attività). Il
+  // costo è leggere il contenuto di tutte le risposte di tutte le schede di **questo** cliente:
+  // piccolo e limitato qui, e la ragione per cui l'elenco clienti non può copiare questa soluzione.
+  // Innesto normale e mai `answers!inner(...)`, che farebbe sparire ogni scheda senza risposte.
+  const { data: assessmentRows, error: assessmentsError } = await supabase
     .from('assessments')
-    .select('id, call_date, interviewee_id, completion_status')
+    .select('id, call_date, interviewee_id, completion_status, verdict, total_questions, answers(content)')
     .eq('client_id', id)
     .order('call_date', { ascending: false })
     .order('created_at', { ascending: false })
@@ -110,6 +119,28 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
       message: assessmentsError.message,
     })
   }
+
+  // La riduzione avviene qui, che è un componente server, e non dentro la card, che è `'use
+  // client'`: le sue prop finiscono nel payload spedito al browser, e il contenuto delle risposte è
+  // la categoria di dato più sensibile del sistema (kb-0.md §4). Alla card arrivano due numeri.
+  //
+  // L'oggetto è esplicito e non un rest spread che «toglie» `answers`: così il giorno che una
+  // colonna entra in AssessmentListItem e non in questa riduzione, il compilatore si ferma.
+  const assessments =
+    assessmentRows?.map((assessment) => ({
+      id: assessment.id,
+      call_date: assessment.call_date,
+      interviewee_id: assessment.interviewee_id,
+      completion_status: assessment.completion_status,
+      verdict: assessment.verdict,
+      total_questions: assessment.total_questions,
+      // `?? []` difende una forma che il tipo vieta, ed è la stessa riga e lo stesso motivo di
+      // `last-activity.ts`: PostgREST risponde `[]` sugli innesti vuoti, ma se rispondesse `null`
+      // il ciclo dentro `countAnswered` cadrebbe **qui**, cioè in un componente server e dopo il
+      // ramo d'errore qui sopra — non la card in errore, che la pagina sa rendere, ma la scheda
+      // cliente intera che non si rende.
+      answered: countAnswered(assessment.answers ?? []),
+    })) ?? null
 
   return (
     <>

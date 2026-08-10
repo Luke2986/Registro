@@ -140,9 +140,13 @@ export async function saveVerdict(
   // senza questa riga si scrive un verdetto, si torna all'elenco e il cliente è dov'era.
   revalidatePath('/clienti')
 
-  // `/clienti/[id]` no: la card del cliente non rende oggi nessuna delle cinque colonne, e
-  // rivalidarla sarebbe costo a effetto zero che sembra la correzione di un difetto. Diventerà
-  // necessaria quando quella card mostrerà l'esito e l'avanzamento.
+  // La card del cliente rende la pillola d'esito nella riga della scheda dalla Story 4.1, il 10
+  // agosto 2026: senza questa riga si scrive un verdetto, si torna al cliente e la pillola dice
+  // ancora quello di prima. Qui c'era scritto che rivalidarla sarebbe stato «costo a effetto zero»
+  // e che sarebbe «diventata necessaria quando quella card mostrerà l'esito e l'avanzamento» —
+  // vero fino a quel giorno, e quel giorno è arrivato. È la stessa riga e lo stesso motivo di
+  // `completion-actions.ts`, che l'aveva aggiunta per la parola dello stato con la Story 3.6.
+  revalidatePath(`/clienti/${data.client_id}`)
 
   // Serve a riallineare il campo dopo che il server ha ripulito: senza, uno spazio in coda
   // lascerebbe il campo sporco e il comando acceso su un campo già salvato.

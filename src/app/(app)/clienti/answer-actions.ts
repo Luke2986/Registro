@@ -90,15 +90,24 @@ export async function saveAnswer(
 
   if (!data) return { error: ANSWER_GONE }
 
-  // Solo la rotta di compilazione: si esce alla scheda cliente e si rientra senza ricaricare, e
-  // senza rivalidazione la cache del router restituirebbe il testo di prima, che è indistinguibile
-  // da un lavoro perso.
-  //
-  // **Non** `/clienti` e **non** `/clienti/[id]`: nessuna delle due rende oggi qualcosa che questa
-  // scrittura cambi, e l'ordinamento dell'elenco guarda `assessments.updated_at`, che scrivendo una
-  // risposta non si muove. Rivalidarle sarebbe costo senza effetto e — peggio — sembrerebbe la
-  // correzione di un difetto che invece resta: sta a ledger come voce nuova.
+  // La rotta di compilazione: si esce alla scheda cliente e si rientra senza ricaricare, e senza
+  // rivalidazione la cache del router restituirebbe il testo di prima, che è indistinguibile da un
+  // lavoro perso.
   revalidatePath(`/clienti/${data.assessments.client_id}/schede/${data.assessment_id}`)
+
+  // Le altre due sono nate con la Story 4.1, il 10 agosto 2026, e fino a quel giorno erano
+  // **assenti di proposito**: la scheda cliente non rendeva niente che questa scrittura cambiasse, e
+  // l'ordinamento dell'elenco guarda `assessments.updated_at`, che salvando una risposta non si
+  // muoveva — su `answers` c'era un trigger solo e non risaliva alla scheda. Rivalidare sarebbe
+  // stato costo a effetto zero e, peggio, sarebbe sembrato la correzione di un difetto che restava.
+  //
+  // Le due cose sono cambiate insieme, ed è il motivo per cui le due chiamate arrivano insieme: la
+  // card del cliente porta ora il contatore e la barra di avanzamento, e la migrazione 0016
+  // (`answers_touch_assessment`) fa risalire l'`updated_at` alla scheda. Senza la prima si
+  // compilano dieci risposte, si torna al cliente e il contatore dice ancora quello di prima; senza
+  // la seconda il cliente non risale nell'elenco (FR11, database.md §5).
+  revalidatePath(`/clienti/${data.assessments.client_id}`)
+  revalidatePath('/clienti')
 
   // Serve a riallineare il campo dopo che il server ha ripulito: senza, uno spazio in coda
   // lascerebbe il campo sporco e il comando acceso su una risposta già salvata.

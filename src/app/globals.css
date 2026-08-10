@@ -900,6 +900,46 @@ a {
   text-decoration: underline;
 }
 
+/* L'avanzamento è un contenitore solo, non due figli della riga: `.assessment` va a capo, e il
+   contatore senza la sua barra è mezza informazione (UX-DR9). I numeri — 64 di larghezza, 4 di
+   altezza, raggio pieno — sono quelli di design-system.md §5 alla lettera.
+
+   **`--sec-prequalifica` dentro il contenuto non è una violazione di UX-DR2**, benché sia la prima
+   cosa che sembra: la regola generale dice che i colori di sezione vivono nella navigazione, ma
+   design-system.md §5 prescrive *questa* barra in *quel* token, per nome e con i suoi numeri, ed è
+   la regola più specifica. Chi lo «corregge» applica la regola sbagliata.
+
+   Qui era citato come precedente `.input:focus`, che porta la stessa tinta. **Non lo è, e la
+   revisione della 4.1 lo toglie invece di lasciarlo**: quell'alone è una voce a ledger assegnata
+   alla Story 5.2 — «la tinta sbagliata su tutte le schermate tranne la compilazione», come dice il
+   commento sopra `.answers` — e la scheda cliente è una di quelle schermate. Difendere una regola
+   prescritta citando un difetto aperto avrebbe messo un ostacolo davanti a chi quella voce deve
+   chiuderla. La ragione buona è una sola ed è la §5.
+
+   Un colore solo, sempre, a qualunque riempimento: nessuna soglia e nessun colore d'allarme (AC2).
+   Serve a distinguere una scheda finita da una lasciata a metà, non a mettere fretta. E nessuna
+   `transition` sulla larghezza: il valore arriva già calcolato dal server e non cambia sotto gli
+   occhi di chi guarda, quindi animarlo sarebbe decorazione (design-system.md §4). */
+.progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress__bar {
+  width: 64px;
+  height: 4px;
+  border-radius: var(--r-full);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.progress__fill {
+  display: block;
+  height: 100%;
+  background: var(--sec-prequalifica);
+}
+
 /* È un <fieldset>: il browser gli mette bordo, padding e margini suoi. */
 .field--group {
   display: flex;

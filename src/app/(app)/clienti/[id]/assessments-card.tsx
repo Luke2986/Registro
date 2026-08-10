@@ -4,9 +4,11 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 import { ErrorState } from '@/components/error-state'
+import { VerdictPill } from '@/components/verdict-pill'
+import { progressFillPercent } from '@/lib/assessment-progress'
 import { formatCallDate } from '@/lib/format-date'
 import { personDisplayName } from '@/lib/person-fields'
-import type { AssessmentSummary, PersonDetail } from '@/lib/types'
+import type { AssessmentListItem, PersonDetail } from '@/lib/types'
 
 import { NewAssessmentForm } from './new-assessment-form'
 
@@ -21,14 +23,18 @@ import { NewAssessmentForm } from './new-assessment-form'
  * resto della scheda continua a funzionare. Un elenco vuoto invece è un cliente su cui non si è
  * ancora fatta nessuna call, che è normale.
  *
- * **La riga porta data, interlocutore e stato di compilazione.** Lo stato è entrato con la Story
- * 3.6, il 10 agosto 2026, ed è la ragione per cui quella story esiste: «dall'elenco distinguo quelle
- * da riprendere da quelle chiuse». Prima valeva `bozza` per tutte e un dato che non varia non
- * informa; da quando esiste un comando che lo cambia, varia.
+ * **La riga porta data, interlocutore, stato di compilazione, esito e avanzamento.** Lo stato è
+ * entrato con la Story 3.6, il 10 agosto 2026, ed è la ragione per cui quella story esiste:
+ * «dall'elenco distinguo quelle da riprendere da quelle chiuse». Prima valeva `bozza` per tutte e un
+ * dato che non varia non informa; da quando esiste un comando che lo cambia, varia.
  *
- * Restano fuori, e arrivano con l'Epic 4: la pillola di verdetto (4.2), il contatore delle risposte e
- * la barra di avanzamento (4.1). Chi implementa la 4.1 troverà quindi la riga già a tre figli e
- * dovrà aggiungerne due, non tre.
+ * L'esito e l'avanzamento sono entrati con la Story 4.1, lo stesso 10 agosto: sono le tre cose che
+ * AC1 chiede insieme — «data, esito e avanzamento» — e vale la pena dire che qui c'era scritto il
+ * contrario. Il commento diceva che la pillola di verdetto sarebbe arrivata con la 4.2 e che chi
+ * implementa la 4.1 avrebbe dovuto aggiungere «due cose, non tre»: la 4.2 è l'esito **nell'elenco
+ * clienti**, cioè un'altra schermata e un'altra query, e le cose da aggiungere erano tre.
+ *
+ * Restano fuori: l'esito nell'elenco clienti (4.2) e l'esportazione della scheda in markdown (4.3).
  *
  * Il collegamento sta **sulla data** e non su tutta la riga: la riga porta anche il nome
  * dell'interlocutore, che non è un bersaglio, e l'alone del fuoco su una riga intera è un'altra
@@ -42,7 +48,7 @@ export function AssessmentsCard({
   today,
 }: {
   clientId: string
-  assessments: AssessmentSummary[] | null
+  assessments: AssessmentListItem[] | null
   people: PersonDetail[] | null
   today: string
 }) {
@@ -138,6 +144,42 @@ export function AssessmentsCard({
                     In coda e non davanti alla data, che resta il collegamento e l'informazione
                     che distingue due schede dello stesso cliente. */}
                 <span className="meta">{assessment.completion_status}</span>
+                {/* Nessun ramo condizionale: `verdict` è `not null default 'non_deciso'`, quindi la
+                    pillola c'è sempre — lo stesso motivo della parola dello stato qui sopra. La
+                    pillola è quella della 3.5 e non se ne scrive una seconda. */}
+                <VerdictPill verdict={assessment.verdict} />
+                {/* Un solo figlio flex e non due: `.assessment` è `flex-wrap: wrap`, e contatore e
+                    barra separati andrebbero a capo uno senza l'altro, lasciando il numero solo —
+                    che è esattamente la coppia che UX-DR9 tiene insieme.
+
+                    `aria-hidden` sulla barra e non un `role="progressbar"`: la barra **ripete** il
+                    numero che il contatore dice accanto, e annunciarla vorrebbe dire far leggere
+                    due volte la stessa cosa a chi non vede lo schermo.
+
+                    Il nome sul contenitore è arrivato con la revisione della 4.1, e va detto perché
+                    il commento qui sopra da solo non basta: il contatore dice `0 / 24`, cioè due
+                    cifre nude, mentre lo stato di compilazione e l'esito accanto sono due parole.
+                    Senza nome, l'avanzamento era l'unico dei tre dati della riga non comprensibile
+                    a chi non vede lo schermo. `role="img"` e non un contenitore muto: su un elemento
+                    generico `aria-label` non viene esposto, mentre qui rende la coppia atomica e
+                    sostituisce le due cifre con la frase — che è quello che serve leggere. */}
+                <span
+                  className="progress"
+                  role="img"
+                  aria-label={`avanzamento: ${assessment.answered} risposte su ${assessment.total_questions}`}
+                >
+                  <span className="data">
+                    {assessment.answered} / {assessment.total_questions}
+                  </span>
+                  <span className="progress__bar" aria-hidden="true">
+                    <span
+                      className="progress__fill"
+                      style={{
+                        width: `${progressFillPercent(assessment.answered, assessment.total_questions)}%`,
+                      }}
+                    />
+                  </span>
+                </span>
               </li>
             )
           })}

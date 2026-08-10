@@ -32,9 +32,18 @@ export function SaveBar({ store }: { store: SaveStore }) {
           e il clic salva di nuovo. È la ricetta già scritta come `keepFocus` sulla scheda cliente.
           Da tastiera i due possono comunque passare nella stessa manciata di millisecondi, e va
           bene: `save()` si difende con `!pending`, il registro filtra i pendenti, e nel caso
-          peggiore la stessa scrittura parte due volte con lo stesso valore. Costa un `updated_at`
-          mosso due volte e nient'altro — una difesa in più sarebbe una macchina per un danno che
-          non c'è. */}
+          peggiore la stessa scrittura parte due volte con lo stesso valore.
+
+          Qui c'era scritto che costa «un `updated_at` mosso due volte e nient'altro», e dal 10
+          agosto 2026 non è più vero: il trigger `answers_touch_assessment` della migrazione 0016 fa
+          risalire ogni `update` di `answers.content` fino ad `assessments.updated_at`, e `saveAnswer`
+          rivalida anche `/clienti` — quindi la scrittura di troppo riporta il cliente in cima
+          all'elenco. Non è una perdita e l'ordine che ne esce non è sbagliato, perché su quel
+          cliente si sta davvero lavorando; è che la scrittura di troppo non è più invisibile. La
+          guardia che la eviterebbe è `attempted.current === value`, che manca a tutti e tre i
+          percorsi che rimandano un testo già salvato — questo, l'uscita dal campo e il
+          `visibilitychange` — e sta a ledger come una cosa sola, insieme alla via di database
+          (`when (old.content is distinct from new.content)` sul trigger). */}
       <button
         type="button"
         className="btn btn--primary"

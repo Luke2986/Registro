@@ -19,9 +19,8 @@ export type AnswerRow = Database['public']['Tables']['answers']['Row']
 export type PersonDetail = Pick<PersonRow, 'id' | 'decision_roles' | 'is_primary' | PersonFieldKey>
 
 /**
- * Quello che la scheda cliente legge di una scheda di prequalifica, e non una riga in più: l'esito
- * e l'avanzamento sono **della 4.1**, che li mostra insieme nella card del cliente. Un dato letto e
- * non mostrato è una colonna che qualcuno mostrerà per sbaglio.
+ * Quello che la scheda cliente legge di una scheda di prequalifica, e non una riga in più: un dato
+ * letto e non mostrato è una colonna che qualcuno mostrerà per sbaglio.
  *
  * La riga diceva «il verdetto è della Story 3.5» ed era sbagliata: la 3.5 scrive il verdetto dentro
  * la schermata di compilazione e non tocca questo tipo. Corretta il 10 agosto 2026, mentre il file
@@ -29,11 +28,26 @@ export type PersonDetail = Pick<PersonRow, 'id' | 'decision_roles' | 'is_primary
  *
  * `completion_status` è entrato con la Story 3.6, il 10 agosto 2026, e la regola qui sopra è stata
  * tenuta vera nello stesso commit: la colonna si legge **e** si rende, in `assessments-card.tsx`.
+ *
+ * `verdict` e `total_questions` sono entrati con la Story 4.1, lo stesso 10 agosto, e la regola è
+ * stata tenuta vera allo stesso modo: la pillola d'esito e il contatore sono nella stessa riga, nello
+ * stesso commit. Fino a ieri il commento diceva che erano «della 4.1» al futuro, e questa è quella.
  */
 export type AssessmentSummary = Pick<
   AssessmentRow,
-  'id' | 'call_date' | 'interviewee_id' | 'completion_status'
+  'id' | 'call_date' | 'interviewee_id' | 'completion_status' | 'verdict' | 'total_questions'
 >
+
+/**
+ * Quello che la card riceve davvero: la riga letta più il numeratore dell'avanzamento.
+ *
+ * `answered` non è una colonna e non può stare dentro il `Pick`: è il numero che il componente
+ * server calcola con `countAnswered`, ed è **l'unica cosa che il browser deve sapere delle
+ * risposte**. Le righe di `answers` restano sul server, perché passarle a un componente
+ * `'use client'` vorrebbe dire spedire al browser il testo integrale di ogni risposta di ogni scheda
+ * del cliente per rendere un `12 / 15` (kb-0.md §4).
+ */
+export type AssessmentListItem = AssessmentSummary & { answered: number }
 
 /**
  * Le cinque colonne del verdetto, derivate dai descrittori e non riscritte: se un campo entra in
