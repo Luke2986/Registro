@@ -3,6 +3,7 @@
 import { type FocusEvent, startTransition, useCallback, useEffect, useRef, useState } from 'react'
 
 import type { SaveState } from '@/components/save-indicator'
+import { shouldHonourExit } from '@/lib/owed-exit'
 
 /** Quello che le azioni della scheda rispondono: l'errore, il valore ripulito, l'avviso di doppione. */
 export type SaveResult = { error?: string; saved?: string; duplicateOf?: string }
@@ -66,6 +67,16 @@ export function useEditableField({
   const attempted = useRef<string | null>(null)
   /** Un allineamento maturato mentre si scriveva: si applica quando il campo perde il fuoco. */
   const waiting = useRef<{ sent: string; saved: string } | null>(null)
+  /**
+   * Il testo di una scrittura dovuta e non partita, perché una era già in volo. Si spende appena
+   * quella si risolve: chi è uscito dal campo per navigare via non torna in pagina ad aspettare i
+   * tre secondi del timer.
+   *
+   * L'accendono tutti e tre i percorsi che scrivono senza il timer — l'uscita dal campo, il
+   * passaggio in secondo piano, il salvataggio esplicito — perché una sola regola per la stessa
+   * decisione è il punto: lasciarne fuori uno lo renderebbe il solo a perdersi in silenzio.
+   */
+  const owedExit = useRef<string | null>(null)
   const focused = useRef(false)
   const alive = useRef(true)
 
@@ -77,7 +88,9 @@ export function useEditableField({
     }
   }, [])
 
-  const write = useCallback(
+  // Il tipo è dichiarato invece che dedotto perché il corpo richiama `write` per spendere
+  // l'uscita rimasta in sospeso: senza l'annotazione l'inferenza gira su sé stessa.
+  const write: (next: string) => void = useCallback(
     (next: string) => {
       attempted.current = next
       setResult({})
@@ -109,12 +122,20 @@ export function useEditableField({
             // lascerebbe Salva acceso su un campo già salvato. Si allinea solo se nel frattempo
             // non è stato scritto altro, e mai mentre il campo ha il fuoco: riscrivere una
             // textarea sotto le dita toglie l'a capo appena battuto e manda il cursore in fondo.
-            if (outcome.saved === undefined) return
+            if (outcome.saved !== undefined) {
+              const alignment = { sent: next, saved: outcome.saved }
 
-            const alignment = { sent: next, saved: outcome.saved }
+              if (focused.current) waiting.current = alignment
+              else setValue((current) => (current === next ? alignment.saved : current))
+            }
 
-            if (focused.current) waiting.current = alignment
-            else setValue((current) => (current === next ? alignment.saved : current))
+            // L'uscita rimasta in sospeso si onora qui e non aspettando il timer, perché il
+            // timer arma solo finché si resta in pagina, e chi è uscito per navigare via non ci
+            // resta. La decisione sta in un modulo suo, con i suoi test.
+            const owed = owedExit.current
+            owedExit.current = null
+
+            if (owed !== null && shouldHonourExit(owed, next, outcome.saved)) write(owed)
           })
       })
     },
@@ -137,6 +158,38 @@ export function useEditableField({
     return () => clearTimeout(timer)
   }, [autosave, dirty, pending, value, write])
 
+  // Fra l'ultima battuta e i tre secondi non c'è niente: chiudere la scheda del browser, o
+  // passare a un'altra applicazione sul tablet col fuoco ancora nel campo, perde quello che si
+  // è appena scritto. Qui si fa la stessa cosa che fa l'uscita dal campo.
+  //
+  // **Non è il `beforeunload` rifiutato il 9 agosto 2026**, e la differenza è tutta: quello fa
+  // comparire una finestrella del browser, contro `design-system.md` §5. Questo non mostra
+  // niente, non chiede niente e non ferma niente — fa partire una scrittura, o ne ricorda una se
+  // ce n'è già una in volo.
+  //
+  // **Non è una garanzia,** e i due rami non promettono la stessa cosa: quello che scrive fa
+  // partire la richiesta, e se il browser chiude il processo prima che sia uscita non arriva;
+  // quello che ricorda non fa partire niente, e il ricordo si spende solo se il componente è
+  // ancora montato quando la scrittura in volo si risolve. Restringe la finestra, non la chiude.
+  useEffect(() => {
+    if (!autosave) return
+
+    const onHidden = () => {
+      if (document.visibilityState !== 'hidden' || !dirty) return
+
+      if (pending) {
+        owedExit.current = value
+        return
+      }
+
+      write(value)
+    }
+
+    document.addEventListener('visibilitychange', onHidden)
+
+    return () => document.removeEventListener('visibilitychange', onHidden)
+  }, [autosave, dirty, pending, value, write])
+
   return {
     value,
     dirty,
@@ -144,11 +197,21 @@ export function useEditableField({
     result,
     saveState,
     save: () => {
-      if (!pending) write(value)
+      // Stessa regola dell'uscita dal campo, e per lo stesso motivo: con una scrittura in volo
+      // non se ne avvia una seconda, si ricorda. Senza, il gesto esplicito sarebbe l'unico dei
+      // tre percorsi a perdersi in silenzio — e sul campo corto, che non ha timer che lo sani,
+      // si perderebbe davvero.
+      if (pending) {
+        owedExit.current = value
+        return
+      }
+
+      write(value)
     },
     cancel: () => {
       attempted.current = null
       waiting.current = null
+      owedExit.current = null
       setValue(baseline)
       setResult({})
       setSaveState({ kind: 'idle' })
@@ -160,9 +223,17 @@ export function useEditableField({
         // L'errore parla del valore di prima: lasciarlo acceso su un campo che si sta
         // correggendo vuol dire mettere del rosso su una cosa che non è più un errore.
         setResult({})
+        // E una battuta nuova supera il ricordo, come lo supera il fuoco che torna. Serve al
+        // caso che il `visibilitychange` copre e `onFocus` no: la pagina che va in secondo piano
+        // col fuoco ancora dentro non produce nessun `blur`, quindi al ritorno nessun `focus`
+        // azzera niente, e senza questa riga la risoluzione riscriverebbe un testo già corretto.
+        owedExit.current = null
       },
       onFocus: () => {
         focused.current = true
+        // Il campo è di nuovo sotto le dita: l'uscita di prima non è più un'uscita, e quello che
+        // c'è da salvare lo dirà la prossima.
+        owedExit.current = null
       },
       onBlur: (event) => {
         focused.current = false
@@ -182,7 +253,17 @@ export function useEditableField({
 
         // Senza il salvataggio all'uscita dal campo, chi scrive e clicca via entro tre secondi
         // perde quello che ha scritto: è esattamente ciò che la regola esiste per impedire.
-        if (autosave && dirty && !pending) write(value)
+        if (!autosave || !dirty) return
+
+        // Con una scrittura già in volo non se ne avvia una seconda: due `update` sulla stessa
+        // riga non hanno un ordine garantito, e se vince la prima il testo vecchio sovrascrive
+        // il nuovo. Si ricorda l'uscita, e la si onora quando quella in volo si risolve.
+        if (pending) {
+          owedExit.current = value
+          return
+        }
+
+        write(value)
       },
     },
   }
