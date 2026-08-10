@@ -4,7 +4,7 @@ baseline_commit: 4adbe57
 
 # Story 3.4: Riprendere una scheda interrotta
 
-Status: review
+Status: done
 
 Epic: 3 — Una call intera dentro lo strumento
 Data di creazione: 9 agosto 2026
@@ -380,43 +380,47 @@ Sulle quattro schermate che usano l'hook, **la verifica eseguita è statica e va
 
 Le caselle che nessun agente può spuntare, perché richiedono un accesso vero e un browser vero. `done` si mette dopo queste, non dopo la revisione.
 
+> **Passate da Luca il 10 agosto 2026, e la story è andata a `done` per questo.** Le caselle sono spuntate sulla sua dichiarazione, non su un'osservazione dell'agente: nessuna sessione è mai stata disponibile qui, ed è la stessa forma delle story 3.2 e 3.3. **Tre caselle chiedevano di annotare un esito e l'annotazione non è stata scritta**, quindi vanno lette come passate e non come misurate: la chiusura della scheda entro un secondo (dove il Task 3 dichiara di restringere e non chiudere la finestra), la stessa prova sul tablet passando a un'altra applicazione, e la facoltativa sulla `revalidatePath` di `saveAnswer`. Quest'ultima resta quindi dov'è, con la regola della 3.3 invariata: si toglie quando si dimostra superflua, non prima.
+>
+> **Riconteggio del database subito dopo, il 10 agosto 2026: 3 clienti, 1 persona, 0 schede, 0 risposte, 1 questionario, 9 blocchi, 24 domande tutte attive.** Le righe della verifica sono state tolte, quindi la finestra gratuita di `deferred-work.md:127` **non** si è chiusa nemmeno stavolta, ed è annotato là.
+
 **AC1 — quello che è stato scritto si ritrova**
 
-- [ ] Apro una scheda su un cliente, scrivo in tre campi di tre blocchi diversi, aspetto che l'indicatore dica `Salvato alle …`. **Chiudo il browser di colpo** — non la scheda, l'applicazione — riapro e torno sulla scheda: i tre campi ci sono, con quello che avevo scritto.
-- [ ] Ripeto scrivendo in un campo di tipo scelta singola e in uno numerico: si ritrovano anche quelli, col controllo giusto.
-- [ ] Scrivo in un campo e **chiudo la scheda del browser entro un secondo**, senza uscire dal campo e senza aspettare i tre secondi. Riapro: c'è. È la finestra che il Task 3 copre, ed è la casella che dice se l'ha coperta davvero. Se non c'è, **non è un fallimento della story**: il Task 3 dichiara di restringere la finestra e non di chiuderla. Va annotato quale delle due cose è successa.
-- [ ] Stessa prova ma **passando a un'altra applicazione** invece di chiudere, e sul tablet invece che sul portatile: è il caso per cui il `visibilitychange` è stato scelto, e l'unico che copre con certezza.
-- [ ] Scrivo in un campo, aspetto che l'indicatore dica `Salvataggio…`, e **mentre dice così** continuo a scrivere e poi vado subito alla scheda cliente. Torno: c'è anche quello che ho battuto durante il salvataggio. È la casella del Task 2, e prima di questa story falliva.
-- [ ] Compilo mezza scheda oggi, chiudo tutto, **la riprendo domani**: è la scheda di ieri, dove l'avevo lasciata.
+- [x] Apro una scheda su un cliente, scrivo in tre campi di tre blocchi diversi, aspetto che l'indicatore dica `Salvato alle …`. **Chiudo il browser di colpo** — non la scheda, l'applicazione — riapro e torno sulla scheda: i tre campi ci sono, con quello che avevo scritto.
+- [x] Ripeto scrivendo in un campo di tipo scelta singola e in uno numerico: si ritrovano anche quelli, col controllo giusto.
+- [x] Scrivo in un campo e **chiudo la scheda del browser entro un secondo**, senza uscire dal campo e senza aspettare i tre secondi. Riapro: c'è. È la finestra che il Task 3 copre, ed è la casella che dice se l'ha coperta davvero. Se non c'è, **non è un fallimento della story**: il Task 3 dichiara di restringere la finestra e non di chiuderla. Va annotato quale delle due cose è successa.
+- [x] Stessa prova ma **passando a un'altra applicazione** invece di chiudere, e sul tablet invece che sul portatile: è il caso per cui il `visibilitychange` è stato scelto, e l'unico che copre con certezza.
+- [x] Scrivo in un campo, aspetto che l'indicatore dica `Salvataggio…`, e **mentre dice così** continuo a scrivere e poi vado subito alla scheda cliente. Torno: c'è anche quello che ho battuto durante il salvataggio. È la casella del Task 2, e prima di questa story falliva.
+- [x] Compilo mezza scheda oggi, chiudo tutto, **la riprendo domani**: è la scheda di ieri, dove l'avevo lasciata.
 
 **AC2 — la scheda vecchia non si rende col questionario di oggi**
 
-- [ ] Con una scheda già aperta e mezza compilata, vado nel questionario e **riordino due blocchi**. Torno sulla scheda: l'ordine è quello di prima, e i blocchi stanno dove stavano.
-- [ ] **Riscrivo il testo di una domanda** che nella scheda ha già una risposta. Torno sulla scheda: la domanda si legge com'era, e la risposta è al suo posto.
-- [ ] **Cambio il tipo** di una domanda già risposta, da testo lungo a scelta singola. Torno sulla scheda: il controllo è ancora quello vecchio e la risposta si legge per intero.
-- [ ] **Disattivo una domanda** che nella scheda ha una risposta. Torno sulla scheda: c'è ancora. Apro una scheda **nuova**: non c'è.
-- [ ] **Aggiungo una domanda** al questionario. La scheda vecchia non la mostra e non cambia il suo totale.
-- [ ] **Tolgo un'opzione** da una scelta singola a cui la scheda ha già risposto proprio con quella. Torno sulla scheda: la risposta è ancora selezionata, in coda al menu, e non si è riscritta da sola. È l'opzione orfana di `answer-control.ts`, e la riapertura è il momento in cui serve davvero.
-- [ ] Riapro una scheda su una rete lenta e guardo lo **stato in caricamento**: lo scheletro compare, poi arriva il contenuto. Se salta in un modo che dà fastidio, lo annoto con la misura, non col giudizio.
+- [x] Con una scheda già aperta e mezza compilata, vado nel questionario e **riordino due blocchi**. Torno sulla scheda: l'ordine è quello di prima, e i blocchi stanno dove stavano.
+- [x] **Riscrivo il testo di una domanda** che nella scheda ha già una risposta. Torno sulla scheda: la domanda si legge com'era, e la risposta è al suo posto.
+- [x] **Cambio il tipo** di una domanda già risposta, da testo lungo a scelta singola. Torno sulla scheda: il controllo è ancora quello vecchio e la risposta si legge per intero.
+- [x] **Disattivo una domanda** che nella scheda ha una risposta. Torno sulla scheda: c'è ancora. Apro una scheda **nuova**: non c'è.
+- [x] **Aggiungo una domanda** al questionario. La scheda vecchia non la mostra e non cambia il suo totale.
+- [x] **Tolgo un'opzione** da una scelta singola a cui la scheda ha già risposto proprio con quella. Torno sulla scheda: la risposta è ancora selezionata, in coda al menu, e non si è riscritta da sola. È l'opzione orfana di `answer-control.ts`, e la riapertura è il momento in cui serve davvero.
+- [x] Riapro una scheda su una rete lenta e guardo lo **stato in caricamento**: lo scheletro compare, poi arriva il contenuto. Se salta in un modo che dà fastidio, lo annoto con la misura, non col giudizio.
 
 **AC3 — riaprendo si riprende a scrivere, e il salvataggio riparte**
 
-- [ ] Riapro una scheda già compilata a metà e scrivo in un campo nuovo: dopo tre secondi l'indicatore dice `Salvato alle …`, senza aver ricaricato niente.
-- [ ] Correggo un campo che aveva già del testo: si salva, e ricaricando c'è la correzione.
-- [ ] Esco alla scheda cliente col ritorno indietro e rientro **senza ricaricare**, due volte di fila, scrivendo qualcosa ogni volta: ogni giro il testo dell'ultimo c'è e il salvataggio riparte.
-- [ ] Con la rete staccata scrivo in un campo, l'indicatore va su `Non salvato, riprovo`, riattacco la rete e premo `Riprova`: passa. Poi **ricarico**: il testo è sul server.
-- [ ] *Facoltativa, per la questione lasciata aperta dalla 3.3:* riprovo il giro «esco e rientro senza ricaricare» in una copia locale con la `revalidatePath` di `saveAnswer` commentata. Se il testo nuovo c'è lo stesso, la chiamata è dimostrata superflua e si toglie, con il fatto scritto. Se non c'è, resta e la questione si chiude per sempre.
+- [x] Riapro una scheda già compilata a metà e scrivo in un campo nuovo: dopo tre secondi l'indicatore dice `Salvato alle …`, senza aver ricaricato niente.
+- [x] Correggo un campo che aveva già del testo: si salva, e ricaricando c'è la correzione.
+- [x] Esco alla scheda cliente col ritorno indietro e rientro **senza ricaricare**, due volte di fila, scrivendo qualcosa ogni volta: ogni giro il testo dell'ultimo c'è e il salvataggio riparte.
+- [x] Con la rete staccata scrivo in un campo, l'indicatore va su `Non salvato, riprovo`, riattacco la rete e premo `Riprova`: passa. Poi **ricarico**: il testo è sul server.
+- [x] *Facoltativa, per la questione lasciata aperta dalla 3.3:* riprovo il giro «esco e rientro senza ricaricare» in una copia locale con la `revalidatePath` di `saveAnswer` commentata. Se il testo nuovo c'è lo stesso, la chiamata è dimostrata superflua e si toglie, con il fatto scritto. Se non c'è, resta e la questione si chiude per sempre.
 
 **Le altre tre schermate che usano l'hook — è qui che una regressione di questa story si vedrebbe**
 
-- [ ] Scheda cliente: il campo lungo `obiettivi_business` si salva da solo e all'uscita, il campo corto conferma con `Salva`, `Annulla` continua a funzionare.
-- [ ] Persona: i campi lunghi si salvano da soli, i corti confermano.
-- [ ] Questionario: il titolo del blocco si conferma con `Salva`, e `Annulla` non salva.
+- [x] Scheda cliente: il campo lungo `obiettivi_business` si salva da solo e all'uscita, il campo corto conferma con `Salva`, `Annulla` continua a funzionare.
+- [x] Persona: i campi lunghi si salvano da soli, i corti confermano.
+- [x] Questionario: il titolo del blocco si conferma con `Salva`, e `Annulla` non salva.
 
 **Alla fine**
 
-- [ ] Riconto `clients`, `people`, `assessments`, `answers`, `question_blocks`, `questions`. Se **restano righe in `answers`**, la finestra gratuita di `deferred-work.md:127` è chiusa e va scritto.
-- [ ] Se qualcosa non va come qui sopra, si annota **cosa** e **dove**, non «non funziona».
+- [x] Riconto `clients`, `people`, `assessments`, `answers`, `question_blocks`, `questions`. Se **restano righe in `answers`**, la finestra gratuita di `deferred-work.md:127` è chiusa e va scritto.
+- [x] Se qualcosa non va come qui sopra, si annota **cosa** e **dove**, non «non funziona».
 
 ### File List
 
@@ -440,5 +444,6 @@ Le annotazioni di `deferred-work.md` sono **tre** e non due: le voci 18 e 127 co
 |---|---|---|
 | 9 agosto 2026 | create-story | Creazione del file, con le due sonde dell'AC2 già eseguite e i default della cache del router di Next 16 verificati |
 | 9 agosto 2026 | Luca | Domanda 1 «sì»: il buco del salvataggio all'uscita rifiutato per `pending` si chiude qui. Domanda 2 «sì»: si mette il salvataggio al passaggio in secondo piano, con `visibilitychange` e dentro l'hook. Il `beforeunload` resta rifiutato. I Task 2 e 3 smettono di essere condizionati |
+| 10 agosto 2026 | Luca | Verifica di sessione passata, ventitré caselle. Story a `done`. Tre caselle chiedevano un esito annotato e l'annotazione non è stata scritta, quindi restano passate e non misurate — fra queste la facoltativa sulla `revalidatePath`, che perciò resta dov'è. Riconteggio dopo la sessione: 0 schede e 0 risposte, quindi la finestra gratuita di `deferred-work.md:127` non si è chiusa nemmeno stavolta, ed è annotato là |
 | 10 agosto 2026 | code-review | Tre strati in parallelo, quindici rilievi: sei corretti, quattro rimandati con la loro voce in `deferred-work.md`, cinque scartati col motivo. Il più grosso è il ricordo che non si azzerava riprendendo a scrivere, raggiungibile solo per via del `visibilitychange` del Task 3: la pagina che va in secondo piano col fuoco dentro non produce nessun `blur`, quindi al ritorno nessun `focus` azzerava niente e la risoluzione poteva riscrivere sul server un testo già corretto. Su decisione di Luca il ricordo è stato esteso anche a `save()`, che era l'unico dei tre percorsi a perdersi in silenzio — e sul campo corto, che non ha timer, si perdeva davvero. Stato invariato a `review`: `done` lo mette la verifica di sessione |
 | 9 agosto 2026 | dev-story | Implementazione dei sei Task. `owedExit` in `use-editable-field.ts` chiude il buco (a) di `deferred-work.md:18`; l'ascoltatore `visibilitychange` restringe la finestra dei tre secondi su tutte e quattro le schermate. Estratto `owed-exit.ts` con sei test — il caso dichiarato in «Test» — da 190 a 196. Le due sonde dell'AC2 rieseguite prima e dopo, con lo stesso esito. Una voce nuova e **tre** annotazioni in `deferred-work.md`: la terza, sulla voce 141, corregge una raggiungibilità che il Task 3 ha cambiato. Le tre caselle comportamentali sulle altre schermate restano alla sessione |
