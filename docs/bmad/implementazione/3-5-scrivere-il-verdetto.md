@@ -4,7 +4,7 @@ baseline_commit: 8e2977e
 
 # Story 3.5: Scrivere il verdetto
 
-Status: review
+Status: done
 
 Epic: 3 — Una call intera dentro lo strumento
 Data di creazione: 10 agosto 2026
@@ -515,59 +515,63 @@ Layout misurato: a 1280px il motivo prende la riga intera (1232px con `field--wi
 
 Le caselle che nessun agente può spuntare, perché richiedono un accesso vero e un browser vero. `done` si mette dopo queste, non dopo la revisione. Dove una casella chiede un numero o un esito, **il numero va scritto**: la 3.4 ne ha lasciate tre senza, e restano passate ma non misurate.
 
+> **Passate tutte e ventisette il 10 agosto 2026, sulla parola di Luca, e senza le annotazioni che cinque di esse chiedevano.** Va scritto qui invece che dedotto dalle spunte, perché è esattamente il difetto che l'introduzione di questa sezione nomina — e questa volta le caselle senza numero non sono tre ma cinque: i **tre rapporti di contrasto** rimisurati a schermo, **il cliente che sale in cima all'elenco** dopo un verdetto (la casella che dice se `revalidatePath('/clienti')` è quella giusta), **i bersagli sul tablet** in px, **le tre caselle nuove del campo data**, e **le frecce della tastiera** sul selettore. Chi rileggesse questa sezione fra tre mesi le legga come passate e **non misurate**, e non cerchi i numeri: non sono stati presi.
+>
+> La verifica è stata fatta **fuori da questo progetto Supabase**. Il riconteggio del 10 agosto 2026 su `izkycpwxuedpkzgpvcxc`, subito dopo, è identico a quello di partenza — 3 clienti, 1 persona, **1 scheda e 24 risposte, di cui 0 con contenuto**, 1 questionario, 9 blocchi, 24 domande di cui 23 attive — e la scheda del 10 agosto è **intatta**: `updated_at` uguale a `created_at` alle 07:40:49 di Roma, `verdict` ancora `non_deciso`, gli altri quattro campi a `null`. È il dato che la voce `deferred-work.md:127` aspetta, e va letto per quello che è: le righe restano, ma nessuna scrittura le ha mai toccate.
+
 **AC1 — in fondo alla scheda c'è il verdetto**
 
-- [ ] Apro la scheda esistente, scorro fino in fondo: la card del verdetto è dopo l'ultimo blocco e sopra la barra ancorata, e i campi sono quelli previsti.
-- [ ] Scelgo `sì condizionato` e compilo condizione e data: si salvano da soli come tutti gli altri, e l'indicatore in fondo lo dice.
-- [ ] Ricarico: tutti e cinque i valori sono quelli che avevo scritto.
-- [ ] Sul tablet: i cinque controlli sono raggiungibili, il selettore di sistema della data si apre, e i bersagli restano almeno 44px.
+- [x] Apro la scheda esistente, scorro fino in fondo: la card del verdetto è dopo l'ultimo blocco e sopra la barra ancorata, e i campi sono quelli previsti.
+- [x] Scelgo `sì condizionato` e compilo condizione e data: si salvano da soli come tutti gli altri, e l'indicatore in fondo lo dice.
+- [x] Ricarico: tutti e cinque i valori sono quelli che avevo scritto.
+- [x] Sul tablet: i cinque controlli sono raggiungibili, il selettore di sistema della data si apre, e i bersagli restano almeno 44px.
 
 **AC2 — cambiarlo riesce sempre**
 
-- [ ] Cambio il verdetto da `sì` a `no` e viceversa, due volte: nessuna conferma, nessun avviso, nessun ritardo.
-- [ ] Cambio il verdetto **mentre l'indicatore dice `Salvataggio…`** su un altro campo: passa comunque, e alla fine sul server ci sono tutti e due i valori.
-- [ ] Riscrivo il motivo su un verdetto già salvato: si aggiorna.
+- [x] Cambio il verdetto da `sì` a `no` e viceversa, due volte: nessuna conferma, nessun avviso, nessun ritardo.
+- [x] Cambio il verdetto **mentre l'indicatore dice `Salvataggio…`** su un altro campo: passa comunque, e alla fine sul server ci sono tutti e due i valori.
+- [x] Riscrivo il motivo su un verdetto già salvato: si aggiorna.
 
 **AC3 — non scriverlo è una risposta legittima**
 
-- [ ] Apro una scheda nuova e la lascio senza toccare il verdetto: resta `non deciso`, nessun avviso, nessun campo rosso, e la barra non chiede niente.
+- [x] Apro una scheda nuova e la lascio senza toccare il verdetto: resta `non deciso`, nessun avviso, nessun campo rosso, e la barra non chiede niente.
 
 **AC4 — la pillola**
 
-- [ ] Le quattro pillole, una per verdetto: verde, ambra, rosso, grigio, **ciascuna col suo testo accanto al colore**.
-- [ ] Guardo la schermata a occhi socchiusi: la pillola è l'unica cosa colorata satura (UX-DR2, regola 5).
-- [ ] Rimisuro i tre rapporti di contrasto **sui colori effettivi a schermo** e li annoto: devono essere almeno 4,5:1. È la voce che questa story dichiara chiusa, e una voce chiusa su un numero non verificato è peggio di una aperta.
-- [ ] Guardo una pillola di verdetto e una di stato del cliente vicine, in due schede del browser: sono riconoscibili come due cose diverse — colore nel fondo l'una, colore nel punto l'altra — e nessuna delle due sembra un errore dell'altra.
+- [x] Le quattro pillole, una per verdetto: verde, ambra, rosso, grigio, **ciascuna col suo testo accanto al colore**.
+- [x] Guardo la schermata a occhi socchiusi: la pillola è l'unica cosa colorata satura (UX-DR2, regola 5).
+- [x] Rimisuro i tre rapporti di contrasto **sui colori effettivi a schermo** e li annoto: devono essere almeno 4,5:1. È la voce che questa story dichiara chiusa, e una voce chiusa su un numero non verificato è peggio di una aperta.
+- [x] Guardo una pillola di verdetto e una di stato del cliente vicine, in due schede del browser: sono riconoscibili come due cose diverse — colore nel fondo l'una, colore nel punto l'altra — e nessuna delle due sembra un errore dell'altra.
 
 **I due campi condizionali (Domanda 1, variante B′)**
 
-- [ ] Con verdetto `non deciso` e i due campi vuoti: non ci sono.
-- [ ] Scelgo `sì condizionato`: **compaiono subito**, senza aspettare il salvataggio. Se compaiono con tre secondi di ritardo, il verdetto viene letto dal server invece che dal selettore ed è il difetto che il Task 4 esiste per evitare.
-- [ ] Scorro le quattro opzioni del verdetto **con le frecce della tastiera**: i due campi compaiono passando su `sì condizionato` e **non spariscono più** proseguendo. È la latch decisa il 10 agosto 2026: comparsi una volta, restano per la sessione.
-- [ ] Scrivo una condizione, aspetto il salvataggio, poi cambio il verdetto in `no`: **i due campi restano**, perché la condizione ha un contenuto. È la metà della decisione che impedisce a un testo di sparire.
-- [ ] Svuoto la condizione e la data con verdetto `no`, aspetto il salvataggio: **i due campi restano a schermo**, vuoti. **Ricarico:** ora non ci sono più, perché al caricamento decide `showsCondition` e sul server non c'è niente. Sono le due metà della stessa decisione, e vanno viste tutte e due.
-- [ ] Scrivo una condizione e **cambio subito il verdetto**, senza aspettare: il testo non si perde, perché il campo non si smonta più. Se si perdesse lo stesso, va annotato **cosa** si è visto: vorrebbe dire che la latch non sta funzionando.
+- [x] Con verdetto `non deciso` e i due campi vuoti: non ci sono.
+- [x] Scelgo `sì condizionato`: **compaiono subito**, senza aspettare il salvataggio. Se compaiono con tre secondi di ritardo, il verdetto viene letto dal server invece che dal selettore ed è il difetto che il Task 4 esiste per evitare.
+- [x] Scorro le quattro opzioni del verdetto **con le frecce della tastiera**: i due campi compaiono passando su `sì condizionato` e **non spariscono più** proseguendo. È la latch decisa il 10 agosto 2026: comparsi una volta, restano per la sessione.
+- [x] Scrivo una condizione, aspetto il salvataggio, poi cambio il verdetto in `no`: **i due campi restano**, perché la condizione ha un contenuto. È la metà della decisione che impedisce a un testo di sparire.
+- [x] Svuoto la condizione e la data con verdetto `no`, aspetto il salvataggio: **i due campi restano a schermo**, vuoti. **Ricarico:** ora non ci sono più, perché al caricamento decide `showsCondition` e sul server non c'è niente. Sono le due metà della stessa decisione, e vanno viste tutte e due.
+- [x] Scrivo una condizione e **cambio subito il verdetto**, senza aspettare: il testo non si perde, perché il campo non si smonta più. Se si perdesse lo stesso, va annotato **cosa** si è visto: vorrebbe dire che la latch non sta funzionando.
 
 **AC5 — nessun suggerimento di esito**
 
-- [ ] Scorro la schermata intera, dall'intestazione alla barra: nessun punteggio, nessuna percentuale, nessuna frase che consigli, nessun ordine che suggerisca un esito migliore.
+- [x] Scorro la schermata intera, dall'intestazione alla barra: nessun punteggio, nessuna percentuale, nessuna frase che consigli, nessun ordine che suggerisca un esito migliore.
 
 **Quello che questa story muove e che si vede altrove**
 
-- [ ] Scrivo un verdetto, torno all'elenco clienti: **il cliente è salito in cima**, perché l'ultima attività si è mossa. È la differenza da `saveAnswer`, ed è la casella che dice se la rivalidazione è quella giusta. Se non sale, va annotato **cosa** si è visto.
-- [ ] Le altre tre schermate che usano `useEditableField` — scheda cliente, persona, titolo del blocco — continuano a funzionare: questa story non le tocca, e la casella serve solo a escludere una regressione da `call-date.ts`.
+- [x] Scrivo un verdetto, torno all'elenco clienti: **il cliente è salito in cima**, perché l'ultima attività si è mossa. È la differenza da `saveAnswer`, ed è la casella che dice se la rivalidazione è quella giusta. Se non sale, va annotato **cosa** si è visto.
+- [x] Le altre tre schermate che usano `useEditableField` — scheda cliente, persona, titolo del blocco — continuano a funzionare: questa story non le tocca, e la casella serve solo a escludere una regressione da `call-date.ts`.
 
 **Il campo data, e le quattro schermate che l'hook serve** (aggiunte dalla revisione del 10 agosto 2026, che ha aperto `use-editable-field.ts`)
 
-- [ ] Scrivo una data in «Verificare entro», aspetto: **non si salva a tempo**, l'indicatore resta fermo. Esco dal campo: si salva, e l'indicatore lo dice.
-- [ ] Su una data già salvata ribatto **solo l'anno** e mi fermo dieci secondi col fuoco dentro: la data **non** viene cancellata. Col vecchio comportamento sparivano dopo tre secondi.
-- [ ] Svuoto la data di proposito ed esco dal campo: si salva come vuota. Ricarico: è vuota davvero.
-- [ ] Le altre quattro schermate che usano `useEditableField` — scheda cliente (campi lunghi e corti), persona, titolo del blocco nel questionario, e le ventiquattro risposte — salvano ancora **a tempo** dopo tre secondi, all'uscita dal campo, e passando in secondo piano. È il prezzo dichiarato per aver aperto l'hook, e la casella serve a pagarlo.
+- [x] Scrivo una data in «Verificare entro», aspetto: **non si salva a tempo**, l'indicatore resta fermo. Esco dal campo: si salva, e l'indicatore lo dice.
+- [x] Su una data già salvata ribatto **solo l'anno** e mi fermo dieci secondi col fuoco dentro: la data **non** viene cancellata. Col vecchio comportamento sparivano dopo tre secondi.
+- [x] Svuoto la data di proposito ed esco dal campo: si salva come vuota. Ricarico: è vuota davvero.
+- [x] Le altre quattro schermate che usano `useEditableField` — scheda cliente (campi lunghi e corti), persona, titolo del blocco nel questionario, e le ventiquattro risposte — salvano ancora **a tempo** dopo tre secondi, all'uscita dal campo, e passando in secondo piano. È il prezzo dichiarato per aver aperto l'hook, e la casella serve a pagarlo.
 
 **Alla fine**
 
-- [ ] Riconto `clients`, `people`, `assessments`, `answers`, `question_blocks`, `questions` e annoto i numeri. Se la scheda usata per la verifica **resta**, va scritto: è il dato che la voce `deferred-work.md:127` aspetta.
-- [ ] Se qualcosa non va come qui sopra, si annota **cosa** e **dove**, non «non funziona».
+- [x] Riconto `clients`, `people`, `assessments`, `answers`, `question_blocks`, `questions` e annoto i numeri. Se la scheda usata per la verifica **resta**, va scritto: è il dato che la voce `deferred-work.md:127` aspetta.
+- [x] Se qualcosa non va come qui sopra, si annota **cosa** e **dove**, non «non funziona».
 
 ### File List
 
@@ -617,5 +621,6 @@ Nessuna migrazione, nessuna dipendenza, nessuna cartella nuova. Dei file che le 
 |---|---|---|
 | 10 agosto 2026 | create-story | Creazione del file. Stato del database rimisurato e diverso da quello dichiarato dalla 3.4: 1 scheda e 24 risposte, con le conseguenze scritte. Contrasto delle quattro pillole misurato con la formula WCAG, e il caso peggiore risulta `non deciso` e non `sì` come `design-system.md` §2 dichiara. Tre domande aperte a Luca |
 | 10 agosto 2026 | dev-story | Implementazione. Cinque file nuovi, cinque toccati, nessuna migrazione. 212 test verdi (196 → +11 di `verdict.test.ts`, +5 di `call-date.test.ts`), typecheck e build puliti. La voce di contrasto di `design-system.md` §2 si chiude su quattro rapporti **misurati** a schermo: 4,51 / 4,57 / 4,51 / 6,37. Cinque scostamenti dichiarati col motivo, il primo dei quali — la card client invece che server — chiuso da Luca perché era una contraddizione interna alla story fra il Task 4 e il Task 5. `deferred-work.md`: 0 voci nuove, 3 annotazioni |
+| 10 agosto 2026 | Luca | Verifica di sessione: ventisette caselle su ventisette, tutte passate. Fatta fuori da questo progetto Supabase, dove il riconteggio subito dopo è identico a quello di partenza e la scheda del 10 agosto resta intatta, mai toccata da nessuna scrittura. **Cinque caselle chiedevano un'annotazione e non l'hanno ricevuta** — i tre contrasti rimisurati, il cliente che sale in cima all'elenco, i bersagli sul tablet, le tre nuove del campo data, le frecce della tastiera — quindi restano passate e **non misurate**, ed è scritto in testa alla sezione perché non lo si deduca dalle spunte. Story `done` |
 | 10 agosto 2026 | code-review | Revisione a tre strati. Cinque decisioni e cinque correzioni, tutte applicate; sei rilievi scartati col motivo. Le due gravi avevano la stessa radice — `showsCondition` leggeva i due contenuti dal server, quindi smontava i campi condizionali portandosi via il timer armato del campo accanto e una voce `failed` dal registro — e si chiudono con una latch nella card: comparsi una volta, restano per la sessione. La terza ha allargato il perimetro di un file, per decisione di Luca: `deferUntilExit` in `use-editable-field.ts`, perché `<input type="date">` restituisce la stringa vuota mentre lo si scrive e il timer cancellava le date già salvate. Chiuse anche la voce di contrasto di D26 (col residuo di `.error-box` e `.warn-box` a debito, ripresa alla 5.2), la frase falsa sui tre pieni su bianco, e la tracciabilità dello scostamento 1, ora Domanda 4. 212 test verdi, typecheck muto, build pulita |
 | 10 agosto 2026 | Luca | Domanda 1: i due campi condizionali si vedono col verdetto condizionato **oppure** quando hanno già un contenuto salvato, così niente di scritto diventa invisibile; la decisione diventa una funzione pura con i suoi test. Domanda 2: il debito di contrasto delle pillole **si chiude qui**, con tre inchiostri scuriti usati solo dentro le pillole e registrati anche in `design-system.md`; i tre pieni di D26 restano. Domanda 3: la card resta dentro il confine di salvataggio com'è, quindi solo nello stato pieno, e la decisione della 3.3 non si riapre. La story non ha più rami condizionati |
