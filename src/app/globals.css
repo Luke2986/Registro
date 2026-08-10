@@ -226,6 +226,35 @@ a {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* `flex-wrap` qui sopra e `flex-basis` qui sotto sono le due righe che `.card__actions` ha già, e
+   arrivano da una misura e non da un giudizio (Story 3.6, 10 agosto 2026; numero e causa corretti
+   dalla sua code review lo stesso giorno, perché la prima stesura sbagliava tutti e due).
+
+   A 375px lo spazio utile è 343 — 375 meno i 16+16 di `.main` sotto i 720. `documentElement
+   .scrollWidth` misurato su riproduzione statica con questo file e i font veri:
+
+     con le due righe, con la riga d'errore ......  375, eccedenza    0
+     senza le due righe, con la riga d'errore ....  470, eccedenza   95
+     senza le due righe, senza la riga d'errore ..  400, eccedenza   25
+
+   **La riga d'errore non è la causa, è solo la parte più grossa**, ed è la correzione che conta:
+   senza di lei e senza `wrap` la pagina scorre lo stesso di 25px, perché data (78), parola (33) e
+   pulsante fanno 245,4 col pulsante **già compresso al minimo** (102,7 invece di 146,6), e sommati
+   al min-content di `Prequalifica` (106,9) più il gap danno 368,3 contro 343. `flex-wrap` serve
+   quindi al pulsante prima che all'errore, e `flex-basis: 100%` chiude i 95 mandando l'errore a
+   capo a piena larghezza. Chi un giorno togliesse la riga d'errore da questa intestazione **non
+   può** togliere anche il `wrap`. */
+.page-header__actions .field__error {
+  flex-basis: 100%;
+  /* L'unico `.field__error` del software che non sta dentro una card, quindi l'unico su `--bg`
+     invece che su `--surface`: lì `--bad` misura 4,13:1 e non arriva ai 4,5 che §8 chiede, mentre
+     su bianco sta a 4,62 e passa. `--bad-ink` su `--bg` misura 4,84:1. Il token nasce con la 3.5
+     per le pillole di verdetto, e da qui vale anche per questo caso: il campo allargato è scritto
+     in `design-system.md` §2 e §9 e in D26, dove la restrizione era stata dichiarata. */
+  color: var(--bad-ink);
 }
 
 /* Il ritorno indietro sopra il titolo, come una cosa sola a sinistra. Serve dove l'intestazione

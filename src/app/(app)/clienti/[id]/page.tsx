@@ -98,7 +98,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   // scambiano di posto fra un caricamento e l'altro sono un difetto che non produce nessun errore.
   const { data: assessments, error: assessmentsError } = await supabase
     .from('assessments')
-    .select('id, call_date, interviewee_id')
+    .select('id, call_date, interviewee_id, completion_status')
     .eq('client_id', id)
     .order('call_date', { ascending: false })
     .order('created_at', { ascending: false })

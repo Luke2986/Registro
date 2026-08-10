@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import { isUuid } from '@/lib/uuid'
 
 import { AnswerBlocks } from './answer-blocks'
+import { CompletionButton } from './completion-button'
 import { SaveBoundary } from './save-boundary'
 import { VerdictCard } from './verdict-card'
 
@@ -62,7 +63,7 @@ export default async function AssessmentPage({
   const { data: assessment, error } = await supabase
     .from('assessments')
     .select(
-      'id, client_id, call_date, verdict, verdict_reason, condition_text, verify_by, next_step, clients(name)',
+      'id, client_id, call_date, completion_status, verdict, verdict_reason, condition_text, verify_by, next_step, clients(name)',
     )
     .eq('id', assessmentId)
     .eq('client_id', id)
@@ -112,6 +113,8 @@ export default async function AssessmentPage({
         clientId={id}
         clientName={assessment.clients.name}
         callDate={assessment.call_date}
+        assessmentId={assessment.id}
+        completionStatus={assessment.completion_status}
       />
 
       {answersError ? (
@@ -169,15 +172,28 @@ export default async function AssessmentPage({
 /**
  * Il nome del cliente è il ritorno indietro, non un titolo: la pagina è la scheda, il cliente è
  * da dove si viene. Il titolo è `Prequalifica` e la data della call gli sta accanto.
+ *
+ * **Lo stato di compilazione sta qui e non in fondo** (decisione di Luca del 10 agosto 2026): il
+ * comando si preme una volta per scheda, lo stato si *legge* ogni volta che la si apre, e fra i due
+ * è il secondo a decidere dove va la coppia. Accanto alla data sta anche accanto all'altra cosa che
+ * dice *quale* scheda è, che è ciò che lo stato di compilazione è. In fondo si sarebbe visto solo
+ * scorrendo, cioè quasi mai.
+ *
+ * Nello stato d'errore i due mancano insieme alla data, ed è giusto: la riga della scheda non si è
+ * letta, quindi non si sa né che stato abbia né cosa scriverci.
  */
 function AssessmentHeader({
   clientId,
   clientName,
   callDate,
+  assessmentId,
+  completionStatus,
 }: {
   clientId: string
   clientName?: string
   callDate?: string
+  assessmentId?: string
+  completionStatus?: string
 }) {
   return (
     <header className="page-header">
@@ -194,6 +210,18 @@ function AssessmentHeader({
       {callDate === undefined ? null : (
         <div className="page-header__actions">
           <span className="data">{formatCallDate(callDate)}</span>
+          {/* La parola c'è sempre, non solo quando la scheda è chiusa: è la stessa scelta di
+              `question-item.tsx` col suo motivo — una parola che compare solo nel caso negativo non
+              dice niente a chi non l'ha mai vista comparire, e il pulsante da solo nomina la
+              destinazione, non lo stato. Nessun colore e nessuna pillola: lo stato di compilazione
+              non è un esito, e l'unica cosa colorata satura di questa schermata è già la pillola del
+              verdetto (UX-DR2, regola 5). */}
+          {completionStatus === undefined || assessmentId === undefined ? null : (
+            <>
+              <span className="meta">{completionStatus}</span>
+              <CompletionButton assessmentId={assessmentId} completionStatus={completionStatus} />
+            </>
+          )}
         </div>
       )}
     </header>

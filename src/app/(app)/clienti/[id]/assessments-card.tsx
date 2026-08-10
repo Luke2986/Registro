@@ -21,9 +21,14 @@ import { NewAssessmentForm } from './new-assessment-form'
  * resto della scheda continua a funzionare. Un elenco vuoto invece è un cliente su cui non si è
  * ancora fatta nessuna call, che è normale.
  *
- * **La riga porta data e interlocutore, e basta.** Nessuna pillola di verdetto (Story 3.5 e 4.2),
- * nessun contatore e nessuna barra (Story 4.1), nessuno stato di compilazione: oggi vale `bozza`
- * per tutte, e un dato che non varia non informa.
+ * **La riga porta data, interlocutore e stato di compilazione.** Lo stato è entrato con la Story
+ * 3.6, il 10 agosto 2026, ed è la ragione per cui quella story esiste: «dall'elenco distinguo quelle
+ * da riprendere da quelle chiuse». Prima valeva `bozza` per tutte e un dato che non varia non
+ * informa; da quando esiste un comando che lo cambia, varia.
+ *
+ * Restano fuori, e arrivano con l'Epic 4: la pillola di verdetto (4.2), il contatore delle risposte e
+ * la barra di avanzamento (4.1). Chi implementa la 4.1 troverà quindi la riga già a tre figli e
+ * dovrà aggiungerne due, non tre.
  *
  * Il collegamento sta **sulla data** e non su tutta la riga: la riga porta anche il nome
  * dell'interlocutore, che non è un bersaglio, e l'alone del fuoco su una riga intera è un'altra
@@ -126,6 +131,13 @@ export function AssessmentsCard({
                 </Link>
                 {name === undefined ? null : <span className="meta">{name}</span>}
                 {unnamed ? <span className="meta">Interlocutore non caricato</span> : null}
+                {/* La parola c'è su ogni riga, non solo sulle chiuse: con una sola scheda chiusa
+                    fra molte, una parola che compare solo nel caso negativo si legge come un
+                    avviso invece che come uno stato. È la stessa forma e lo stesso motivo di
+                    `question-item.tsx`. Nessun colore: lo stato di compilazione non è un esito.
+                    In coda e non davanti alla data, che resta il collegamento e l'informazione
+                    che distingue due schede dello stesso cliente. */}
+                <span className="meta">{assessment.completion_status}</span>
               </li>
             )
           })}

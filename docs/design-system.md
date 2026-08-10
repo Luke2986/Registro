@@ -67,7 +67,9 @@ Riservati agli esiti e agli stati. Non compaiono mai nella navigazione.
 
 **Chiusa il 10 agosto 2026, con la Story 3.5**, che è la story che le pillole di verdetto le crea. Si è chiusa nella forma che la voce stessa prescriveva — scurendo **solo dentro le pillole**, non i token — e va detto *come*, altrimenti fra tre mesi la §2 e la §9 si rileggono come una contraddizione.
 
-**Cosa è cambiato:** tre inchiostri nuovi, usati **soltanto** come testo della pillola di verdetto sulla propria tinta di fondo.
+**Cosa è cambiato:** tre inchiostri nuovi, usati come testo della pillola di verdetto sulla propria tinta di fondo.
+
+~~Usati **soltanto** lì.~~ **Il «soltanto» è caduto il 10 agosto 2026, con la code review della Story 3.6**, ed è una riga sola perché il campo si è allargato di un caso, non di una regola. `--bad-ink` è ora anche il colore di `.page-header__actions .field__error`, cioè della riga d'errore che vive nell'intestazione di pagina: è l'unico `.field__error` del software che non sta dentro una card, quindi l'unico su `--bg` invece che su `--surface`, e lì `--bad` misura **4,13:1** mentre `--bad-ink` misura **4,84:1**. Il nome del token continua a dire il suo ruolo — l'inchiostro che sta sopra un fondo chiaro dove il pieno non arriva — e quel ruolo non era mai stato «la pillola»: era la pillola l'unico posto che ne aveva bisogno finché non ne è nato un secondo.
 
 | Pillola | Testo | Su tinta | Rapporto |
 |---|---|---|---|
@@ -76,7 +78,7 @@ Riservati agli esiti e agli stati. Non compaiono mai nella navigazione.
 | no | `--bad-ink` `#BB402E` | `--bad-tint` | 4,51:1 |
 | non deciso | `--ink-muted` (caso base) | `--neutral-tint` | 6,37:1 |
 
-**Cosa non è cambiato, ed è il punto:** `--ok`, `--warn` e `--bad` restano quelli di D26, e i tre `-ink` non sono una loro versione «migliore»: il nome dice il ruolo — l'inchiostro che sta sopra la propria tinta — e la pillola è l'unico posto che li usa. La prima stesura di questo capoverso dava però una ragione sbagliata, e la correzione sta qui invece che cancellata: diceva che i tre pieni «continuano a servire come testo su bianco, dove il contrasto c'è già», mentre misurati su bianco `--bad` sta a 4,62:1 e passa, `--warn` a 4,46:1 e `--ok` a 4,37:1 non passano. Nei fatti `--ok` non è usato come testo da nessuna parte e `--warn` come testo compare solo in `.warn-box`, cioè sulla propria tinta. La ragione vera per non toccarli è un'altra: sono i valori di D26, e sostituirli sarebbe superare una decisione registrata dentro una story.
+**Cosa non è cambiato, ed è il punto:** `--ok`, `--warn` e `--bad` restano quelli di D26, e i tre `-ink` non sono una loro versione «migliore»: il nome dice il ruolo, l'inchiostro che sta sopra un fondo chiaro dove il pieno non arriva. ~~E la pillola è l'unico posto che li usa.~~ *(Vero fino al 10 agosto 2026: da quel giorno `--bad-ink` è anche la riga d'errore dell'intestazione di pagina, v. qui sopra. `--ok-ink` e `--warn-ink` restano usati dalle sole pillole.)* La prima stesura di questo capoverso dava però una ragione sbagliata, e la correzione sta qui invece che cancellata: diceva che i tre pieni «continuano a servire come testo su bianco, dove il contrasto c'è già», mentre misurati su bianco `--bad` sta a 4,62:1 e passa, `--warn` a 4,46:1 e `--ok` a 4,37:1 non passano. Nei fatti `--ok` non è usato come testo da nessuna parte e `--warn` come testo compare solo in `.warn-box`, cioè sulla propria tinta. La ragione vera per non toccarli è un'altra: sono i valori di D26, e sostituirli sarebbe superare una decisione registrata dentro una story.
 
 **Il neutro non riceve il quarto token, e non per simmetria mancata:** il caso base della pillola sta già a 6,37:1, mentre il neutro *pieno* starebbe a 3,02:1. Il quarto contrasto si chiude quindi non aggiungendo niente.
 
@@ -281,8 +283,10 @@ Obbligatori, come da `kb-0.md`.
   --bad:#CE4632;     --bad-tint:#FBE6E1;
   --neutral:#8A857F; --neutral-tint:#EDE9E2;
 
-  /* inchiostri della pillola di verdetto, e solo di quella: §2. Non sostituiscono i tre pieni
-     qui sopra, che restano i valori di D26. Il neutro non ne ha uno, e il perché è in §2. */
+  /* inchiostri per un fondo chiaro dove il pieno non arriva a 4,5:1: §2. Nati per le pillole di
+     verdetto; dal 10 agosto 2026 `--bad-ink` è anche la riga d'errore dell'intestazione di pagina,
+     che è l'unico `.field__error` fuori da una card. Non sostituiscono i tre pieni qui sopra, che
+     restano i valori di D26. Il neutro non ne ha uno, e il perché è in §2. */
   --ok-ink:#0D7C52;  --warn-ink:#985F09;  --bad-ink:#BB402E;
 
   /* forma */

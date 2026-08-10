@@ -21,8 +21,21 @@ export default function AssessmentLoading() {
           <h1 className="page-title">Prequalifica</h1>
         </div>
         <div className="page-header__actions">
-          {/* La data in mono viene 80 di larghezza: `09/08/2026` a 13px. */}
+          {/* Tutti e tre ci sono sempre: `completion_status` è `not null default 'bozza'` (0005),
+              quindi la parola e il pulsante non dipendono dai dati più di quanto ne dipenda la data.
+              Riservare la sola data era la versione precedente, e la code review della 3.6 l'ha
+              misurata invece di dedurla: `.page-header` è `space-between`, quindi questo blocco è
+              ancorato a destra e cresce verso sinistra, e con 80 riservati contro 289,4 reali la
+              data scivolava a sinistra all'arrivo dei dati di **209,4px a 1280** e di **147,9px a
+              375**. È esattamente il salto che questo file esiste per togliere. Coi tre scheletri
+              scende a **4,6px** e **1px**.
+              Le larghezze sono misurate su riproduzione statica col `globals.css` vero e i font
+              veri, identiche alle due taglie: data 78, parola 32,7 (`bozza`) o 35,7 (`chiusa`),
+              pulsante 146,6 × 40. Lo scarto che resta è l'arrotondamento in eccesso, cioè quanto si
+              può riservare senza sapere quale delle due parole arriverà. */}
           <div className="skeleton" style={{ width: 80 }} />
+          <div className="skeleton" style={{ width: 36 }} />
+          <div className="skeleton" style={{ width: 146, height: 40, borderRadius: 'var(--r-md)' }} />
         </div>
       </header>
 

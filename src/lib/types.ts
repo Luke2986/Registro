@@ -26,8 +26,14 @@ export type PersonDetail = Pick<PersonRow, 'id' | 'decision_roles' | 'is_primary
  * La riga diceva «il verdetto è della Story 3.5» ed era sbagliata: la 3.5 scrive il verdetto dentro
  * la schermata di compilazione e non tocca questo tipo. Corretta il 10 agosto 2026, mentre il file
  * era comunque aperto, perché mandava chi implementa la 4.1 a cercare nella 3.5 qualcosa che non c'è.
+ *
+ * `completion_status` è entrato con la Story 3.6, il 10 agosto 2026, e la regola qui sopra è stata
+ * tenuta vera nello stesso commit: la colonna si legge **e** si rende, in `assessments-card.tsx`.
  */
-export type AssessmentSummary = Pick<AssessmentRow, 'id' | 'call_date' | 'interviewee_id'>
+export type AssessmentSummary = Pick<
+  AssessmentRow,
+  'id' | 'call_date' | 'interviewee_id' | 'completion_status'
+>
 
 /**
  * Le cinque colonne del verdetto, derivate dai descrittori e non riscritte: se un campo entra in
