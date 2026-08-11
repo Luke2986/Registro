@@ -25,11 +25,15 @@ export function BlockTitleForm({
   blockId,
   title,
   actions,
+  trailing,
 }: {
   blockId: string
   title: string
   /** Le azioni della card oltre a `Rinomina` (le frecce della 2.5), rese solo a riposo. */
   actions?: ReactNode
+  /** Quelle che stanno dopo `Rinomina`: l'azione distruttiva va per ultima, com'è nella riga
+      della domanda. Un secondo slot e non un riordino di `actions`, che vale per tutte. */
+  trailing?: ReactNode
 }) {
   const [renaming, setRenaming] = useState(false)
   const [returning, setReturning] = useState(false)
@@ -92,6 +96,7 @@ export function BlockTitleForm({
           >
             Rinomina
           </button>
+          {trailing}
         </div>
       </div>
     )

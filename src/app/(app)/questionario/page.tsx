@@ -26,6 +26,12 @@ export default async function QuestionnairePage() {
   // *se* una domanda è attiva, quindi filtrarle renderebbe invisibile metà del criterio. È il
   // contrario di quello che farà la schermata di compilazione.
   //
+  // `answers(count)` è l'aggregato e non le righe: dice solo *se* una domanda è già finita in una
+  // scheda, che è la condizione da cui dipende `Elimina` (0017). Il contenuto delle risposte non
+  // si legge — è il confine che database.md §3 traccia per l'elenco clienti, e vale qui uguale.
+  // Senza questo conteggio il pulsante comparirebbe su tutte le domande e rifiuterebbe su quasi
+  // tutte: la regola è del server, ma dev'essere visibile prima di premere.
+  //
   // Niente `.single()` e niente `.maybeSingle()`: tutti e due trasformano «due righe» in un
   // errore, e questa schermata finirebbe sullo stato d'errore per un dato che non è un guasto.
   // `questionnaires` non ha nessun vincolo che imponga un solo questionario attivo.
@@ -61,7 +67,7 @@ export default async function QuestionnairePage() {
       id, name, version,
       question_blocks(
         id, title, position, created_at,
-        questions(id, text, help_text, answer_type, options, position, is_active, created_at)
+        questions(id, text, help_text, answer_type, options, position, is_active, created_at, answers(count))
       )
     `)
     .eq('is_active', true)

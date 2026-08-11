@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { answerTypeLabel } from '@/lib/answer-types'
 
 import type { QuestionnaireQuestion } from './block-card'
+import { DeleteButton } from './delete-button'
 import { EditQuestionForm } from './edit-question-form'
 import { MoveButtons } from './move-buttons'
 import { QuestionActiveButton } from './question-active-button'
@@ -24,10 +25,13 @@ export function QuestionItem({
   question,
   isFirst,
   isLast,
+  deletable,
 }: {
   question: QuestionnaireQuestion
   isFirst: boolean
   isLast: boolean
+  /** Nessuna scheda l'ha mai contenuta, quindi non c'è storia da perdere a cancellarla (0017). */
+  deletable: boolean
 }) {
   const [editing, setEditing] = useState(false)
   const [returning, setReturning] = useState(false)
@@ -76,6 +80,13 @@ export function QuestionItem({
               {/* Anche sulle domande spente, dove dice `Riattiva`: nessuno stato blocca
                   nessuna azione (D14). */}
               <QuestionActiveButton questionId={question.id} isActive={question.is_active} />
+              {/* `Elimina` e `Disattiva` non sono due modi di dire la stessa cosa e convivono
+                  di proposito: la prima toglie una domanda che non è mai servita, la seconda la
+                  ritira dalle schede nuove lasciando leggibili le vecchie. Appena una scheda la
+                  contiene resta solo la seconda, e il pulsante sparisce invece di rifiutare. */}
+              {deletable ? (
+                <DeleteButton kind="question" id={question.id} label={question.text} />
+              ) : null}
             </div>
           </div>
 

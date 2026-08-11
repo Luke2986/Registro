@@ -507,8 +507,12 @@ a {
   flex-wrap: wrap;
 }
 
+/* La riga d'errore e la domanda di conferma vanno a capo intere invece di stringere i pulsanti
+   che stanno sulla stessa riga flessibile. Stessa ragione per tutte e due, quindi stessa regola. */
 .card__actions .field__error,
-.question__actions .field__error {
+.question__actions .field__error,
+.card__actions .meta,
+.question__actions .meta {
   flex-basis: 100%;
 }
 

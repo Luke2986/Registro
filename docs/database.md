@@ -165,6 +165,12 @@ create index questions_block_position_idx on questions (block_id, position);
 
 Le domande non si cancellano, si disattivano: una domanda disattivata sparisce dalle schede nuove e resta in quelle vecchie.
 
+**Precisato l'11 agosto 2026, con la 0017.** La frase resta vera dove conta e non lo era abbastanza dove non conta: la regola esiste per proteggere le schede vecchie, e una domanda che nessuna scheda ha mai contenuto non ha niente da proteggere — restava però in un questionario che si rilegge a ogni call. `delete_question` la cancella se e solo se nessuna riga di `answers` la nomina; `delete_block` cancella un blocco se e solo se non ha più domande, attive o spente. Rispondono `deleted`, `gone` o `in_use`, e `in_use` non è un guasto: è la frase che l'interfaccia deve saper dire.
+
+Sono funzioni e non due `delete` da PostgREST perché **il database non sa rifiutare da solo nessuna delle due**, ed è la cosa meno ovvia di questa riga: `questions.block_id` cade in `cascade`, quindi cancellare un blocco si porta via le sue domande in silenzio; `answers.question_id` cade in `set null`, quindi cancellare una domanda usata riesce e slega le risposte. Un controllo letto prima e cancellato dopo lascia in mezzo una finestra, e la risposta del progetto a questa classe di problema è già scritta nella 0011: una funzione plpgsql è una transazione. Stessa forma — `security invoker`, `search_path` vuoto, lock consultivo sul questionario, `execute` negato ad `anon` — e `renumber_questions` dopo la cancellazione di una domanda, perché il numero d'intervista lascerebbe un buco.
+
+Una finestra sopravvive ed è dichiarata invece che chiusa, in testa alla migrazione: una scheda aperta fra il controllo e il `delete` porta la propria riga a `question_id` null. La risposta resta leggibile con la sua copia del testo, che è lo stato che questa sezione descrive da sempre come previsto.
+
 ### assessments
 
 ```sql
@@ -375,6 +381,7 @@ supabase/migrations/
   0014_open_assessment_total.sql -- il totale dalle righe scritte, e «oggi» nel fuso dichiarato
   0015_answer_question_copy.sql  -- la risposta copia anche tipo, opzioni e aiuto
   0016_answers_touch_assessment.sql -- salvare una risposta sveglia la sua scheda
+  0017_delete_without_history.sql -- si cancella solo dove non c'è storia da perdere
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```

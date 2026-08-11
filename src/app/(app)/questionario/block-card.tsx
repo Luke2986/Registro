@@ -1,6 +1,7 @@
 import type { Database } from '@/lib/database.types'
 
 import { BlockTitleForm } from './block-title-form'
+import { DeleteButton } from './delete-button'
 import { MoveButtons } from './move-buttons'
 import { NewQuestionForm } from './new-question-form'
 import { QuestionItem } from './question-item'
@@ -15,7 +16,10 @@ type QuestionRow = Database['public']['Tables']['questions']['Row']
 export type QuestionnaireQuestion = Pick<
   QuestionRow,
   'id' | 'text' | 'help_text' | 'answer_type' | 'options' | 'is_active'
->
+> & {
+  /** L'aggregato di PostgREST, non le righe: quante schede hanno già congelato questa domanda. */
+  answers: { count: number }[]
+}
 
 export type QuestionnaireBlock = Pick<BlockRow, 'id' | 'title'> & {
   questions: QuestionnaireQuestion[]
@@ -46,6 +50,14 @@ export function BlockCard({
         blockId={block.id}
         title={block.title}
         actions={<MoveButtons kind="block" id={block.id} isFirst={isFirst} isLast={isLast} />}
+        // Solo sul blocco vuoto, che è la stessa condizione che la 0017 verifica dentro la
+        // transazione: il blocco non porta dati suoi, porta le domande, e svuotarlo è il passo
+        // che si fa prima. Mostrarlo sempre vorrebbe dire un pulsante che rifiuta quasi sempre.
+        trailing={
+          block.questions.length === 0 ? (
+            <DeleteButton kind="block" id={block.id} label={block.title} />
+          ) : null
+        }
       />
 
       {block.questions.length > 0 ? (
@@ -59,6 +71,10 @@ export function BlockCard({
               question={question}
               isFirst={index === 0}
               isLast={index === block.questions.length - 1}
+              // La forma dell'aggregato resta qui, sul server: il componente foglia riceve la
+              // risposta e non la domanda. `?? 0` perché PostgREST rende l'aggregato come un
+              // array, e un array vuoto vuol dire nessuna riga, cioè zero.
+              deletable={(question.answers[0]?.count ?? 0) === 0}
             />
           ))}
         </ul>
