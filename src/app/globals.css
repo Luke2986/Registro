@@ -505,15 +505,54 @@ a {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  /* Il gruppo non si lascia più stringere dal testo che gli sta accanto, ed è la prima delle due
+     cause del disordine dell'11 agosto 2026: dentro un `.question__header` in `space-between` il
+     gruppo era flessibile quanto la domanda, quindi una domanda lunga lo comprimeva e l'ultimo
+     pulsante andava a capo da solo. Misurate, tre righe consecutive partivano da x 618, 710 e
+     664, e la riga col titolo lungo era alta 139 invece di 70. */
+  flex: 0 0 auto;
+}
+
+/* La seconda causa, e la griglia è la risposta: il numero di pulsanti **cambia da riga a riga**
+   — `Elimina` c'è solo dove nessuna scheda contiene quella domanda, e sul blocco solo se è vuoto
+   — e in una fila allineata a destra un pulsante mancante fa slittare tutti gli altri di una
+   colonna intera. Con le colonne fisse la cella resta vuota e le altre non si muovono.
+   100px è la parola più larga del gruppo, `Rinomina`, misurata a 98,5 e arrotondata al multiplo
+   di 4: una colonna sola per tutte le azioni testuali, così le due del blocco cadono sopra le
+   ultime due della domanda invece di formare una griglia loro.
+   `justify-content: end` e non `start`: il gruppo resta ancorato al bordo destro della card come
+   prima, ed è quell'ancoraggio che rende comparabili righe con un numero diverso di celle. */
+.card__actions--grid,
+.question__actions--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 100px);
+  justify-content: end;
+  align-items: start;
+  gap: 4px;
+}
+
+.question__actions--grid {
+  grid-template-columns: repeat(3, 100px);
+}
+
+/* Il gruppo delle due frecce: 2 di distanza invece di 8, perché sono un comando solo con due
+   direzioni. Fuori dalla griglia — in modalità ordine il gruppo è sempre lo stesso, quindi non
+   c'è niente da allineare fra righe. */
+.move {
+  display: flex;
+  gap: 2px;
 }
 
 /* La riga d'errore e la domanda di conferma vanno a capo intere invece di stringere i pulsanti
-   che stanno sulla stessa riga flessibile. Stessa ragione per tutte e due, quindi stessa regola. */
+   che stanno sulla stessa riga flessibile. Stessa ragione per tutte e due, quindi stessa regola.
+   Le due proprietà convivono perché i due gruppi non sono più fatti uguali: `flex-basis` vale
+   nella fila delle frecce, `grid-column` nella griglia, e ognuna è ignorata dall'altro. */
 .card__actions .field__error,
 .question__actions .field__error,
 .card__actions .meta,
 .question__actions .meta {
   flex-basis: 100%;
+  grid-column: 1 / -1;
 }
 
 /* `--t-heading` di design-system.md §3. */
@@ -761,6 +800,23 @@ a {
    bordato: non si legge come un comando, e al passaggio del mouse non risponde. Stessa forma di
    `.btn--danger:hover`, con la tinta neutra al posto di quella dell'errore. */
 .btn--quiet:hover {
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+/* Il pulsante che porta un'icona invece di una parola: quadrato, e in `--ink-muted` perché un
+   contorno alla piena intensità pesa più della parola che sostituisce.
+   **Sta qui e non accanto a `.move`, dove era nato**: `.btn` dichiara `padding: 0 16px` e in un
+   foglio a cascata l'ordine decide — messo prima, il padding gli restava addosso e comprimeva
+   l'icona da 18 a 6 di larghezza dentro i 40 del quadrato. Una variante di pulsante va con i
+   pulsanti, e la ragione non è solo di ordine. */
+.btn--icon {
+  width: 40px;
+  padding: 0;
+  color: var(--ink-muted);
+}
+
+.btn--icon:hover:not(:disabled) {
   background: var(--surface-sunken);
   color: var(--ink);
 }
@@ -1172,6 +1228,46 @@ a {
 
 /* questionario */
 
+/* L'interruttore fra contenuto e ordine, uno solo per pagina. La forma è quella di un selettore
+   a segmenti: un binario scavato con la voce corrente sollevata su `--surface`, che è lo stesso
+   linguaggio del cestino letto al contrario — lì il fondo scavato dice «fuori dal questionario»,
+   qui dice «lo sfondo su cui una delle due sta sopra».
+   Nessun colore: distinguere le due voci con una tinta le farebbe leggere come due stati di un
+   dato, e non lo sono — sono due viste della stessa pagina. */
+.mode {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--r-full);
+  background: var(--surface-sunken);
+}
+
+.mode__option {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--r-full);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-muted);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.mode__option:hover {
+  color: var(--ink);
+}
+
+/* `aria-current` e non una classe: l'attributo che lo dice all'assistenza è lo stesso che lo
+   disegna, quindi non possono divergere. */
+.mode__option[aria-current='page'] {
+  background: var(--surface);
+  box-shadow: var(--sh-1);
+  color: var(--ink);
+}
+
 /* Il modulo di rinomina sostituisce l'intestazione della card: stesso stacco dei 20 di
    `.card__header`, così le domande sotto non salgono quando il titolo diventa un campo. */
 .block-rename {
@@ -1531,6 +1627,36 @@ a {
   /* Stessa ragione di `.question__text`: a 375 un token senza spazi più largo della card
      uscirebbe di lato. Il nome di una persona non ne ha, il titolo di un blocco sì. */
   overflow-wrap: anywhere;
+}
+
+/* Sotto i 600 le tre colonne da 100 non stanno accanto alla domanda: a 375 lo spazio dentro la
+   card è 295 e la griglia ne chiede 308 da sola. Il gruppo scende quindi sotto il testo e prende
+   tutta la larghezza in colonne uguali — **l'allineamento fra righe sopravvive**, che è il punto
+   di tutta la sistemazione, perché `1fr` è la stessa frazione per tutte. La soglia è misurata e
+   non presa dalla nav: sopra i 600 il testo conserva almeno 180 accanto al gruppo. */
+@media (max-width: 600px) {
+  .card__header,
+  .question__header {
+    flex-wrap: wrap;
+  }
+
+  .question__header > .question__text {
+    flex-basis: 100%;
+  }
+
+  .question__actions--grid {
+    flex-basis: 100%;
+    justify-content: stretch;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Il blocco torna una fila, e non per risparmiare: la sua griglia serve solo a far cadere le
+     due colonne sopra le ultime due della domanda, e a colonne uguali quella coincidenza non
+     esiste comunque. Il blocco ha una riga sola, quindi non ha niente da allineare con sé stesso,
+     e `Rinomina` da solo in mezzo a una colonna larga metà schermo galleggia. */
+  .card__actions--grid {
+    display: flex;
+  }
 }
 
 /* i quattro stati di ogni schermata */

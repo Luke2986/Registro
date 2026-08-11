@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 
+import type { QuestionnaireMode } from '@/lib/questionnaire-mode'
 import { useEditableField, type SaveResult } from '@/lib/use-editable-field'
 
 import { renameBlock } from './actions'
@@ -24,11 +25,14 @@ import { renameBlock } from './actions'
 export function BlockTitleForm({
   blockId,
   title,
+  mode,
   actions,
   trailing,
 }: {
   blockId: string
   title: string
+  /** Quale gruppo rendere: `actions` da solo in ordine, `Rinomina` più `trailing` in contenuto. */
+  mode: QuestionnaireMode
   /** Le azioni della card oltre a `Rinomina` (le frecce della 2.5), rese solo a riposo. */
   actions?: ReactNode
   /** Quelle che stanno dopo `Rinomina`: l'azione distruttiva va per ultima, com'è nella riga
@@ -83,21 +87,29 @@ export function BlockTitleForm({
   if (!renaming) {
     // Il gruppo sta a destra come stava l'azione sola: in rinomina il modulo sostituisce
     // l'intestazione intera, frecce comprese, com'è già per il titolo.
+    //
+    // I due gruppi non convivono mai, e non è una semplificazione: sono la stessa cosa di
+    // `question-item.tsx`, cioè le due metà che la modalità separa. In ordine il gruppo è
+    // sempre lo stesso — due icone — quindi non ha bisogno di griglia; in contenuto ne ha
+    // bisogno, perché `Elimina` c'è solo sul blocco vuoto.
     return (
       <div className="card__header">
         <h2 className="card__title">{title}</h2>
-        <div className="card__actions">
-          {actions}
-          <button
-            type="button"
-            ref={renameButton}
-            className="btn btn--quiet"
-            onClick={() => setRenaming(true)}
-          >
-            Rinomina
-          </button>
-          {trailing}
-        </div>
+        {mode === 'order' ? (
+          <div className="card__actions">{actions}</div>
+        ) : (
+          <div className="card__actions card__actions--grid">
+            <button
+              type="button"
+              ref={renameButton}
+              className="btn btn--quiet"
+              onClick={() => setRenaming(true)}
+            >
+              Rinomina
+            </button>
+            {trailing}
+          </div>
+        )}
       </div>
     )
   }

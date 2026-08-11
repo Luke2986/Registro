@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { answerTypeLabel } from '@/lib/answer-types'
+import type { QuestionnaireMode } from '@/lib/questionnaire-mode'
 
 import type { QuestionnaireQuestion } from './block-card'
 import { DeleteButton } from './delete-button'
@@ -23,11 +24,14 @@ import { QuestionActiveButton } from './question-active-button'
  */
 export function QuestionItem({
   question,
+  mode,
   isFirst,
   isLast,
   deletable,
 }: {
   question: QuestionnaireQuestion
+  /** Quale gruppo di azioni rendere: le frecce oppure tutto il resto. */
+  mode: QuestionnaireMode
   isFirst: boolean
   isLast: boolean
   /** Nessuna scheda l'ha mai contenuta, quindi non c'è storia da perdere a cancellarla (0017). */
@@ -60,34 +64,47 @@ export function QuestionItem({
         <>
           <div className="question__header">
             <p className="question__text">{question.text}</p>
-            {/* Le frecce ci sono anche sulle domande non attive: nessuno stato blocca nessuna
+            {/* I due gruppi non convivono mai: la modalità separa il riordino da tutto il resto,
+                perché le frecce da sole occupavano metà della fila per l'azione che si usa meno.
+                In ordine il gruppo è sempre lo stesso — due icone — quindi resta una fila; in
+                contenuto è una griglia, perché `Elimina` c'è solo su alcune domande e in una
+                fila allineata a destra la sua assenza faceva slittare tutte le altre.
+                Le frecce ci sono anche sulle domande non attive: nessuno stato blocca nessuna
                 azione (D14) — una domanda spenta si può ancora mettere nell'ordine giusto. */}
-            <div className="question__actions">
-              <MoveButtons
-                kind="question"
-                id={question.id}
-                isFirst={isFirst}
-                isLast={isLast}
-              />
-              <button
-                type="button"
-                ref={editButton}
-                className="btn btn--quiet"
-                onClick={() => setEditing(true)}
-              >
-                Modifica
-              </button>
-              {/* Anche sulle domande spente, dove dice `Riattiva`: nessuno stato blocca
-                  nessuna azione (D14). */}
-              <QuestionActiveButton questionId={question.id} isActive={question.is_active} />
-              {/* `Elimina` e `Disattiva` non sono due modi di dire la stessa cosa e convivono
-                  di proposito: la prima toglie una domanda che non è mai servita, la seconda la
-                  ritira dalle schede nuove lasciando leggibili le vecchie. Appena una scheda la
-                  contiene resta solo la seconda, e il pulsante sparisce invece di rifiutare. */}
-              {deletable ? (
-                <DeleteButton kind="question" id={question.id} label={question.text} />
-              ) : null}
-            </div>
+            {mode === 'order' ? (
+              <div className="question__actions">
+                <MoveButtons
+                  kind="question"
+                  id={question.id}
+                  isFirst={isFirst}
+                  isLast={isLast}
+                />
+              </div>
+            ) : (
+              <div className="question__actions question__actions--grid">
+                <button
+                  type="button"
+                  ref={editButton}
+                  className="btn btn--quiet"
+                  onClick={() => setEditing(true)}
+                >
+                  Modifica
+                </button>
+                {/* Anche sulle domande spente, dove dice `Riattiva`: nessuno stato blocca
+                    nessuna azione (D14). */}
+                <QuestionActiveButton questionId={question.id} isActive={question.is_active} />
+                {/* `Elimina` e `Disattiva` non sono due modi di dire la stessa cosa e convivono
+                    di proposito: la prima toglie una domanda che non è mai servita, la seconda la
+                    ritira dalle schede nuove lasciando leggibili le vecchie. Appena una scheda la
+                    contiene resta solo la seconda, e il pulsante sparisce invece di rifiutare —
+                    ma la sua cella resta, altrimenti la fila slitta. */}
+                {deletable ? (
+                  <DeleteButton kind="question" id={question.id} label={question.text} />
+                ) : (
+                  <span />
+                )}
+              </div>
+            )}
           </div>
 
           {/* Due domande su ventitré hanno l'aiuto vuoto: un contenitore reso comunque

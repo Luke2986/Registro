@@ -1,4 +1,5 @@
 import type { Database } from '@/lib/database.types'
+import type { QuestionnaireMode } from '@/lib/questionnaire-mode'
 
 import { BlockTitleForm } from './block-title-form'
 import { DeleteButton } from './delete-button'
@@ -35,10 +36,13 @@ export type QuestionnaireBlock = Pick<BlockRow, 'id' | 'title'> & {
  */
 export function BlockCard({
   block,
+  mode,
   isFirst,
   isLast,
 }: {
   block: QuestionnaireBlock
+  /** Quale gruppo di azioni rendere: le frecce oppure tutto il resto. */
+  mode: QuestionnaireMode
   isFirst: boolean
   isLast: boolean
 }) {
@@ -49,14 +53,21 @@ export function BlockCard({
       <BlockTitleForm
         blockId={block.id}
         title={block.title}
+        mode={mode}
         actions={<MoveButtons kind="block" id={block.id} isFirst={isFirst} isLast={isLast} />}
         // Solo sul blocco vuoto, che è la stessa condizione che la 0017 verifica dentro la
         // transazione: il blocco non porta dati suoi, porta le domande, e svuotarlo è il passo
         // che si fa prima. Mostrarlo sempre vorrebbe dire un pulsante che rifiuta quasi sempre.
+        //
+        // La cella resta anche quando il pulsante non c'è, ed è metà della sistemazione: in una
+        // fila allineata a destra un pulsante mancante fa slittare tutti gli altri di una
+        // colonna, ed è così che tre righe consecutive finivano su tre coordinate diverse.
         trailing={
           block.questions.length === 0 ? (
             <DeleteButton kind="block" id={block.id} label={block.title} />
-          ) : null
+          ) : (
+            <span />
+          )
         }
       />
 
@@ -69,6 +80,7 @@ export function BlockCard({
             <QuestionItem
               key={question.id}
               question={question}
+              mode={mode}
               isFirst={index === 0}
               isLast={index === block.questions.length - 1}
               // La forma dell'aggregato resta qui, sul server: il componente foglia riceve la

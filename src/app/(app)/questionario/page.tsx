@@ -1,13 +1,19 @@
 import { redirect } from 'next/navigation'
 
 import { ErrorState } from '@/components/error-state'
+import { parseQuestionnaireMode } from '@/lib/questionnaire-mode'
 import { createClient } from '@/lib/supabase/server'
 
 import { BlockCard } from './block-card'
+import { ModeSwitch } from './mode-switch'
 import { NewBlockForm } from './new-block-form'
 import { TrashCard } from './trash-card'
 
-export default async function QuestionnairePage() {
+export default async function QuestionnairePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   const supabase = await createClient()
 
   const {
@@ -15,6 +21,10 @@ export default async function QuestionnairePage() {
   } = await supabase.auth.getUser()
 
   if (!user) redirect('/accedi')
+
+  // `await` obbligatorio: da Next 15 `searchParams` è una promessa e in 16 la forma sincrona non
+  // esiste più. Stesso schema di /clienti, che già attende i suoi filtri.
+  const mode = parseQuestionnaireMode(await searchParams)
 
   // Innesto normale e mai `question_blocks!inner` né `questions!inner`: con !inner sparirebbero
   // il questionario senza blocchi — cioè proprio lo stato vuoto che AC4 chiede di mostrare — e il
@@ -128,6 +138,9 @@ export default async function QuestionnairePage() {
           questionario adesso. Si aggiunge quando esiste il concetto che lo rende vero. */}
       <header className="page-header">
         <h1 className="page-title">Questionario</h1>
+        {/* L'interruttore c'è anche quando il questionario non si è caricato: sparire in errore
+            farebbe cambiare posto al titolo, e la modalità è una vista, non un'azione sui dati. */}
+        <ModeSwitch current={mode} />
       </header>
 
       {error ? (
@@ -167,6 +180,7 @@ export default async function QuestionnairePage() {
             <BlockCard
               key={block.id}
               block={block}
+              mode={mode}
               isFirst={index === 0}
               isLast={index === questionnaire.question_blocks.length - 1}
             />

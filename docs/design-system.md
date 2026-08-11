@@ -197,6 +197,33 @@ Altezza 22, raggio `--r-full`, padding orizzontale 10, testo `--t-meta` peso 500
 
 Come nei riferimenti: raggio `--r-sm`, fondo in tinta chiara, cifra in mono peso 500. Usato per contare le persone o le schede.
 
+### Gruppo di azioni di una riga
+
+**Nato l'11 agosto 2026, e anche questo nasce da un difetto:** nella schermata del questionario ogni domanda portava cinque comandi in fila — due frecce, `Modifica`, `Disattiva`, `Elimina` — dentro un contenitore flessibile. Ne uscivano due disallineamenti, e vale la pena tenerli distinti perché hanno due rimedi diversi.
+
+- **Il gruppo era flessibile quanto il testo.** In un contenitore `space-between` una domanda lunga lo comprimeva, e l'ultimo pulsante andava a capo da solo. Rimedio: `flex: 0 0 auto`, il gruppo non si stringe più.
+- **Il numero di pulsanti cambia da riga a riga.** `Elimina` compare solo dove nessuna scheda contiene quella domanda, e in una fila allineata a destra la sua assenza faceva slittare tutti gli altri di una colonna intera. Rimedio: una **griglia a colonne fisse**, dove la cella resta vuota invece di sparire.
+
+Misurate su tre righe consecutive, la coordinata di partenza del gruppo era 618, 710 e 664; ora è 727 su tutte e tre, e la riga col titolo lungo è alta 99 invece di 139.
+
+**La colonna è 100px per tutte le azioni testuali**, che è la parola più larga del gruppo — `Rinomina`, misurata 98,5 — arrotondata al multiplo di 4. Una sola misura e non una per gruppo: così le due colonne dell'intestazione del blocco cadono sopra le ultime due della domanda invece di formare una griglia loro. Il gruppo resta ancorato a destra, ed è quell'ancoraggio che rende comparabili righe con un numero diverso di celle.
+
+**Sotto i 600 il gruppo della domanda scende sotto il testo** e prende tutta la larghezza in colonne uguali: l'allineamento fra righe sopravvive, perché `1fr` è la stessa frazione per tutte. La soglia è misurata — a 601 il testo conserva 201px accanto al gruppo, a 375 la griglia da 308 non starebbe nei 295 della card. L'intestazione del blocco lì torna una fila semplice: ha una riga sola, quindi non ha niente da allineare con sé stessa.
+
+### Pulsante con icona
+
+`.btn--icon`: quadrato di 40, nessun padding, tratto in `--ink-muted`, icona 18. Le due frecce di riordino sono l'unico uso di oggi, in un gruppo staccato di 2 invece di 8 perché sono un comando solo con due direzioni.
+
+La parola non sparisce quando diventa icona: resta come nome accessibile e come suggerimento del passaggio del mouse. `Sposta su` e `Sposta giù` sono diventate icone perché due etichette lunghe occupavano da sole metà della fila per l'azione che si usa meno.
+
+### Interruttore di modalità
+
+Un binario scavato con la voce corrente sollevata su `--surface`: lo stesso linguaggio del cestino letto al contrario — lì il fondo scavato dice «fuori dal questionario», qui dice «lo sfondo su cui una delle due sta sopra». Altezza 34 dentro un contenitore di 40, raggio pieno, testo `--t-label`.
+
+**Nessun colore**, e non è timidezza: una tinta farebbe leggere le due voci come due stati di un dato, e non lo sono — sono due viste della stessa pagina. Lo stato corrente si dichiara con `aria-current="page"`, che è anche il selettore che lo disegna: l'attributo che lo dice all'assistenza e quello che lo colora non possono divergere.
+
+Un uso oggi, in cima al questionario: `Contenuto` e `Ordine`. Le parole nominano cosa si sta sistemando e non cosa si sta facendo — `Modifica` sarebbe entrato in collisione col pulsante omonimo della domanda, e `Leggi` avrebbe mentito, perché anche lì si scrive.
+
 ### Cestino
 
 **Nato l'11 agosto 2026, e nasce da un difetto:** i due cestini — quello del questionario e quello delle persone — riusavano `.card` con dentro `.question`, cioè fondo bianco, `--sh-1` e voce a `--t-heading`. Una riga eliminata era resa con gli stessi identici valori di una domanda viva, e distingueva solo la parola sul pulsante. La schermata del questionario aveva quindi tre gradi di vita — attiva, non attiva, eliminata — e due trattamenti, con il salto più grosso non disegnato affatto.

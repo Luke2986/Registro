@@ -140,6 +140,12 @@ La schermata su cui si lavora durante la call, quindi progettata per quello: blo
 
 Elenco dei blocchi e delle domande, con riordino, modifica del testo, attivazione e disattivazione. Nessuna cancellazione fisica: si disattiva.
 
+**Il riordino sta in una modalità sua, dall'11 agosto 2026.** In cima alla schermata un interruttore passa fra `Contenuto` e `Ordine`: nella prima ogni riga porta `Modifica`, `Disattiva` ed `Elimina`, nella seconda solo le due frecce. Il motivo è che cinque comandi per riga, per ventitré domande, fanno centoquindici comandi su una schermata che serve a rileggere il questionario — e due dei cinque servono solo mentre si riordina, che è un momento raro e dichiarato.
+
+La modalità **sta nell'indirizzo** (`/questionario?modo=ordine`) e non in un cookie: un cookie la farebbe ritrovare accesa fra tre settimane, che è il difetto tipico delle modalità. Così esce dalla pagina con la pagina.
+
+**Non è un divieto** e non contraddice D14: le azioni non rese non sono negate, sono a un clic di distanza. La modalità è una vista, come lo è un filtro dell'elenco clienti. Come sono disposte le azioni, e perché prima sembravano messe a caso, sta in `design-system.md` §5.
+
 **L'ultima frase è precisata dall'11 agosto 2026, e va letta insieme a quello che la motiva.** La regola esiste per proteggere le schede vecchie: cancellare una domanda che una scheda contiene toglierebbe la domanda a cui una risposta risponde. Non dice niente invece su una domanda scritta per sbaglio due minuti fa, che nessuna scheda ha mai visto — e quella restava in un questionario che si rilegge a ogni call, senza nessun modo di toglierla.
 
 Da qui `Elimina`, che compare **solo** dove non c'è storia da perdere: su una domanda che nessuna scheda ha mai contenuto, e su un blocco senza domande. Appena una scheda contiene la domanda il pulsante sparisce e resta `Disattiva`, che è la risposta giusta per quel caso e continua a essere l'unica. Il pulsante sparisce invece di rifiutare perché la regola è del server ma dev'essere visibile prima di premere. Come è imposta, e perché non basta un `delete`, sta in `database.md` §3.
