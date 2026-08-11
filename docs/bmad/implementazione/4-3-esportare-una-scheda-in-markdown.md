@@ -4,7 +4,7 @@ baseline_commit: b9225cc
 
 # Story 4.3: Esportare una scheda in markdown
 
-Status: review
+Status: done
 
 Epic: 4 — Ritrovare a mesi di distanza e portare fuori
 Data di creazione: 11 agosto 2026
@@ -646,17 +646,17 @@ Riconteggio subito dopo i `rollback`: 3 clienti, 1 persona, 1 scheda, 24 rispost
 
 _(le caselle che richiedono una sessione vera; le passa Luca, e sono quelle che portano la story a `done`)_
 
-- [ ] Apro una scheda, **compilo alcune risposte e ne lascio altre vuote**, poi premo `Esporta`: il file si scarica senza che la pagina se ne vada.
-- [ ] Apro il file: ha l'intestazione con cliente e data, i blocchi nell'ordine dell'intervista, ogni domanda col suo testo, e il verdetto in fondo con l'esito scritto per esteso (AC1).
-- [ ] Nello stesso file, le domande che ho saltato **ci sono**, col loro titolo, e sotto non c'è niente (AC3). Un `Motivo` che non ho scritto invece **non lascia il suo titolo**, e l'`Esito` c'è anche se è `non deciso`.
-- [ ] Guardo il nome del file: `<cliente>-<data>-prequalifica.md`, tutto minuscolo, senza accenti e senza spazi (AC2). *Scrivere qui il nome vero.*
-- [ ] Apro una scheda nuova **scegliendo un interlocutore** (oggi nessuna scheda ne ha uno) ed esporto: l'intestazione porta la riga `Interlocutore` col nome della persona (AC1).
-- [ ] Riscrivo dal questionario il testo di una domanda che quella scheda contiene, e ne disattivo un'altra. Riesporto: il file porta **il testo vecchio** e contiene ancora la domanda disattivata (AC4).
-- [ ] Guardo l'intestazione della schermata su schermo stretto (telefono o finestra a 375px) con la scheda `chiusa`: i quattro comandi ci stanno, la pagina non scorre di lato, e il comando `Esporta` è raggiungibile.
-- [ ] Guardo la schermata mentre carica (rete lenta o ricarica dura): l'intestazione ha **quattro** scheletri e all'arrivo dei dati la data non scivola.
-- [ ] **Guardo la stessa schermata mentre carica a 375px: la pagina non scorre di lato.** È la misura che il Task 6 chiedeva sul solo `loading.tsx` e che non è stata presa — i quattro scheletri riservano 349 più 48 di gap contro i 343 utili, quindi vanno a capo, ma che la pagina resti dentro i 375 è una previsione e non un numero.
-- [ ] Cucio a mano un indirizzo di esportazione con un `assessmentId` che non esiste: leggo un messaggio in italiano e non una traccia, e non mi si scarica nessun file.
-- [ ] **Conteggio di `answers` a verifica finita, sul progetto `izkycpwxuedpkzgpvcxc`: quante righe e quante con contenuto.** *Scrivere qui i due numeri, e dire se i dati di prova sono stati tolti.* È il numero che la voce del `block_id` a ledger aspetta da sei story, e questa è la prima verifica che non può passarlo senza scriverlo.
+- [x] Apro una scheda, **compilo alcune risposte e ne lascio altre vuote**, poi premo `Esporta`: il file si scarica senza che la pagina se ne vada.
+- [x] Apro il file: ha l'intestazione con cliente e data, i blocchi nell'ordine dell'intervista, ogni domanda col suo testo, e il verdetto in fondo con l'esito scritto per esteso (AC1).
+- [x] Nello stesso file, le domande che ho saltato **ci sono**, col loro titolo, e sotto non c'è niente (AC3). Un `Motivo` che non ho scritto invece **non lascia il suo titolo**, e l'`Esito` c'è anche se è `non deciso`.
+- [x] Guardo il nome del file: `<cliente>-<data>-prequalifica.md`, tutto minuscolo, senza accenti e senza spazi (AC2). **Nome vero: `pino-2026-08-10-prequalifica.md`.**
+- [x] Apro una scheda nuova **scegliendo un interlocutore** (oggi nessuna scheda ne ha uno) ed esporto: l'intestazione porta la riga `Interlocutore` col nome della persona (AC1).
+- [x] Riscrivo dal questionario il testo di una domanda che quella scheda contiene, e ne disattivo un'altra. Riesporto: il file porta **il testo vecchio** e contiene ancora la domanda disattivata (AC4).
+- [x] Guardo l'intestazione della schermata su schermo stretto (telefono o finestra a 375px) con la scheda `chiusa`: i quattro comandi ci stanno, la pagina non scorre di lato, e il comando `Esporta` è raggiungibile.
+- [x] Guardo la schermata mentre carica (rete lenta o ricarica dura): l'intestazione ha **quattro** scheletri e all'arrivo dei dati la data non scivola.
+- [x] **Guardo la stessa schermata mentre carica a 375px: la pagina non scorre di lato.** È la misura che il Task 6 chiedeva sul solo `loading.tsx` e che non è stata presa — i quattro scheletri riservano 349 più 48 di gap contro i 343 utili, quindi vanno a capo, ma che la pagina resti dentro i 375 è una previsione e non un numero.
+- [x] Cucio a mano un indirizzo di esportazione con un `assessmentId` che non esiste: leggo un messaggio in italiano e non una traccia, e non mi si scarica nessun file.
+- [x] **Conteggio di `answers` a verifica finita, sul progetto `izkycpwxuedpkzgpvcxc`: 24 righe, 0 con contenuto** — misurate con una query l'11 agosto 2026, non dedotte. Un terzo numero le spiega: **0 righe con `updated_at > created_at`**, quindi il trigger `answers_touch_assessment` non è mai scattato e nessuna risposta è mai stata scritta su questo progetto. **La verifica è avvenuta su un altro ambiente**, come già per la 3.5, la 3.6, la 4.1 e la 4.2: i dati di prova non sono stati tolti da qui, non ci sono mai stati. Il criterio che la voce del `block_id` si è data — «la prima scheda che Luca compila e tiene perché gli serve» — resta quindi **non soddisfatto su questo progetto**, e il costo `not null` senza riempimento resta scaduto per il solo conteggio: ventiquattro righe esistono.
 
 ## Change Log
 
@@ -666,3 +666,4 @@ _(le caselle che richiedono una sessione vera; le passa Luca, e sono quelle che 
 | 11 agosto 2026 | Chiuse le due domande, tutte e due sul default: data ISO nel nome del file, vuoto asimmetrico fra domanda saltata e campo del verdetto. Task 1 e Task 2 aggiornati col valore deciso. |
 | 11 agosto 2026 | Story implementata. Due moduli puri nuovi con 30 test, un Route Handler, il comando nell'intestazione, il quarto scheletro a 87 misurati. 267 test verdi, `typecheck` e `build` puliti. AC1, AC2, AC3 e AC4 provate su dati veri in transazioni annullate; il database è tornato ai suoi 24/0. Ledger: 2 voci nuove — la sovrapposizione del titolo a 375 e lo scheletro che non può somigliare a tutte e due le schede — e 4 annotazioni. `docs/prd-v1.md` §4 definisce ora cosa vuol dire «prevedibile». Stato a `review`. |
 | 11 agosto 2026 | Code review, tre strati in parallelo. 4 decisioni chiuse da Luca lo stesso giorno — due a ledger (contenuto grezzo nel markdown, salvataggi in sospeso non svuotati), due diventate correzioni. 9 patch applicati: commenti potati, mappa di traslitterazione per `Ø Ł ß Æ Ð Þ`, riga `Interlocutore` omessa per una persona senza nome, `no-store` sui rami d'errore, due asserzioni di test rinforzate, un nome di test falso corretto, una casella in più nella verifica di sessione. 7 voci a ledger. 267 test verdi, `typecheck` e `build` puliti. Stato **`review`**: `done` lo mette Luca dopo la verifica di sessione. |
+| 11 agosto 2026 | Verifica di sessione passata da Luca su un ambiente diverso da `izkycpwxuedpkzgpvcxc`, undici caselle su undici. Nome del file visto: `pino-2026-08-10-prequalifica.md`. Riconteggio su questo progetto subito dopo: **24 righe di `answers`, 0 con contenuto, 0 con `updated_at > created_at`**, cioè invariato — la voce del `block_id` a ledger riceve il numero e resta aperta. Stato **`done`**. |
