@@ -58,6 +58,13 @@
   --warn-ink: #985f09;
   --bad-ink: #bb402e;
 
+  /* Il bianco vive qui e non inline: il suggerimento della navigazione richiusa (Story 5.1,
+     UX-DR1) è testo bianco su `--ink`, e la regola del progetto dice «nessun esadecimale fuori dai
+     token» (`design-system.md` §10, AGENTS.md). Simmetrico ai tre `-ink` qui sopra: un inchiostro
+     pensato per un fondo specifico — lì la tinta chiara, qui `--ink`. Anche in `design-system.md`
+     §2 e §9. */
+  --ink-inverse: #ffffff;
+
   /* forma */
   --r-sm: 8px;
   --r-md: 12px;
@@ -122,10 +129,21 @@ a {
 
 /* struttura */
 
+/* La sidebar è **espansa (232) o richiusa (56)**, mai una via di mezzo: la larghezza *transisce*
+   fra i due valori, ma non c'è uno stato «di ampiezza intermedia». La regola qui sotto governa la
+   griglia: la classe `.sidebar--collapsed` (Story 5.1) porta la prima colonna a 56 e l'area del
+   contenuto si allarga di 176. `:has()` è supportato dai browser moderni e Next 16 non chiede
+   polyfill; il giorno che un browser che ci interessa non lo supporta, si passa la classe anche
+   sulla `.shell` da `layout.tsx`. */
 .shell {
   display: grid;
   grid-template-columns: 232px 1fr;
   min-height: 100vh;
+  transition: grid-template-columns var(--dur-base) var(--ease);
+}
+
+.shell:has(.sidebar--collapsed) {
+  grid-template-columns: 56px 1fr;
 }
 
 .sidebar {
@@ -135,15 +153,95 @@ a {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  transition: padding var(--dur-base) var(--ease);
 }
 
+/* Padding orizzontale ridotto da richiusa: la colonna è 56 e i 12+12 di prima lasciano `.nav` a 32,
+   che non basta a un item da 20 di icona + padding. A 8+8 la `.nav` sta a 40 e l'item ci sta. */
+.sidebar--collapsed {
+  padding: 24px 8px;
+}
+
+/* Il brand da riposo è testo + toggle su una riga; da richiuso resta il solo toggle centrato,
+   il testo si dissolve e si comprime a larghezza zero (`.sidebar__brand-text`). */
 .sidebar__brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   font-size: 13px;
   line-height: 18px;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--ink-muted);
   padding: 0 12px;
+  transition: padding var(--dur-base) var(--ease);
+}
+
+.sidebar--collapsed .sidebar__brand {
+  padding: 0;
+  justify-content: center;
+}
+
+/* Il testo del brand si dissolve **e** si comprime: `opacity` da sola lascia i 40 e passa di
+   larghezza del testo, che a 56 di sidebar sbordano. `max-width: 0` con `overflow: hidden`
+   ne toglie anche la larghezza durante la transizione. `nowrap` così non va a capo prima di
+   sparire. Stessa forma applicata a `.nav__item__label`. */
+.sidebar__brand-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 200px;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    max-width var(--dur-base) var(--ease);
+}
+
+.sidebar--collapsed .sidebar__brand-text {
+  opacity: 0;
+  max-width: 0;
+}
+
+/* Il pulsante che richiude/espande la sidebar. Sta dentro `.sidebar__brand` — «la nav si comanda
+   dalla nav» — e non è un `.btn`: ha un aspetto suo, discreto, per non contendere il posto al brand
+   né alle voci. **36×36** e non 44: un pulsante 44×44 accanto al testo del brand a 44 di altezza
+   rovina l'equilibrio della fascia superiore. Sotto la soglia UX-DR14, annotato a ledger per la
+   Story 5.2 (che è la passata di accessibilità e di forma). `flex-shrink: 0` perché il brand-text
+   accanto si comprime a larghezza zero e il toggle non deve seguirlo. */
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  border-radius: var(--r-md);
+  color: var(--ink-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--dur-fast) var(--ease);
+  min-width: 36px;
+  min-height: 36px;
+  flex-shrink: 0;
+}
+
+.sidebar-toggle:hover {
+  background: var(--surface-sunken);
+}
+
+/* Alone in `--sec-clienti-tint`: il toggle sta sopra la nav e non appartiene a una sezione, ma
+   `focus-visible` deve avere un alone visibile e la tinta della prima voce è il ripiego. È la
+   stessa scelta di ripiego che `.input:focus` fa oggi (`--sec-prequalifica`), voce a ledger già
+   assegnata alla Story 5.2. `box-shadow: none` per non sommare l'alone dell'`outline` a quello
+   della regola universale `:focus-visible` in cima al file. */
+.sidebar-toggle:focus-visible {
+  outline: 3px solid var(--sec-clienti-tint);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.sidebar-toggle:disabled {
+  cursor: default;
+  opacity: 0.6;
 }
 
 .nav {
@@ -161,11 +259,98 @@ a {
   min-height: 44px;
   display: flex;
   align-items: center;
+  gap: 12px;
   transition: background var(--dur-fast) var(--ease);
 }
 
 .nav__item:hover {
   background: var(--surface-sunken);
+}
+
+/* L'icona non si comprime quando l'etichetta a fianco cambia larghezza. `currentColor` sullo
+   `stroke` (nav-icons.tsx): l'icona eredita `color`, che qui è `--ink-muted`. Sulla voce attiva
+   diventa `--nav-accent` (regola sotto) e la barra e l'icona restano sempre della stessa tinta
+   della sezione. */
+.nav__item__icon {
+  flex-shrink: 0;
+}
+
+/* AC3: «icona nel colore della sezione». Il link attivo tiene `color: var(--ink)` sul testo, e
+   l'icona vuole invece `--nav-accent`. Selettore mirato: la label eredita da `.nav__item--active`,
+   l'icona no. */
+.nav__item--active .nav__item__icon {
+  color: var(--nav-accent);
+}
+
+/* Stessa forma di `.sidebar__brand-text`, e per la stessa ragione: `opacity` da sola lascerebbe la
+   larghezza dell'etichetta, che a 56 di sidebar sborda. `max-width: 0` + `overflow: hidden` chiude
+   anche quella. `pointer-events: none` da richiusa così un clic accidentale sull'etichetta invisibile
+   non conta. */
+.nav__item__label {
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 200px;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    max-width var(--dur-base) var(--ease);
+}
+
+.sidebar--collapsed .nav__item__label {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+/* Da richiusa l'icona sta al centro della colonna da 56 e il gap con l'etichetta (che ha
+   larghezza zero) non ha più senso. Padding orizzontale ridotto per far respirare l'icona da 20
+   nella colonna. */
+.sidebar--collapsed .nav__item {
+  justify-content: center;
+  padding: 10px 4px;
+  gap: 0;
+}
+
+/* Il suggerimento sulla voce, da richiusa, come pseudo-element e non `title`: il browser
+   controllerebbe font, colore e ritardo, e nessuno dei tre è quello che UX-DR1 chiede (fondo
+   `--ink`, testo bianco). `attr(data-label)` legge il valore che `nav.tsx` mette sull'ancora — il
+   `content` di un pseudo-element non può leggere il testo di un figlio, solo un `data-*`.
+   Positionato relativo a `.nav__item` (che è già `position: relative`) e spostato fuori della
+   sidebar sul lato destro. `.sidebar` non è un contenente della posizione (non ha `position:
+   relative`) e non ha `overflow: hidden`: il tooltip esce libero. Se un giorno qualcuno aggiungesse
+   `overflow: hidden` alla sidebar per contenere altro, il tooltip verrebbe tagliato — l'alternativa
+   sta scritta nella story 5.1 (Task 6). `z-index: 100`: nessun altro elemento del progetto oggi
+   dichiara `z-index` (la `.save-bar` è `sticky` con `z-index: auto`), e il valore alto è di
+   riserva per il giorno che nascesse una finestra modale.
+
+   La forma del tooltip sta scritta una volta sola qui: la classe `.sidebar--collapsed` e la media
+   query «sotto 720» si limitano ad attivare `opacity: 1` sull'hover e sul focus. A sidebar
+   espansa il tooltip resta a `opacity: 0` e `pointer-events: none`, quindi invisibile e neutro.
+   La duplicazione precedente (23 righe copiate tra questa regola e il ramo della media query) era
+   la classe di difetto «duplicazione silenziosa» di `kb-0.md` §9. */
+.nav__item::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--ink);
+  color: var(--ink-inverse);
+  padding: 6px 10px;
+  border-radius: var(--r-md);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+  z-index: 100;
+  box-shadow: var(--sh-2);
+}
+
+.sidebar--collapsed .nav__item:hover::after,
+.sidebar--collapsed .nav__item:focus-visible::after {
+  opacity: 1;
 }
 
 .nav__item--active {
@@ -1284,14 +1469,49 @@ a {
   gap: 20px;
 }
 
+/* Sotto i 720px la nav è **sempre a icone**, la scelta ricordata non conta e il toggle sparisce
+   (Story 5.1, AC4). La regola risponde alla domanda «come non far coprire il contenuto», non
+   «come dare la nav larga anche su schermo stretto»: una sidebar a 56 di icone su un 375 lascia
+   319 al contenuto, più di quanto un cassetto ne lascerebbe aperto. La forma richiusa qui è
+   forzata dalla media query e coincide con quella dello stato per scelta. */
 @media (max-width: 720px) {
   .shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: 56px 1fr;
   }
 
   .sidebar {
-    border-right: none;
-    border-bottom: 1px solid var(--line);
+    padding: 24px 8px;
+  }
+
+  .sidebar__brand {
+    padding: 0;
+    justify-content: center;
+  }
+
+  .sidebar__brand-text,
+  .nav__item__label {
+    opacity: 0;
+    max-width: 0;
+    pointer-events: none;
+  }
+
+  .nav__item {
+    justify-content: center;
+    padding: 10px 4px;
+    gap: 0;
+  }
+
+  .sidebar-toggle {
+    display: none;
+  }
+
+  /* Il tooltip: la forma sta scritta una volta sola sopra (`.nav__item::after`). Qui la media
+     query si limita ad attivare `opacity: 1` sull'hover e sul focus, senza dipendere dalla classe
+     `.sidebar--collapsed` (che sotto 720 non c'è se il cookie dice espansa, ma la resa è forzata
+     lo stesso). */
+  .nav__item:hover::after,
+  .nav__item:focus-visible::after {
+    opacity: 1;
   }
 
   .main {

@@ -86,6 +86,8 @@ Riservati agli esiti e agli stati. Non compaiono mai nella navigazione.
 
 **Cosa questa chiusura non copre, e va detto perché il testo barrato parlava più largo delle pillole.** La voce enunciava un problema generale — «un colore pieno sulla propria tinta di fondo non arriva a 4,5:1» — e qui si chiude **per le sole pillole di verdetto**. Restano due componenti che sono esattamente quel caso: `.error-box`, `--bad` su `--bad-tint`, **3,85:1**, e `.warn-box`, `--warn` su `--warn-tint`, **3,86:1**. Non sono un difetto introdotto dalla Story 3.5 — esistono da prima e i loro token non cambiano — ma non erano stati guardati, e una voce che sembra chiusa e non lo è è peggio di una aperta. Il residuo sta in `docs/bmad/implementazione/deferred-work.md`, e il punto di ripresa è la **Story 5.2**, che è la passata di verifica del contrasto: i due `-ink` che servirebbero esistono già qui sopra.
 
+**Un quinto inchiostro nato per un fondo scuro, `--ink-inverse: #FFFFFF`** (Story 5.1, 11 agosto 2026). Il suggerimento della navigazione richiusa (§5) è testo bianco su `--ink`, e la regola di §10 dice «nessun esadecimale fuori dai token»: il bianco vive quindi qui e non inline. Simmetrico ai tre `-ink` qui sopra — un inchiostro pensato per un fondo specifico, lì la tinta chiara, qui `--ink` — e non «uno dei semantici»: non ha una controparte pieno/tinta perché non è un colore di significato ma un inchiostro di leggibilità. Contrasto misurato con la formula WCAG l'11 agosto 2026: `#FFFFFF` su `--ink` (`#141210`) sta a **18,69:1**, sovrabbondante di proposito — il suggerimento è piccolo e va letto sicuro. Un solo uso oggi (`.sidebar--collapsed .nav__item::after`); se ne nascerà un secondo, il token è già lì.
+
 ### Regola di governo del colore
 
 Questa è la parte che impedisce all'interfaccia di diventare un arcobaleno.
@@ -168,6 +170,8 @@ Le domande del questionario si compongono a `--t-heading`, il testo di aiuto sot
 ### Navigazione laterale
 
 Colonna bianca su fondo `--bg`, richiudibile a sola icona come nei riferimenti. La voce attiva ha fondo `--surface-sunken`, icona nel colore della sezione e una barra verticale di 3px dello stesso colore sul bordo sinistro. Da richiusa, il passaggio del mouse mostra un suggerimento su fondo `--ink` con testo bianco.
+
+**Due stati richiusi diversi, e vale la pena saperlo** (Story 5.1, 11 agosto 2026). *Richiusa per scelta*, sopra i 720px: un pulsante toggle nella fascia del brand la stringe da 232 a 56, la scelta si scrive in un cookie (`nav_collapsed`) e vale alla visita successiva. *Richiusa per larghezza*, sotto i 720px: la stessa forma è forzata da una media query, il toggle sparisce, il cookie non conta. La resa a schermo è identica; cambia solo chi la applica. La riga «la scelta viene ricordata» resta vera perché su tablet e telefono la scelta non c'è — a 375 la nav larga non ha senso, e proporla sarebbe una decisione che nessuno userebbe.
 
 ### Card
 
@@ -290,6 +294,10 @@ Obbligatori, come da `kb-0.md`.
      che è l'unico `.field__error` fuori da una card. Non sostituiscono i tre pieni qui sopra, che
      restano i valori di D26. Il neutro non ne ha uno, e il perché è in §2. */
   --ok-ink:#0D7C52;  --warn-ink:#985F09;  --bad-ink:#BB402E;
+
+  /* inchiostro per un fondo scuro: il suggerimento della navigazione richiusa è testo bianco su
+     `--ink` (§2, §5). Nato con la Story 5.1, un uso oggi, 18,69:1 misurati. */
+  --ink-inverse:#FFFFFF;
 
   /* forma */
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px; --r-full:999px;
