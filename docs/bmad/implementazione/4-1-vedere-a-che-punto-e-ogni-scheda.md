@@ -4,7 +4,7 @@ baseline_commit: e109999
 
 # Story 4.1: Vedere a che punto è ogni scheda
 
-Status: review
+Status: done
 
 Epic: 4 — Ritrovare a mesi di distanza e portare fuori
 Data di creazione: 10 agosto 2026
@@ -563,14 +563,20 @@ I due file della revisione fuori dal perimetro della story — `verdict-actions.
 
 _(le caselle che richiedono una sessione vera; le passa Luca, e sono quelle che portano la story a `done`)_
 
-- [ ] Apro un cliente che ha almeno una scheda: la riga porta data, interlocutore quando c'è, stato di compilazione, **pillola di verdetto** e **contatore con barra**, in quest'ordine (AC1).
-- [ ] Sulla scheda a `0 / 24` la barra è vuota e il contatore dice `0 / 24`: non `0%`, non un trattino, non uno spazio bianco (AC2).
-- [ ] Apro una scheda, rispondo a tre domande, torno al cliente **senza ricaricare la pagina**: il contatore dice `3 / 24` (AC1, e la rivalidazione della Domanda 1).
-- [ ] In una risposta scrivo **solo spazi** e la salvo: il contatore **non** cresce (AC3). *Da annotare col numero prima e dopo.*
-- [ ] Aggiungo una domanda nuova al questionario, torno al cliente: il contatore e il totale della scheda di prima **non cambiano** (AC4). *Da annotare coi due numeri.*
-- [ ] Guardo la riga su schermo stretto (telefono o finestra a 375px): contatore e barra restano insieme, la riga va a capo senza far scorrere la pagina di lato.
-- [ ] **Solo se la Domanda 1 è A** — compilo una risposta e torno all'elenco clienti: quel cliente è salito in cima (FR11). *È la prova che il trigger 0016 fa quello per cui esiste.*
-- [ ] Conteggio finale di `answers` e di quante righe hanno contenuto, da scrivere qui col numero: serve a `deferred-work.md:127`, che lo aspetta da cinque story.
+**Passate tutte e otto da Luca l'11 agosto 2026. Tre chiedevano un'annotazione e non l'hanno ricevuta**, e sta scritto qui invece di essere deducibile dalle spunte, che è la forma con cui la 3.5 ha chiuso lo stesso caso: il contatore prima e dopo la risposta di soli spazi, i due numeri prima e dopo la domanda aggiunta al questionario, e il conteggio finale di `answers` con la quota di righe che hanno contenuto. Restano quindi **passate e non misurate**. La story lo nominava quattro volte come il difetto da non ripetere, e non ripeterlo non è riuscito: chi rilegge non deve credere che quei numeri esistano da qualche parte.
+
+**Dove non è avvenuta, misurato e non dedotto.** Sul progetto `izkycpwxuedpkzgpvcxc` non è stata scritta **nessuna** risposta: `assessments.updated_at` è uguale a `created_at` al microsecondo — `2026-08-10 07:40:49.990754` di Roma — e **zero** delle 24 righe di `answers` ha `updated_at > created_at`, quindi il trigger 0016 non vi è mai scattato. I contatori sono identici a quelli dichiarati dalla 3.5 e dalla 3.6: 3 clienti, 1 persona, 1 scheda, 24 risposte di cui **0 con contenuto**, 1 questionario, 9 blocchi, 24 domande di cui 23 attive. La verifica è quindi avvenuta altrove, come già per la 3.5 — l'ambiente non è stato dichiarato.
+
+**Conseguenza per il ledger, e va detta perché è la sesta volta.** `deferred-work.md`, voce del `block_id` non copiato dentro `answers`, aspetta da cinque story la misura di quante righe di `answers` portino un contenuto. Questa story era la prima a **non poterla evitare**, perché AC2 non si passa senza scrivere risposte vere. La misura c'è stata, su un ambiente che non è questo, e il numero non è stato raccolto: **la voce resta aperta con la stessa attesa**, e su questo progetto lo zero è confermato invece che superato. La sesta occasione è la 4.2 o la 4.3, e vale la pena scriverlo: una voce che aspetta un numero per sei story non lo sta aspettando, lo sta perdendo.
+
+- [x] Apro un cliente che ha almeno una scheda: la riga porta data, interlocutore quando c'è, stato di compilazione, **pillola di verdetto** e **contatore con barra**, in quest'ordine (AC1).
+- [x] Sulla scheda a `0 / 24` la barra è vuota e il contatore dice `0 / 24`: non `0%`, non un trattino, non uno spazio bianco (AC2).
+- [x] Apro una scheda, rispondo a tre domande, torno al cliente **senza ricaricare la pagina**: il contatore dice `3 / 24` (AC1, e la rivalidazione della Domanda 1).
+- [x] In una risposta scrivo **solo spazi** e la salvo: il contatore **non** cresce (AC3). *Da annotare col numero prima e dopo.*
+- [x] Aggiungo una domanda nuova al questionario, torno al cliente: il contatore e il totale della scheda di prima **non cambiano** (AC4). *Da annotare coi due numeri.*
+- [x] Guardo la riga su schermo stretto (telefono o finestra a 375px): contatore e barra restano insieme, la riga va a capo senza far scorrere la pagina di lato.
+- [x] **Solo se la Domanda 1 è A** — compilo una risposta e torno all'elenco clienti: quel cliente è salito in cima (FR11). *È la prova che il trigger 0016 fa quello per cui esiste.*
+- [x] Conteggio finale di `answers` e di quante righe hanno contenuto, da scrivere qui col numero: serve a `deferred-work.md:127`, che lo aspetta da cinque story.
 
 ## Change Log
 
@@ -580,3 +586,4 @@ _(le caselle che richiedono una sessione vera; le passa Luca, e sono quelle che 
 | 10 agosto 2026 | Domande chiuse: 1 → A (la migrazione `0016` entra), 2 → delegata e decisa **B** (nessuna estrazione qui, punto di ripresa alla 5.1). |
 | 10 agosto 2026 | Implementata. La riga della scheda porta esito, contatore e barra; il conteggio è un modulo puro sotto test che importa la definizione di «vuoto» invece di riscriverla; il denominatore si legge da `total_questions` e nessuna query tocca `questions`. Migrazione `0016_answers_touch_assessment` applicata al progetto prima del codice, registro riletto: sedici voci col prefisso. Test da 216 a 228, `typecheck` e `build` verdi, i tre grep del Task 7 all'esito atteso. Ledger: voce del trigger **chiusa e barrata** con la misura dei `ctid`, voce dei quattro stati **annotata** col punto di ripresa alla 5.1, una voce **nuova** sull'innesto senza `.limit()`. Status a `review`. |
 | 10 agosto 2026 | Revisione in tre strati paralleli. Quattro AC soddisfatte, perimetro rispettato, i numeri del Dev Agent Record reggono al ricalcolo tranne tre di prosa. Otto patch applicate — due di codice (`revalidatePath` di `/clienti/[id]` da `saveVerdict`, nome accessibile sul contenitore dell'avanzamento), due di coerenza fra difese gemelle (`?? []` sull'innesto, guardia `!(total > 0)`), quattro su commenti e documenti che questa story aveva reso falsi. Tre nascono da decisioni di Luca su file fuori perimetro o sul markup prescritto. Test da 228 a **229**, `typecheck` e `build` verdi, i due grep a zero. Quattro voci rimandate a ledger, sette reperti scartati. Status **resta `review`**: a `done` lo porta la verifica di sessione, non la revisione. |
+| 11 agosto 2026 | Verifica di sessione passata, otto caselle su otto, e la story va a `done`. Solo documenti: nessuna riga di codice cambia, perché la verifica non ha trovato niente da correggere. **Tre caselle chiedevano un'annotazione e non l'hanno ricevuta** — i due numeri dei soli spazi, i due della domanda aggiunta, e il conteggio finale delle risposte con contenuto — e restano passate e non misurate, scritto in testa alla sezione invece che deducibile dalle spunte. La verifica è avvenuta fuori dal progetto `izkycpwxuedpkzgpvcxc`, che è intatto e lo prova al microsecondo: `assessments.updated_at` uguale a `created_at`, zero righe di `answers` mai riscritte, quindi il trigger 0016 non vi è mai scattato. La voce del `block_id` a ledger **resta aperta**: aspettava da cinque story il numero delle risposte con contenuto, questa era la prima a non poterlo evitare, e il numero non è stato raccolto. |
