@@ -36,6 +36,10 @@ export default function AssessmentLoading() {
           <div className="skeleton" style={{ width: 80 }} />
           <div className="skeleton" style={{ width: 36 }} />
           <div className="skeleton" style={{ width: 146, height: 40, borderRadius: 'var(--r-md)' }} />
+          {/* Il quarto, dalla 4.3: 87 è la larghezza misurata di `Esporta`. A 375 l'intestazione
+              vera va a tre righe con `bozza` e a due con `chiusa`, e lo scheletro può somigliare a
+              una sola delle due: somiglia a `bozza`, il valore predefinito della colonna (ledger). */}
+          <div className="skeleton" style={{ width: 87, height: 40, borderRadius: 'var(--r-md)' }} />
         </div>
       </header>
 

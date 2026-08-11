@@ -220,6 +220,12 @@ function AssessmentHeader({
             <>
               <span className="meta">{completionStatus}</span>
               <CompletionButton assessmentId={assessmentId} completionStatus={completionStatus} />
+              {/* Un `<a>` e mai `<Link>`: una navigazione lato client non scarica niente, e il
+                  comando sembrerebbe rotto senza dare nessun errore. Nessun `download`: nel ramo
+                  d'errore trasformerebbe un messaggio in un file scaricato. */}
+              <a href={`/clienti/${clientId}/schede/${assessmentId}/esporta`} className="btn btn--secondary">
+                Esporta
+              </a>
             </>
           )}
         </div>

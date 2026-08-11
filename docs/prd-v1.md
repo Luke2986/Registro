@@ -140,6 +140,12 @@ Elenco dei blocchi e delle domande, con riordino, modifica del testo, attivazion
 
 Da una scheda, un file markdown con intestazione (cliente, data, interlocutore), le risposte raggruppate per blocco con il testo della domanda, e il verdetto per esteso. Nome file prevedibile: `cliente-data-prequalifica.md`.
 
+**«Prevedibile» aveva bisogno di una definizione, e la Story 4.3 gliene ha data una (11 agosto 2026).** Tre cose che il capoverso qui sopra non dice e che si cercano qui:
+
+- **I livelli dei titoli:** `#` il documento, `##` il blocco e il verdetto, `###` la domanda e il campo del verdetto. Uniforme di proposito: `Motivo` è un campo lungo, e un'etichetta in grassetto in linea si spezzerebbe su un contenuto a più righe.
+- **La data nel nome del file è ISO**, `pino-2026-08-10-prequalifica.md`, e dentro il documento la stessa data si legge `10/08/2026`. Le due forme divergono apposta: una cartella di esportazioni si ordina per nome, e l'ISO è l'unica forma che rende quell'ordine cronologico. Il nome è tutto minuscolo e composto da `[a-z0-9-]`, che è anche la difesa contro un nome di cliente che finisce in un'intestazione HTTP.
+- **Cosa non entra nel file:** il «cosa serve capire», le opzioni e il tipo di risposta (dicono com'era fatto il controllo, non cosa è stato detto), lo stato di compilazione e l'avanzamento. Una **domanda saltata** compare col suo titolo e sotto niente; un **campo del verdetto vuoto** si omette, titolo compreso, tranne l'`Esito`, che c'è sempre.
+
 ## 5. Requisiti non funzionali
 
 - Nessun dato perso: qualsiasi interruzione durante la compilazione conserva l'ultimo salvataggio automatico.
