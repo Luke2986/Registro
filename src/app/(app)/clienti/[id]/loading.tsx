@@ -8,7 +8,7 @@ import { CLIENT_FIELDS } from '@/lib/client-fields'
  */
 export default function ClientLoading() {
   return (
-    <>
+    <main className="main section--clienti">
       <header className="page-header">
         <div className="skeleton" style={{ width: 88 }} />
       </header>
@@ -76,6 +76,6 @@ export default function ClientLoading() {
           <div className="skeleton" style={{ width: 64, height: 24 }} />
         </div>
       </div>
-    </>
+    </main>
   )
 }

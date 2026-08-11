@@ -130,12 +130,15 @@ export function EditQuestionForm({
           Tipo di risposta
         </label>
 
+        {/* `aria-controls` solo quando il campo esiste davvero: puntare a un id assente sarebbe
+            una relazione dichiarata e falsa. */}
         <select
           id={typeId}
           name="answer_type"
           className="input select"
           value={answerType}
           disabled={pending}
+          aria-controls={answerType === 'scelta_singola' ? optionsId : undefined}
           onChange={(event) => {
             const value = event.target.value
 
@@ -162,6 +165,22 @@ export function EditQuestionForm({
           <p className="meta">Questo tipo non usa opzioni: salvando, quelle scritte si perdono.</p>
         ) : null}
       </div>
+
+      {/* La zona che dice a voce che un campo è comparso o è sparito, gemella di quella di
+          `new-question-form`: sta fuori dal ramo condizionale perché una regione `aria-live`
+          annuncia solo se esiste nel documento già prima del cambiamento.
+          **Dice tutte e due le direzioni, dalla revisione della 5.2.** Prima annunciava la sola
+          comparsa, che è quella innocua: nell'altra il testo tornava a `''`, e una rimozione da
+          una regione live non produce nessun annuncio — quindi l'avviso `.meta` qui sopra, che è
+          quello che dice che le opzioni si perdono, non lo sentiva nessuno. La riga ripete quel
+          testo invece di rimandarci: chi non vede lo schermo non ha un «qui sopra». */}
+      <p className="visually-hidden" aria-live="polite">
+        {answerType === 'scelta_singola'
+          ? 'Aggiunto il campo: opzioni, una per riga.'
+          : options.trim() !== ''
+            ? 'Tolto il campo opzioni: salvando, quelle scritte si perdono.'
+            : ''}
+      </p>
 
       {/* Reso solo per la scelta singola: il campo compare e scompare con il tipo, ma il
           valore resta in stato e ricompare tornando sulla scelta singola. Quando è nascosto
@@ -194,7 +213,7 @@ export function EditQuestionForm({
 
       {/* Qui `Salva` è primario: dentro il modulo è l'unica azione. */}
       <div className="form__actions">
-        <button type="submit" className="btn btn--primary" disabled={pending}>
+        <button type="submit" className="btn btn--primary" aria-busy={pending}>
           {pending ? 'Salvataggio…' : 'Salva'}
         </button>
         {/* Su un modulo intonso Annulla chiude e basta: nessuna conferma per azioni
@@ -202,6 +221,9 @@ export function EditQuestionForm({
             non salvato non è recuperabile — è la metà della regola che vieta le azioni
             distruttive senza conferma (revisione 2.4). La conferma è la nativa: una modale
             propria per una frase sola sarebbe cerimonia. */}
+        {/* `disabled` e non `aria-busy`, dalla revisione della 5.2: annullare non è un'azione in
+            volo. In più `FormData` salta i campi `disabled`, che durante la scrittura sono tutti:
+            `isDirty` risponderebbe sempre di sì e la conferma comparirebbe a vuoto. */}
         <button
           type="button"
           className="btn btn--secondary"

@@ -118,9 +118,11 @@ export function NewAssessmentForm({
       {/* Primario dentro il modulo, dove è l'unica azione: fuori resta primario il `Salva` dei
           campi (design-system.md §5). */}
       <div className="form__actions">
-        <button type="submit" className="btn btn--primary" disabled={pending}>
+        <button type="submit" className="btn btn--primary" aria-busy={pending}>
           {pending ? 'Apertura…' : 'Apri scheda'}
         </button>
+        {/* `disabled` e non `aria-busy`, dalla revisione della 5.2: annullare non è un'azione in
+            volo, e premuto durante la scrittura smonta il modulo senza fermarla. */}
         <button type="button" className="btn btn--secondary" onClick={onCancel} disabled={pending}>
           Annulla
         </button>

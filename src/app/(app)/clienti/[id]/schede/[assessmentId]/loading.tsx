@@ -13,7 +13,7 @@
  */
 export default function AssessmentLoading() {
   return (
-    <>
+    <main className="main section--prequalifica">
       <header className="page-header">
         <div className="page-header__lead">
           {/* 88, come lo scheletro del ritorno indietro della scheda cliente. */}
@@ -49,6 +49,6 @@ export default function AssessmentLoading() {
           <div className="skeleton" style={{ width: 96, height: 24 }} />
         </div>
       </section>
-    </>
+    </main>
   )
 }

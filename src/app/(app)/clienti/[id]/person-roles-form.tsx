@@ -95,9 +95,12 @@ export function PersonRolesForm({ personId, roles }: { personId: string; roles: 
 
       {dirty ? (
         <div className="field__actions">
-          <button type="submit" className="btn btn--primary" disabled={pending}>
+          <button type="submit" className="btn btn--primary" aria-busy={pending}>
             {pending ? 'Salvataggio…' : 'Salva'}
           </button>
+          {/* `disabled` e non `aria-busy`, dalla revisione della 5.2: annullare non è un'azione in
+              volo, e premuto durante la scrittura riporta le caselle ai ruoli vecchi mentre il
+              server scrive quelli nuovi. */}
           <button
             type="button"
             className="btn btn--secondary"

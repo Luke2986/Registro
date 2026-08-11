@@ -30,13 +30,15 @@ Modalità chiara per la prima versione. I token sono già strutturati per accogl
 | `--surface-sunken` | `#EAE5DC` | Righe alternate, stati vuoti, campi disabilitati |
 | `--ink` | `#141210` | Testo principale |
 | `--ink-muted` | `#58524B` | Testo secondario, etichette |
-| `--ink-faint` | `#8B8379` | Segnaposto, metadati |
+| `--ink-faint` | `#736D64` | Segnaposto, metadati |
 | `--line` | `#E1DACE` | Bordi e separatori |
 | `--line-strong` | `#D3CCC4` | Bordi dei campi al passaggio del mouse |
 
 Il nero non è nero: `#141210` ha una punta di caldo che lo tiene coerente con la base. Usarlo anche per gli elementi scuri pieni (suggerimenti, pillola attiva).
 
 **I sette valori della base e tutti gli accenti sono cambiati il 9 agosto 2026, con la revisione «viva» (D26).** Il fondo si è scaldato di un passo e le superfici si separano di più; i due inchiostri intermedi si sono approfonditi, perché era lì che la gerarchia si appiattiva — `--ink-muted` su `--surface-sunken` passa da 4,9:1 a 6,1:1. La direzione della §1 non cambia: la base resta greige e calda, e l'ombra non si alza (§4), perché la card si stacca dallo stacco fra le superfici.
+
+**`--ink-faint` è passato da `#8B8379` a `#736D64` il 12 agosto 2026, con la Story 5.2, e supera D26 per quel solo valore.** Era l'unico inchiostro del progetto sotto la soglia della §8: su `--bg` misurava **3,34:1**, cioè l'indicatore di salvataggio a riposo — la riga che §1 chiama l'elemento firma e che sta sempre a schermo — era il testo meno leggibile del software. Col valore nuovo sta a **4,58:1** su `--bg` e a **5,12:1** su `--surface`. Non era una svista di D26 ma un'omissione della sua misurazione: quella revisione aveva guardato i due inchiostri intermedi e non il terzo. Il token si è scurito invece di cambiarne gli usi perché gli usi sono tre e sono quelli giusti: `.save-indicator` a riposo, il punto della pillola di stato (che non è testo) e il riferimento del digest in `error.tsx`, che è l'unico dei tre a stare fuori da `globals.css` — vive in uno `style` inline, ma su un token e non su un esadecimale, quindi §10 regge. La prima stesura di questa riga ne contava due e non aveva visto il terzo: corretta dalla revisione della 5.2. La coppia che resta sotto — `--ink-faint` su `--surface-sunken`, 4,08:1 — **non esiste nel codice**: dove si sarebbe presentata, il cestino della §5, il progetto usa già `--ink-muted` con la sua ragione scritta.
 
 ### Colori di sezione
 
@@ -84,7 +86,19 @@ Riservati agli esiti e agli stati. Non compaiono mai nella navigazione.
 
 **Una correzione alla voce che si chiude:** diceva che «il verdetto `sì` è il caso peggiore, 3,8:1». Misurati tutti e quattro con la formula WCAG il 10 agosto 2026, il peggiore è **non deciso** a colore pieno, 3,02:1; il `sì` sta a 3,77:1, il condizionato a 3,86:1, il `no` a 3,85:1. Chi rileggesse la voce chiusa non deve cercare un quarto token che non esiste.
 
-**Cosa questa chiusura non copre, e va detto perché il testo barrato parlava più largo delle pillole.** La voce enunciava un problema generale — «un colore pieno sulla propria tinta di fondo non arriva a 4,5:1» — e qui si chiude **per le sole pillole di verdetto**. Restano due componenti che sono esattamente quel caso: `.error-box`, `--bad` su `--bad-tint`, **3,85:1**, e `.warn-box`, `--warn` su `--warn-tint`, **3,86:1**. Non sono un difetto introdotto dalla Story 3.5 — esistono da prima e i loro token non cambiano — ma non erano stati guardati, e una voce che sembra chiusa e non lo è è peggio di una aperta. Il residuo sta in `docs/bmad/implementazione/deferred-work.md`, e il punto di ripresa è la **Story 5.2**, che è la passata di verifica del contrasto: i due `-ink` che servirebbero esistono già qui sopra.
+~~**Cosa questa chiusura non copre, e va detto perché il testo barrato parlava più largo delle pillole.**~~ La voce enunciava un problema generale — «un colore pieno sulla propria tinta di fondo non arriva a 4,5:1» — e ~~qui si chiude **per le sole pillole di verdetto**~~. Restano due componenti che sono esattamente quel caso: `.error-box`, `--bad` su `--bad-tint`, **3,85:1**, e `.warn-box`, `--warn` su `--warn-tint`, **3,86:1**. Non sono un difetto introdotto dalla Story 3.5 — esistono da prima e i loro token non cambiano — ma non erano stati guardati, e una voce che sembra chiusa e non lo è è peggio di una aperta. Il residuo sta in `docs/bmad/implementazione/deferred-work.md`, e il punto di ripresa è la **Story 5.2**, che è la passata di verifica del contrasto: i due `-ink` che servirebbero esistono già qui sopra.
+
+**Il residuo è chiuso il 12 agosto 2026, con la Story 5.2, e il caso enunciato era più largo ancora di così.** `.error-box` prende `--bad-ink` (**4,51:1**) e `.warn-box` prende `--warn-ink` (**4,57:1**), esattamente i due token che il capoverso barrato indicava. Rimisurando *tutto* il progetto sono venuti fuori altri tre testi sotto soglia che nessuno aveva contato, e si chiudono qui insieme:
+
+| Componente | Prima | Dopo | Come |
+|---|---|---|---|
+| `.btn--danger` sull'hover | `--bad` su `--bad-tint`, 3,85:1 | `--bad-ink`, **4,51:1** | Un token solo per tutti e due gli stati: a riposo passa da 4,62 a **5,40** su `--surface` |
+| `.save-indicator--failed` | `--bad` su `--bg`, 4,13:1 | `--bad-ink`, **4,84:1** | Stesso caso della riga d'errore dell'intestazione, chiuso dalla 3.6 con lo stesso token |
+| `.field__error` dentro il cestino | `--bad` su `--surface-sunken`, **3,68:1** | `--bad-ink` su `--bad-tint`, **4,51:1** | Lì nemmeno `--bad-ink` da solo basta (4,31): la riga prende la propria tinta, come `.error-box` |
+
+Nessun token nuovo, e i quattro pieni di D26 continuano a non toccarsi. Con questo **nessun testo del software sta sotto 4,5:1**. Le due coppie che restano sotto non sono testo: `--ink-faint` su `--neutral-tint`, 4,23:1, è il punto di 6px della pillola di stato — un grafico che raddoppia la parola accanto, non la sostituisce — e `--ink-faint` su `--surface-sunken`, 4,08:1, non esiste nel codice (v. il capoverso sulla base, sopra).
+
+**La terza conseguenza del fondo scavato del cestino** (§5 ne elencava due: il separatore che sale a `--line-strong`, il badge che si inverte) è questa riga d'errore, e non era stata vista perché il colore del testo non cambia — cambia il fondo sotto. Vale per i due `Ripristina`, uno per cestino.
 
 **Un quinto inchiostro nato per un fondo scuro, `--ink-inverse: #FFFFFF`** (Story 5.1, 11 agosto 2026). Il suggerimento della navigazione richiusa (§5) è testo bianco su `--ink`, e la regola di §10 dice «nessun esadecimale fuori dai token»: il bianco vive quindi qui e non inline. Simmetrico ai tre `-ink` qui sopra — un inchiostro pensato per un fondo specifico, lì la tinta chiara, qui `--ink` — e non «uno dei semantici»: non ha una controparte pieno/tinta perché non è un colore di significato ma un inchiostro di leggibilità. Contrasto misurato con la formula WCAG l'11 agosto 2026: `#FFFFFF` su `--ink` (`#141210`) sta a **18,69:1**, sovrabbondante di proposito — il suggerimento è piccolo e va letto sicuro. Un solo uso oggi (`.sidebar--collapsed .nav__item::after`); se ne nascerà un secondo, il token è già lì.
 
@@ -171,7 +185,16 @@ Le domande del questionario si compongono a `--t-heading`, il testo di aiuto sot
 
 Colonna bianca su fondo `--bg`, richiudibile a sola icona come nei riferimenti. La voce attiva ha fondo `--surface-sunken`, icona nel colore della sezione e una barra verticale di 3px dello stesso colore sul bordo sinistro. Da richiusa, il passaggio del mouse mostra un suggerimento su fondo `--ink` con testo bianco.
 
-**Due stati richiusi diversi, e vale la pena saperlo** (Story 5.1, 11 agosto 2026). *Richiusa per scelta*, sopra i 720px: un pulsante toggle nella fascia del brand la stringe da 232 a 56, la scelta si scrive in un cookie (`nav_collapsed`) e vale alla visita successiva. *Richiusa per larghezza*, sotto i 720px: la stessa forma è forzata da una media query, il toggle sparisce, il cookie non conta. La resa a schermo è identica; cambia solo chi la applica. La riga «la scelta viene ricordata» resta vera perché su tablet e telefono la scelta non c'è — a 375 la nav larga non ha senso, e proporla sarebbe una decisione che nessuno userebbe.
+**Due stati richiusi diversi, e vale la pena saperlo** (Story 5.1, 11 agosto 2026). *Richiusa per scelta*, sopra i 720px: un pulsante toggle nella fascia del brand la stringe da 232 a 56, la scelta si scrive in un cookie (`nav_collapsed`) e vale alla visita successiva. *Richiusa per larghezza*, sotto i 720px: la stessa forma è forzata da una media query, il toggle sparisce, il cookie non conta. ~~La resa a schermo è identica; cambia solo chi la applica.~~ La riga «la scelta viene ricordata» resta vera perché su tablet e telefono la scelta non c'è — a 375 la nav larga non ha senso, e proporla sarebbe una decisione che nessuno userebbe.
+
+**«La resa è identica» ha smesso di essere vera il 12 agosto 2026, con la Story 5.2, e la differenza sta nel piede.** `Esci` è un `.btn` con `padding: 0 16px`, quindi chiede 62,1 di larghezza; la colonna a 56 con gli 8+8 della sidebar ne lascia 40, e i 12+12 del piede li riducevano a 16. Il pulsante sforava di 26,1 oltre il bordo della colonna, in tutti e due gli stati.
+
+- *Richiusa per scelta*: **il piede sparisce**. Per uscire dalla sessione si riapre la nav, che è un clic sul toggle — l'azione non è negata, è a un clic di distanza (D14), e chi esce ha finito di lavorare.
+- *Richiusa per larghezza*: **il piede resta e il pulsante si stringe**. Lì il toggle non c'è, quindi nasconderlo renderebbe l'uscita irraggiungibile su telefono e tablet, che è un difetto peggiore. Tolto il padding del piede e portato quello del pulsante da 16 a 4, `Esci` viene 39 dentro 40. Il testo non si taglia: la parola da sola misura 30,1, a stringersi è solo il contorno.
+
+**I due stati si sommano, e per un giorno la seconda riga è stata falsa.** La classe `sidebar--collapsed` arriva dal cookie e non dalla larghezza, quindi *richiusa per scelta* e *richiusa per larghezza* possono valere insieme: si stringe la nav sul portatile, si riapre l'app sul telefono, e la regola che nasconde il piede — scritta fuori da ogni media query — vince anche là sotto, dove il toggle è già nascosto. Il risultato era una sessione senza uscita e una nav che non si riapriva, cioè esattamente il difetto che la riga qui sopra dichiara di evitare. Chiuso dalla revisione della Story 5.2 ridichiarando `display` dentro la media query dei 720. Vale come regola generale e non solo per il piede: **una regola che dipende dal cookie e una che dipende dalla larghezza si incontrano, e chi ne scrive una deve chiedersi cosa succede quando valgono tutte e due**.
+
+I 39 restano sotto i 44 che §8 chiede in orizzontale, ed è una proprietà del rail e non del pulsante — anche le voci della nav lì stanno in 40. L'altezza è 44 in tutti e due i casi, che è la dimensione lungo cui il dito sbaglia in una colonna verticale. La voce è a ledger con la sua misura.
 
 ### Card
 
@@ -212,7 +235,9 @@ Misurate su tre righe consecutive, la coordinata di partenza del gruppo era 618,
 
 ### Pulsante con icona
 
-`.btn--icon`: quadrato di 40, nessun padding, tratto in `--ink-muted`, icona 18. Le due frecce di riordino sono l'unico uso di oggi, in un gruppo staccato di 2 invece di 8 perché sono un comando solo con due direzioni.
+`.btn--icon`: quadrato di 44, nessun padding, tratto in `--ink-muted`, icona 18. Le due frecce di riordino sono l'unico uso di oggi, in un gruppo staccato di 2 invece di 8 perché sono un comando solo con due direzioni.
+
+**Era 40 fino al 12 agosto 2026**, e cresce con `.btn` per la stessa ragione (§8). La larghezza si dichiara insieme all'altezza e non si eredita: `.btn--icon` porta il proprio `width`, quindi senza cambiarlo il pulsante sarebbe diventato 40×44 — un rettangolo, e con la dimensione più stretta ancora sotto soglia proprio dove il bersaglio è tutto quello che c'è, perché qui non c'è una parola da mirare. Misurato 44×44.
 
 La parola non sparisce quando diventa icona: resta come nome accessibile e come suggerimento del passaggio del mouse. `Sposta su` e `Sposta giù` sono diventate icone perché due etichette lunghe occupavano da sole metà della fila per l'azione che si usa meno.
 
@@ -270,12 +295,14 @@ Contatore in mono, `12 / 15`, e accanto una barra alta 4px, larga 64, raggio pie
 
 | Variante | Aspetto | Uso |
 |---|---|---|
-| primario | fondo `--ink`, testo bianco, raggio `--r-md`, altezza 40 | Una sola azione per schermata |
+| primario | fondo `--ink`, testo bianco, raggio `--r-md`, altezza 44 | Una sola azione per schermata |
 | secondario | fondo `--surface`, bordo `--line`, testo `--ink` | Azioni di supporto |
 | discreto | nessun fondo, testo `--ink-muted` | Azioni terziarie |
-| distruttivo | testo `--bad`, fondo `--bad` in tinta chiara al passaggio | Solo con conferma |
+| distruttivo | testo `--bad-ink`, fondo `--bad` in tinta chiara al passaggio | Solo con conferma |
 
 Il primario è nero e non colorato: così il colore resta libero di significare la sezione o l'esito.
+
+**Due stati che non sono varianti, e il secondo è nato dalla revisione della Story 5.2.** *Spento* (`:disabled`) e *occupato* (`aria-busy`) hanno lo stesso aspetto — `opacity: 0.5` — e cambiano solo nel cursore: `default` sullo spento, `progress` sull'occupato. La somiglianza è voluta, ma le due parole dicono cose opposte e vanno tenute distinte da chi scrive: **spento vuol dire che l'azione è inammissibile** — la freccia `Sposta su` sulla prima domanda, l'`Annulla` mentre la scrittura vola — mentre **occupato vuol dire che sta succedendo**, e il pulsante resta focalizzabile apposta, per non scaricare il fuoco sul body. La regola visiva esiste perché senza di lei il passaggio da `disabled` ad `aria-busy` toglieva l'unico riscontro che il clic fosse stato preso: dove l'etichetta cambia in `Salvataggio…` si vede, ma sulle due frecce, sulla `×` di un tag e sul toggle non cambia niente, e il secondo clic sparirebbe dentro la guardia dell'hook senza che nessuno lo dica.
 
 ---
 
@@ -305,10 +332,23 @@ Obbligatori, come da `kb-0.md`.
 ## 8. Accessibilità
 
 - Contrasto minimo 4.5:1 sul testo, verificato in particolare su `--ink-muted` sopra `--surface-sunken`.
-- Focus sempre visibile: alone di 3px nella tinta della sezione corrente.
+- Focus sempre visibile: contorno di 2px nel colore della sezione corrente, e appena dentro l'alone di 3px nella sua tinta.
 - Bersagli tattili di almeno 44px sui dispositivi tocco, perché la compilazione avviene anche su tablet.
 - Colore mai unico portatore di significato.
 - Ogni campo ha una etichetta vera, non solo un segnaposto.
+
+**Le cinque righe qui sopra erano una promessa fino all'11 agosto 2026; dal 12 sono misurate** (Story 5.2). Cosa vuol dire ognuna, in concreto:
+
+- **Contrasto.** Tutte le coppie del progetto rimisurate con la formula WCAG. Nessun testo sta sotto 4,5:1. I cinque che ci stavano — `.error-box`, `.warn-box`, `.btn--danger` sull'hover, `.save-indicator--failed`, `.field__error` dentro il cestino — sono in §2 con i numeri, prima e dopo. `--ink-faint` è stato scurito per lo stesso motivo.
+- **Focus.** L'alone viene da `--focus-tint`, che tre regole `.shell:has(.section--…)` riscrivono con la tinta della sezione della rotta. Sta sulla `.shell` e non sul `<main>` perché la sidebar è **sorella** di `<main>`: il toggle deve prendere la stessa tinta della pagina che sta accanto. Misurato col fuoco vero da tastiera su tre sezioni.
+
+  **Il contorno pieno è arrivato con la revisione della Story 5.2, e la riga qui sopra da sola era una promessa a metà.** La tinta corrispondeva alla sezione, ed è quello che era stato misurato; quanto si vedesse non lo aveva misurato nessuno. `:focus-visible` portava `outline: none` — cioè via anche il contorno del browser — più il solo alone in tinta, e una tinta chiara su un fondo chiaro non è un indicatore: `--sec-clienti-tint` sta a **1,19:1** su `--surface` e a **1,07:1** su `--bg`, mentre WCAG §1.4.11 chiede **3:1** su un indicatore di fuoco. Si vedeva solo sui campi, e per un'altra ragione: `.input:focus` porta anche `border-color: var(--focus-color)`, che è il colore pieno. Pulsanti e collegamenti, che sono la maggioranza dei bersagli da tastiera, avevano l'alone e basta.
+  Ora `:focus-visible` porta `outline: 2px solid var(--focus-color)` con `outline-offset: 3px`, cioè il contorno sta esattamente dove l'alone finisce: l'alone da 3px in tinta resta com'era, e il contorno gli si chiude intorno. I tre colori pieni misurati sul fondo peggiore, `--bg`: clienti **5,60:1**, questionario **5,39:1**, prequalifica **4,27:1**. Il toggle della sidebar tiene `outline-offset: 2` invece di 3, perché la fascia del brand lascia 4px sopra e sotto un pulsante da 36, e stringe l'alone a 2 per riempire lo stacco senza passare sotto il contorno.
+- **Bersagli.** `.btn` è alto **44** dalla Story 5.2 (era 40), e `.btn--icon` è 44×44 (era 40×40). Misurate 54 istanze su sei rotte, tutte a 44. Due deroghe, dichiarate qui perché una deroga taciuta è una promessa rotta: il **toggle della sidebar** resta 36×36, perché la fascia del brand è alta 44 e un pulsante da 44 accanto ne rovina l'equilibrio verticale — e sotto i 720, dove il tocco è il caso vero, il toggle non c'è affatto; **`Esci` nel rail stretto** è largo 39, che è una proprietà della colonna a 56 e non del pulsante (v. §5).
+- **Colore mai unico portatore.** Otto punti in cui un colore comunica, tutti verificati: pillole di stato e di verdetto, righe d'errore, indicatore di salvataggio, barra di avanzamento, voce attiva della nav, alone del fuoco, colori di sezione. Ognuno porta la propria parola accanto. La barra di avanzamento è `aria-hidden` di proposito: raddoppia il contatore, non lo sostituisce.
+- **Etichette.** 39 controlli di modulo nel progetto, tutti con un'etichetta vera: 22 con `<label htmlFor>` diretto, 13 attraverso lo `{...shared}` dei componenti di campo, 3 con la `<label>` che avvolge la casella, e un `type="hidden"` che non ne vuole. Nessun segnaposto usato come etichetta.
+
+**Cosa non è stato verificato, e va detto invece che lasciato intendere.** Nessuna sessione con un lettore di schermo: gli annunci `aria-live` e i nomi accessibili sono verificati nel DOM, non all'orecchio. E `prefers-reduced-motion` è verificato nelle sue dichiarazioni — applicate a forza, tutte le animazioni scendono a 0,01ms — ma non nella corrispondenza della media query, che richiede la preferenza di sistema. Le due righe stanno a ledger.
 
 ---
 
@@ -318,7 +358,7 @@ Obbligatori, come da `kb-0.md`.
 :root {
   /* base */
   --bg:#F5F2EC; --surface:#FFFFFF; --surface-sunken:#EAE5DC;
-  --ink:#141210; --ink-muted:#58524B; --ink-faint:#8B8379;
+  --ink:#141210; --ink-muted:#58524B; --ink-faint:#736D64;
   --line:#E1DACE; --line-strong:#D3CCC4;
 
   /* sezioni */
@@ -336,13 +376,29 @@ Obbligatori, come da `kb-0.md`.
 
   /* inchiostri per un fondo chiaro dove il pieno non arriva a 4,5:1: §2. Nati per le pillole di
      verdetto; dal 10 agosto 2026 `--bad-ink` è anche la riga d'errore dell'intestazione di pagina,
-     che è l'unico `.field__error` fuori da una card. Non sostituiscono i tre pieni qui sopra, che
-     restano i valori di D26. Il neutro non ne ha uno, e il perché è in §2. */
+     che è l'unico `.field__error` fuori da una card. Dal 12 agosto 2026 (Story 5.2) i due rossi
+     coprono tutti i posti dove quel caso si presenta: `--warn-ink` va anche su `.warn-box`, e
+     `--bad-ink` su `.error-box`, su `.btn--danger`, sull'indicatore di salvataggio fallito e sulla
+     riga d'errore dentro il cestino. Non sostituiscono i tre pieni qui sopra, che restano i valori
+     di D26. Il neutro non ne ha uno, e il perché è in §2. */
   --ok-ink:#0D7C52;  --warn-ink:#985F09;  --bad-ink:#BB402E;
 
   /* inchiostro per un fondo scuro: il suggerimento della navigazione richiusa è testo bianco su
      `--ink` (§2, §5). Nato con la Story 5.1, un uso oggi, 18,69:1 misurati. */
   --ink-inverse:#FFFFFF;
+
+  /* la tinta e il colore del fuoco della **sezione corrente** (Story 5.2, §8). Qui portano i valori
+     della sezione clienti, che è il ripiego: tre regole `.shell:has(.section--clienti |
+     --questionario | --prequalifica)` li riscrivono con quelli della rotta aperta. La
+     sovrascrittura sta sulla `.shell` e non sul `<main>` perché la sidebar è **sorella** di
+     `<main>`: sul `<main>` il toggle sarebbe rimasto sul ripiego. Li leggono `:focus-visible`,
+     `.input:focus` e `.sidebar-toggle:focus-visible`, che sono i tre posti dove il fuoco si
+     disegna — un alone nuovo li usa invece di scegliersi una tinta.
+     **Servono tutti e due insieme, e non sono l'uno il ripiego dell'altro** (revisione 5.2): la
+     tinta è l'alone, il pieno è il contorno che si vede. Da sola la tinta sta a 1,07:1 su `--bg`,
+     cioè sotto il 3:1 che §1.4.11 chiede a un indicatore di fuoco — i numeri per esteso in §8. */
+  --focus-tint:var(--sec-clienti-tint);
+  --focus-color:var(--sec-clienti);
 
   /* forma */
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px; --r-full:999px;

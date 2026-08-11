@@ -78,10 +78,12 @@ export function PersonRemoveForm({
               className="btn btn--danger"
               aria-describedby={questionId}
               onClick={remove}
-              disabled={pending}
+              aria-busy={pending}
             >
               {pending ? 'Eliminazione…' : 'Elimina'}
             </button>
+            {/* `disabled` e non `aria-busy`, dalla revisione della 5.2: annullare non è un'azione in
+                volo, e premuto mentre l'eliminazione vola chiuderebbe la conferma senza fermarla. */}
             <button
               type="button"
               className="btn btn--secondary"

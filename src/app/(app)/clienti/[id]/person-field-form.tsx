@@ -91,7 +91,7 @@ export function PersonFieldForm({
       {/* Compaiono solo quando il campo è cambiato: a riposo la scheda si legge, non si compila. */}
       {state.dirty ? (
         <div className="field__actions">
-          <button type="submit" className="btn btn--primary" disabled={state.pending} onMouseDown={keepFocus}>
+          <button type="submit" className="btn btn--primary" aria-busy={state.pending} onMouseDown={keepFocus}>
             {state.pending ? 'Salvataggio…' : 'Salva'}
           </button>
           {/* Non si disabilita durante la scrittura, come in client-field-form.tsx: riportare il

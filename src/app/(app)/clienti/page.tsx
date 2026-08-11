@@ -120,7 +120,9 @@ export default async function ClientsPage({
   const emptyForFilters = !error && filtered && found === null && !archiveEmpty
 
   return (
-    <>
+    // La classe di sezione sul landmark, non su un contenitore anonimo: è `<main>` a dire quale
+    // sezione si sta guardando, e da lì `globals.css` ricava la tinta dell'alone del fuoco.
+    <main className="main section--clienti">
       <header className="page-header">
         <h1 className="page-title">Clienti</h1>
         {/* `Nuovo cliente` resta col filtro che non trova niente **e nell'errore**: legato alle
@@ -173,6 +175,6 @@ export default async function ClientsPage({
           </div>
         )}
       </div>
-    </>
+    </main>
   )
 }

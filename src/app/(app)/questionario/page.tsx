@@ -129,7 +129,7 @@ export default async function QuestionnairePage({
   // solo direbbe «il questionario non è caricato» anche quando il database non ha risposto, cioè
   // una bugia rassicurante nel momento in cui serve la verità.
   return (
-    <>
+    <main className="main section--questionario">
       {/* Nessun conteggio accanto al titolo, e non è una dimenticanza: `/clienti` ce l'ha e
           copiarlo qui sembrerebbe coerente. Non lo è, perché il numero che conta per una call è
           quello delle domande *attive*, cioè il denominatore che la Story 3.1 congela in
@@ -199,6 +199,6 @@ export default async function QuestionnairePage({
           è proprio il momento in cui uno potrebbe cercarlo. Assente quando è vuoto — il perché
           sta in trash-card.tsx. */}
       {archived && archived.length > 0 ? <TrashCard rows={archived} /> : null}
-    </>
+    </main>
   )
 }

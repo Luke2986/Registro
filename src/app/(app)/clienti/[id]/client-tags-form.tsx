@@ -90,6 +90,13 @@ export function ClientTagsForm({
    * rivalidazione dev'essere un aggiornamento non urgente.
    */
   function write(action: ClientTagAction, tag: string, scope: Scope, onSuccess?: () => void) {
+    // La guardia sta qui e non solo sull'invio, dalla revisione della Story 5.2. Fino all'11 agosto
+    // 2026 il secondo clic lo fermava `disabled={pending}` sulla `×`; con `aria-busy` il pulsante
+    // resta premibile, e `removeClientTag` legge l'array dei tag e lo riscrive intero — due
+    // rimozioni in volo insieme leggono lo stesso elenco e la seconda rimette dentro il tag che la
+    // prima aveva tolto. Questo file non passa da `useWrite`, quindi la sua guardia non lo copre.
+    if (pending) return
+
     setError(null)
     setPending(true)
 
@@ -163,7 +170,7 @@ export function ClientTagsForm({
                 type="button"
                 className="tag__remove"
                 aria-label={`Togli il tag ${tag}`}
-                disabled={pending}
+                aria-busy={pending}
                 /* Il pulsante che aveva il fuoco sparisce insieme al chip: da tastiera, senza
                    rimetterlo nel campo il Tab riparte da capo. `detail === 0` distingue il click
                    da tastiera da quello col dito, che invece aprirebbe la tastiera software a
@@ -216,7 +223,7 @@ export function ClientTagsForm({
         {/* Compare solo quando c'è qualcosa da aggiungere: a riposo la scheda si legge, non si
             compila. È l'unica azione primaria del campo. */}
         {draft.trim().length > 0 ? (
-          <button type="submit" className="btn btn--primary" disabled={pending}>
+          <button type="submit" className="btn btn--primary" aria-busy={pending}>
             {/* `Aggiunta…` e non `Salvataggio…`: l'azione si chiama allo stesso modo dal
                 pulsante alla conferma (kb-0.md §6), e `Salvataggio…` è per giunta la parola
                 dell'indicatore di salvataggio, che qui Task 3 vieta di proposito. */}

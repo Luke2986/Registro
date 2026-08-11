@@ -113,11 +113,14 @@ export function DeleteButton({
         className="btn btn--danger"
         aria-label={name}
         aria-describedby={questionId}
-        disabled={pending}
+        aria-busy={pending}
         onClick={remove}
       >
         {pending ? 'Eliminazione…' : 'Elimina'}
       </button>
+      {/* `disabled` e non `aria-busy`, dalla revisione della 5.2: annullare non è un'azione in volo,
+          e qui il pulsante è premibile mentre l'eliminazione vola — chiuderebbe la conferma senza
+          fermarla, cioè un `Annulla` che archivia lo stesso. */}
       <button
         type="button"
         className="btn btn--secondary"

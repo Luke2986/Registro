@@ -10,7 +10,10 @@
  */
 export default function AppError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
-    <>
+    // Nessuna classe di sezione: questo confine copre ogni rotta sotto `(app)/` e non ne conosce
+    // nessuna. L'alone del fuoco prende quindi il ripiego di `:root`, che è la scelta giusta —
+    // dichiarare una sezione qui vorrebbe dire dichiararne una sbagliata su tutte le altre.
+    <main className="main">
       <header className="page-header">
         <h1 className="page-title">Qualcosa non ha risposto</h1>
       </header>
@@ -28,6 +31,6 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
           </p>
         ) : null}
       </div>
-    </>
+    </main>
   )
 }

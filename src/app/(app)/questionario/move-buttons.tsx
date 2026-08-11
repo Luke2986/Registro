@@ -35,22 +35,38 @@ const ARROW = {
  * Server Component non sarebbe serializzabile, e passare l'azione come prop obbligherebbe ogni
  * chiamante a rifare il binding.
  *
- * Al bordo il pulsante è `disabled`: un comando che non farà niente non deve sembrare un
- * comando; il no-op della funzione resta come ultima difesa per la richiesta forgiata. Il
- * costo noto — l'elemento spostato fino al bordo spegne il pulsante appena premuto e il fuoco
- * cade sul body — è la famiglia di quirk già rimandata alla Story 5.2, annotata nel ledger.
+ * **Al bordo il pulsante è `disabled`, durante il volo no, e la Story 5.2 separa le due cose per
+ * la prima volta.** Erano un `disabled={pending || isFirst}` solo, cioè due semantiche diverse
+ * dette con la stessa parola: `disabled` significa «l'azione è inammissibile» — un comando che
+ * non farà niente non deve sembrare un comando — mentre durante il volo l'azione è ammissibile e
+ * sta solo succedendo. Tenerle unite spegneva il pulsante appena premuto e scaricava il fuoco sul
+ * body. Ora il volo lo dice `aria-busy`, il pulsante resta focalizzabile, e il secondo clic lo
+ * assorbe `useWrite`. Il no-op della funzione resta come ultima difesa per la richiesta forgiata.
+ *
+ * **Il fuoco lo si perde ancora al bordo, e la revisione della 5.2 lo corregge qui invece di
+ * lasciarlo credere chiuso:** si preme `Sposta su` sulla seconda domanda, la rivalidazione la porta
+ * in prima posizione, `isFirst` diventa vero e il pulsante che ha il fuoco si spegne. È lo stesso
+ * fuoco che cade sul body, per l'altra delle due semantiche — e quella resta `disabled` a ragione,
+ * perché l'azione lì è davvero inammissibile. Chiuso per il volo, aperto per il bordo, a ledger.
+ *
+ * `name` esiste per il nome accessibile: ventitré «Sposta su» indistinguibili sono quello che
+ * sente chi naviga per elenco di pulsanti, e il titolo della domanda o del blocco è l'unica cosa
+ * che li distingue.
  */
 export function MoveButtons({
   kind,
   id,
+  name,
   isFirst,
   isLast,
 }: {
   kind: 'block' | 'question'
   id: string
+  name: string
   isFirst: boolean
   isLast: boolean
 }) {
+  const what = kind === 'block' ? 'il blocco' : 'la domanda'
   const { pending, error, write } = useWrite(
     kind === 'block' ? BLOCK_NOT_MOVED : QUESTION_NOT_MOVED,
   )
@@ -79,8 +95,9 @@ export function MoveButtons({
         <button
           type="button"
           className="btn btn--quiet btn--icon"
-          disabled={pending || isFirst}
-          aria-label="Sposta su"
+          disabled={isFirst}
+          aria-busy={pending}
+          aria-label={`Sposta su ${what} «${name}»`}
           title="Sposta su"
           onClick={() => move('up')}
         >
@@ -91,8 +108,9 @@ export function MoveButtons({
         <button
           type="button"
           className="btn btn--quiet btn--icon"
-          disabled={pending || isLast}
-          aria-label="Sposta giù"
+          disabled={isLast}
+          aria-busy={pending}
+          aria-label={`Sposta giù ${what} «${name}»`}
           title="Sposta giù"
           onClick={() => move('down')}
         >

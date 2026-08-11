@@ -32,6 +32,16 @@ export function useWrite(unreachable: string): WriteState {
 
   const alive = useRef(true)
 
+  // La guardia contro il secondo click, aggiunta dalla Story 5.2 perché da lì in poi è l'unica.
+  // Fino all'11 agosto 2026 il doppio click lo fermava `disabled={pending}` sul pulsante; quella
+  // story lo sostituisce con `aria-busy`, che annuncia e non blocca — il pulsante resta premibile
+  // apposta, per non scaricare il fuoco sul body. Senza questa riga la stessa azione partirebbe
+  // due volte.
+  //
+  // Una ref e non lo stato: `write` è memoizzata su `[unreachable]`, quindi il `pending` catturato
+  // nella chiusura sarebbe quello del render in cui è stata creata e resterebbe falso per sempre.
+  const inFlight = useRef(false)
+
   useEffect(() => {
     alive.current = true
 
@@ -42,6 +52,9 @@ export function useWrite(unreachable: string): WriteState {
 
   const write = useCallback(
     <R extends { error?: string }>(call: () => Promise<R>, onSuccess?: (outcome: R) => void) => {
+      if (inFlight.current) return
+
+      inFlight.current = true
       setPending(true)
       setError(null)
 
@@ -63,6 +76,11 @@ export function useWrite(unreachable: string): WriteState {
           (it): R | null => it,
           (): null => null,
         )
+
+        // Si libera prima del controllo sullo smontaggio: dopo, un componente rimontato
+        // erediterebbe una ref nuova comunque, ma lasciarla alzata qui è il tipo di riga che
+        // sembra innocua finché la ref non diventa condivisa.
+        inFlight.current = false
 
         if (!alive.current) return
 

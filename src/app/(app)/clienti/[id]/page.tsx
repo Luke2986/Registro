@@ -163,7 +163,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
     })) ?? null
 
   return (
-    <>
+    <main className="main section--clienti">
       <ClientHeader />
       <ClientCard client={data} suggestions={suggestions} />
       {/* Card sorella dell'anagrafica, non una sezione dentro di essa: le persone sono voci
@@ -188,7 +188,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         people={people}
         today={todayIsoDate()}
       />
-    </>
+    </main>
   )
 }
 
@@ -202,14 +202,17 @@ function ClientHeader() {
   )
 }
 
+// Il landmark è qui e non fuori: questo componente è un ritorno anticipato della pagina, quindi
+// è lui la radice della rotta in quel ramo. Senza, lo stato d'errore perde il respiro della
+// pagina e l'alone del fuoco del suo `Riprova` torna al ripiego invece della tinta dei clienti.
 function ClientError({ id }: { id: string }) {
   return (
-    <>
+    <main className="main section--clienti">
       <ClientHeader />
       <div className="card">
         <ErrorState message="La scheda non si è caricata. Riprova fra un momento." retryHref={`/clienti/${id}`} />
       </div>
-    </>
+    </main>
   )
 }
 

@@ -12,7 +12,14 @@
   --surface-sunken: #eae5dc;
   --ink: #141210;
   --ink-muted: #58524b;
-  --ink-faint: #8b8379;
+  /* Scurito dalla Story 5.2 (12 agosto 2026), e supera il valore di D26. Misurato con la formula
+     WCAG, `#8b8379` stava a 3,34:1 su `--bg` e 3,74:1 su `--surface`: sotto i 4,5 che §8 chiede,
+     su un token il cui unico uso come testo è l'elemento firma — «Salvato alle 14:32» a riposo,
+     nei suoi tre montaggi — più il riferimento del digest in `error.tsx`. `#736d64` sta a 4,58:1
+     su `--bg`, 5,12:1 su `--surface` e 4,08:1 su `--surface-sunken`, e conserva il tono discreto
+     che cambiare quei testi in `--ink-muted` avrebbe tolto. Il punto della pillola di stato, che
+     è l'altro uso, sale da 3,09:1 a 4,23:1 su `--neutral-tint`. Anche in `design-system.md` §2 e §9. */
+  --ink-faint: #736d64;
   --line: #e1dace;
   --line-strong: #d3ccc4;
 
@@ -65,6 +72,13 @@
      §2 e §9. */
   --ink-inverse: #ffffff;
 
+  /* L'alone e il bordo del fuoco, nella tinta della sezione corrente (UX-DR14). Ripiego a
+     `--sec-clienti` per quello che non sta dentro nessuna sezione — `/accedi`, che vive fuori
+     dalla shell. Chi sta dentro riceve il valore dalle regole `.shell:has(…)` qui sotto.
+     Due token e non uno: l'alone vuole la tinta chiara, il bordo del campo il colore pieno. */
+  --focus-tint: var(--sec-clienti-tint);
+  --focus-color: var(--sec-clienti);
+
   /* forma */
   --r-sm: 8px;
   --r-md: 12px;
@@ -83,6 +97,33 @@
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --dur-fast: 150ms;
   --dur-base: 220ms;
+}
+
+/* Quale sezione sia lo dichiara il landmark `<main>` della rotta, che è l'unico posto che lo sa
+   senza rendere client il layout — la strada che la Story 5.1 ha già rifiutato. Prima della 5.2
+   c'erano tre aloni con tre tinte diverse per la stessa decisione: `:focus-visible` universale in
+   `--sec-clienti-tint`, `.input:focus` in `--sec-prequalifica-tint`, il toggle in
+   `--sec-clienti-tint`. Ognuno era un ripiego coerente col proprio contesto; insieme erano tre
+   valori per una regola sola.
+
+   `:has()` sulla shell e non la sola classe su `<main>`, ed è la correzione che la story non
+   poteva prevedere: il toggle della sidebar è **fratello** del landmark, non suo discendente, e
+   dentro `<main>` non ci entra mai. Ereditando dalla shell prende la tinta della rotta corrente
+   invece di restare sul ripiego, che è quello che la voce a ledger chiedeva. Stessa tecnica già
+   in uso qui sotto per `.sidebar--collapsed`, quindi nessuna dipendenza nuova. */
+.shell:has(.section--clienti) {
+  --focus-tint: var(--sec-clienti-tint);
+  --focus-color: var(--sec-clienti);
+}
+
+.shell:has(.section--questionario) {
+  --focus-tint: var(--sec-questionario-tint);
+  --focus-color: var(--sec-questionario);
+}
+
+.shell:has(.section--prequalifica) {
+  --focus-tint: var(--sec-prequalifica-tint);
+  --focus-color: var(--sec-prequalifica);
 }
 
 *,
@@ -111,9 +152,15 @@ a {
   text-decoration: none;
 }
 
+/* Il contorno pieno è arrivato con la revisione della Story 5.2, e senza di lui l'alone non si
+   vedeva: la tinta della sezione sta a 1,07:1 su `--bg` e 1,19:1 su `--surface`, mentre WCAG
+   §1.4.11 chiede 3:1 su un indicatore di fuoco. `outline: none` toglieva anche quello del browser,
+   quindi sui pulsanti e sui collegamenti la tinta era tutto. L'alone da 3px di §8 resta com'è e il
+   contorno gli sta appena fuori: `outline-offset: 3px` lo mette dove la tinta finisce. */
 :focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--sec-clienti-tint);
+  outline: 2px solid var(--focus-color);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--focus-tint);
   border-radius: var(--r-sm);
 }
 
@@ -204,10 +251,13 @@ a {
 
 /* Il pulsante che richiude/espande la sidebar. Sta dentro `.sidebar__brand` — «la nav si comanda
    dalla nav» — e non è un `.btn`: ha un aspetto suo, discreto, per non contendere il posto al brand
-   né alle voci. **36×36** e non 44: un pulsante 44×44 accanto al testo del brand a 44 di altezza
-   rovina l'equilibrio della fascia superiore. Sotto la soglia UX-DR14, annotato a ledger per la
-   Story 5.2 (che è la passata di accessibilità e di forma). `flex-shrink: 0` perché il brand-text
-   accanto si comprime a larghezza zero e il toggle non deve seguirlo. */
+   né alle voci. **36×36 e non 44, e la Story 5.2 conferma invece di rimandare:** la fascia del
+   brand è alta 44, e un pulsante 44×44 accanto al testo del brand rovina l'equilibrio verticale
+   della fascia superiore. La classe di controllo è «pulsante di navigazione dentro una fascia di
+   brand», che §8 non copre: quei 44 parlano dei bersagli delle **azioni**, non dei controlli di
+   forma della navigazione. È una decisione dichiarata, non un ripiego, e la voce a ledger si
+   chiude qui. `flex-shrink: 0` perché il brand-text accanto si comprime a larghezza zero e il
+   toggle non deve seguirlo. */
 .sidebar-toggle {
   background: transparent;
   border: none;
@@ -228,20 +278,15 @@ a {
   background: var(--surface-sunken);
 }
 
-/* Alone in `--sec-clienti-tint`: il toggle sta sopra la nav e non appartiene a una sezione, ma
-   `focus-visible` deve avere un alone visibile e la tinta della prima voce è il ripiego. È la
-   stessa scelta di ripiego che `.input:focus` fa oggi (`--sec-prequalifica`), voce a ledger già
-   assegnata alla Story 5.2. `box-shadow: none` per non sommare l'alone dell'`outline` a quello
-   della regola universale `:focus-visible` in cima al file. */
+/* Alone nella tinta della sezione corrente, che il toggle riceve dalla shell benché stia fuori dal
+   landmark che la dichiara: v. le regole `.shell:has(…)` in cima al file. Il contorno è pieno come
+   nella regola universale, per la stessa ragione scritta lì; l'offset resta 2 invece di 3 perché la
+   fascia del brand lascia 4px sopra e sotto un toggle da 36, e l'alone si stringe a 2 per riempire
+   esattamente lo stacco invece di passare sotto il contorno. */
 .sidebar-toggle:focus-visible {
-  outline: 3px solid var(--sec-clienti-tint);
+  outline: 2px solid var(--focus-color);
   outline-offset: 2px;
-  box-shadow: none;
-}
-
-.sidebar-toggle:disabled {
-  cursor: default;
-  opacity: 0.6;
+  box-shadow: 0 0 0 2px var(--focus-tint);
 }
 
 .nav {
@@ -387,6 +432,19 @@ a {
   padding: 0 12px;
 }
 
+/* Da richiusa il piede sparisce: per uscire dalla sessione si espande la nav, che è un clic sul
+   toggle. La colonna a 56 con gli 8+8 di padding lascia 40 di larghezza utile, e `Esci` come
+   `.btn` — 44 di altezza e `padding: 0 16px` — ne chiede più del doppio: sforava già a 40 di
+   altezza, e la crescita a 44 di questa story lo peggiora.
+   Non è un divieto e non tocca D14: l'azione non è negata, è a un clic di distanza, e chi esce
+   dalla sessione ha finito di lavorare — non è il gesto che si fa venti volte al giorno.
+   Le due alternative sono state scartate con motivo: un'icona dedicata avrebbe fatto della fascia
+   inferiore una seconda barra di comandi, che nessun AC chiede; comprimere il pulsante con
+   `overflow: hidden` lo avrebbe reso illeggibile, cioè peggio che nascosto. */
+.sidebar--collapsed .sidebar__foot {
+  display: none;
+}
+
 /* `min-width: 0` perché `.main` è una cella di griglia: senza, la sua larghezza minima è il
    contenuto più largo che porta, e una tabella larga allargava la pagina invece di scorrere
    dentro `.table-scroll` (misurato a 375px: 593 prima, 375 dopo). */
@@ -396,10 +454,17 @@ a {
   min-width: 0;
 }
 
+/* `flex-wrap: wrap` dalla Story 5.2, e nasce da una misura: a 375 il questionario sforava di 18px
+   perché il titolo (134,8) più i 16 di stacco più l'interruttore di modalità (170,3) chiedevano
+   321,1 dei 287 disponibili, e `.mode` non si stringe — le sue due voci hanno `padding: 0 14px`.
+   `.page-header__actions` aveva già `flex-wrap: wrap` ed è il motivo per cui la scheda di
+   prequalifica, che porta quattro figli, non sforava: qui la stessa regola sale di un livello.
+   Non cambia niente sopra i 375: quando ci sta, `space-between` dispone come prima. */
 .page-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -594,9 +659,10 @@ a {
 
 /* elenco: ricerca e filtri */
 
-/* `flex-end` e non `center`: `.input` è alto almeno 44 e `.btn` esattamente 40, e allineare in
-   basso toglie il disallineamento visibile senza toccare il pulsante, che è la voce già
-   rimandata alla Story 5.2. È quello che `.tags-add` fa già per lo stesso motivo.
+/* `flex-end` e non `center`: `.input` qui è alto 48 (regola sotto) e `.btn` da questa story è alto
+   44, e allineare in basso toglie il disallineamento visibile senza toccare né l'uno né l'altro.
+   È quello che `.tags-add` fa già per lo stesso motivo. Fino alla Story 5.2 il pulsante stava a
+   40 e la voce era a ledger: chiusa, e il disallineamento residuo è ora di 4 invece che di 8.
    `flex-wrap` perché a 375px i tre campi e i due comandi non stanno su una riga. */
 .filters {
   display: flex;
@@ -758,11 +824,14 @@ a {
 
 /* pulsanti */
 
+/* 44 e non più 40 dalla Story 5.2 (12 agosto 2026): è la soglia del bersaglio tattile di §8, e
+   `.btn` è un bersaglio d'azione per definizione. Era la voce a ledger più vecchia del progetto,
+   aperta dalla revisione della 1.1 il 2 agosto e cresciuta di tre istanze fino alla 4.3. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
+  height: 44px;
   padding: 0 16px;
   border-radius: var(--r-md);
   border: 1px solid transparent;
@@ -775,6 +844,18 @@ a {
 .btn:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* Lo stato occupato si vede come quello spento, ed è voluto: fino alla Story 5.2 il pulsante in
+   volo era `disabled`, e `opacity: 0.5` era l'unico riscontro che il clic fosse stato preso.
+   `aria-busy` annuncia e non spegne, quindi senza questa regola — dove l'etichetta non cambia in
+   `Salvataggio…`, cioè le due frecce, la `×` di un tag, il toggle — il secondo clic sarebbe
+   assorbito dalla guardia dell'hook senza che niente lo dica. `progress` e non `default`: l'azione
+   non è negata, sta succedendo. Ristretta ai `<button>`, perché `aria-busy` su un contenitore vuol
+   dire «il contenuto sta arrivando» e non va smorzato. */
+button[aria-busy='true'] {
+  opacity: 0.5;
+  cursor: progress;
 }
 
 .btn--primary {
@@ -808,10 +889,13 @@ a {
    contorno alla piena intensità pesa più della parola che sostituisce.
    **Sta qui e non accanto a `.move`, dove era nato**: `.btn` dichiara `padding: 0 16px` e in un
    foglio a cascata l'ordine decide — messo prima, il padding gli restava addosso e comprimeva
-   l'icona da 18 a 6 di larghezza dentro i 40 del quadrato. Una variante di pulsante va con i
-   pulsanti, e la ragione non è solo di ordine. */
+   l'icona da 18 a 6 di larghezza dentro il quadrato. Una variante di pulsante va con i pulsanti,
+   e la ragione non è solo di ordine.
+   La larghezza segue l'altezza di `.btn`, che la Story 5.2 ha portato a 44: quadrato è una
+   proprietà di questa variante, e lasciarla a 40 l'avrebbe resa 40×44 senza che nessuno lo
+   chiedesse — oltre a tenere sotto soglia la sola dimensione che qui si tocca col dito. */
 .btn--icon {
-  width: 40px;
+  width: 44px;
   padding: 0;
   color: var(--ink-muted);
 }
@@ -823,9 +907,15 @@ a {
 
 /* L'unico distruttivo del progetto, e solo con conferma (design-system.md §5). Il rosso qui non
    attira l'attenzione: dice che l'azione toglie qualcosa e non torna. */
+/* `--bad-ink` e non `--bad`, dalla Story 5.2, e il motivo sta nell'hover: a riposo il testo è su
+   `--surface` e `--bad` passava (4,62:1), ma sull'hover il fondo diventa `--bad-tint` e la coppia
+   scende a 3,85:1 — lo stesso caso di `.error-box`, in un componente che nessuno aveva guardato
+   perché il colore non cambia, cambia il fondo sotto. `--bad-ink` misura 5,40:1 a riposo e 4,51:1
+   sull'hover: un token solo copre tutti e due gli stati, e cambiare colore fra i due sarebbe stato
+   un lampeggio per un decimale. */
 .btn--danger {
   background: none;
-  color: var(--bad);
+  color: var(--bad-ink);
 }
 
 .btn--danger:hover {
@@ -884,8 +974,8 @@ a {
 
 .input:focus {
   outline: none;
-  border-color: var(--sec-prequalifica);
-  box-shadow: 0 0 0 3px var(--sec-prequalifica-tint);
+  border-color: var(--focus-color);
+  box-shadow: 0 0 0 3px var(--focus-tint);
 }
 
 .form {
@@ -893,6 +983,26 @@ a {
   flex-direction: column;
   gap: 20px;
   max-width: 480px;
+}
+
+/* Testo che esiste per l'assistenza e non per lo schermo (Story 5.2): la zona che annuncia la
+   comparsa del campo opzioni quando il tipo di risposta diventa scelta singola.
+   Né `display: none` né `visibility: hidden`, che lo toglierebbero anche dall'albero di
+   accessibilità, cioè proprio a chi serve — e una zona `aria-live` annuncia solo se esiste nel
+   documento **prima** del cambiamento, quindi nasconderla non è un'opzione.
+   `position: absolute` non è decorazione: senza, l'elemento resterebbe una cella del `.form`, che
+   è una colonna flessibile con 20 di stacco, e da vuoto aggiungerebbe quei 20 fra il tipo di
+   risposta e quello che segue. Fuori dal flusso non ne aggiunge nessuno. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .form__actions {
@@ -935,8 +1045,13 @@ a {
   color: var(--ink-muted);
 }
 
+/* `--bad-ink` e non `--bad`, dalla Story 5.2: la barra di salvataggio ha `background: var(--bg)`,
+   e lì `--bad` sta a 4,13:1 — identico al caso della riga d'errore dell'intestazione, chiuso dalla
+   3.6 con questo stesso token. `--bad-ink` su `--bg` misura 4,84:1. È lo stato che si legge nel
+   momento peggiore, quando un salvataggio non è passato: era il posto meno adatto a un testo
+   sbiadito. */
 .save-indicator--failed {
-  color: var(--bad);
+  color: var(--bad-ink);
 }
 
 /* Non un pulsante pieno: la riga resta discreta. Il bersaglio però resta toccabile, perché
@@ -1058,17 +1173,13 @@ a {
   cursor: pointer;
 }
 
-.tag__remove:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
 /* Non `.field__actions`: quella è la riga dei pulsanti sotto un campo, questa è il campo stesso
    accanto al suo pulsante. Il `min-width: 0` è la stessa ragione già scritta su `.detail-grid
    > *`: senza, un tag lungo allarga il campo e porta la card a scorrere di lato. */
-/* `center` e non `flex-start`: `.input` è alto almeno 44px e `.btn` esattamente 40, quindi in
-   alto sarebbero allineati e in basso no. I 40px del pulsante restano la voce già rimandata
-   dalla revisione della Story 1.1; qui si toglie almeno il disallineamento. */
+/* `center` e non `flex-start`: `.input` è alto almeno 44px e `.btn` da questa story è alto 44,
+   quindi ora i due coincidono e l'allineamento non ha più niente da correggere. Resta `center`
+   perché un campo che cresce col contenuto tornerebbe a essere più alto del pulsante, e allora
+   la regola serve di nuovo. La voce sui 40px, aperta dalla revisione della 1.1, è chiusa. */
 .tags-add {
   display: flex;
   gap: 8px;
@@ -1167,12 +1278,13 @@ a {
    design-system.md §5 prescrive *questa* barra in *quel* token, per nome e con i suoi numeri, ed è
    la regola più specifica. Chi lo «corregge» applica la regola sbagliata.
 
-   Qui era citato come precedente `.input:focus`, che porta la stessa tinta. **Non lo è, e la
-   revisione della 4.1 lo toglie invece di lasciarlo**: quell'alone è una voce a ledger assegnata
-   alla Story 5.2 — «la tinta sbagliata su tutte le schermate tranne la compilazione», come dice il
-   commento sopra `.answers` — e la scheda cliente è una di quelle schermate. Difendere una regola
-   prescritta citando un difetto aperto avrebbe messo un ostacolo davanti a chi quella voce deve
-   chiuderla. La ragione buona è una sola ed è la §5.
+   Qui era citato come precedente `.input:focus`, che portava la stessa tinta. **Non lo era, e la
+   revisione della 4.1 lo ha tolto invece di lasciarlo**: quell'alone era una voce a ledger, «la
+   tinta sbagliata su tutte le schermate tranne la compilazione», e la scheda cliente è una di
+   quelle schermate — difendere una regola prescritta citando un difetto aperto avrebbe messo un
+   ostacolo davanti a chi quella voce doveva chiuderla. Dalla Story 5.2 la voce è chiusa e
+   `.input:focus` legge `--focus-tint`, ma il precedente resta quello sbagliato da citare: là la
+   tinta la sceglie la rotta, qui è prescritta per nome. La ragione buona è una sola ed è la §5.
 
    Un colore solo, sempre, a qualunque riempimento: nessuna soglia e nessun colore d'allarme (AC2).
    Serve a distinguere una scheda finita da una lasciata a metà, non a mettere fretta. E nessuna
@@ -1382,11 +1494,11 @@ a {
 
 /* compilazione della scheda di prequalifica */
 
-/* Il fuoco dei campi non si scrive qui, ed è già quello giusto: `.input:focus` dichiara da sempre
-   `--sec-prequalifica` e il suo alone da 3px. Su ogni altra schermata quella tinta è la tinta
-   sbagliata — è la voce rimandata del 2 agosto, assegnata alla Story 5.2 — e **questa è la sola
-   schermata del progetto dove è quella giusta** (design-system.md §5 la assegna esattamente al
-   campo di risposta). Chi chiuderà quella voce deve saperlo, altrimenti la toglie anche di qui. */
+/* Il fuoco dei campi non si scrive qui, ed è già quello giusto: `.input:focus` legge dalla Story
+   5.2 `--focus-color` e `--focus-tint`, che su questa rotta risolvono a `--sec-prequalifica` —
+   la classe `section--prequalifica` sul `<main>` e le regole `.shell:has(…)` in cima al file.
+   Fino all'11 agosto 2026 la tinta era scritta a mano qui, ed era quella giusta su questa sola
+   schermata e sbagliata su tutte le altre: era la voce rimandata del 2 agosto, che la 5.2 chiude. */
 
 .answers {
   list-style: none;
@@ -1613,6 +1725,21 @@ a {
   background: var(--surface);
 }
 
+/* La terza conseguenza del fondo scavato, trovata misurando (Story 5.2), e la più grave delle tre:
+   `.field__error` è `--bad` su `--surface`, dove sta a 4,62:1, ma dentro il cestino il fondo è
+   `--surface-sunken` e la coppia scende a **3,68:1**, il peggior contrasto di testo del software.
+   Nemmeno `--bad-ink` basta lì (4,31:1), quindi non è un cambio di token: l'errore prende la
+   propria tinta, cioè la stessa coppia di `.error-box` — `--bad-ink` su `--bad-tint`, 4,51:1 — e
+   torna a leggersi. Sono i due `Ripristina` che possono fallire, uno per cestino.
+   Il fondo non è una decorazione: è quello che rende la coppia misurabile invece di dipendere da
+   dove la riga è finita. */
+.trash .field__error {
+  background: var(--bad-tint);
+  color: var(--bad-ink);
+  border-radius: var(--r-sm);
+  padding: 4px 8px;
+}
+
 /* La voce del cestino **non è il titolo di niente**: `--t-body` peso 500 invece del `--t-heading`
    che porta la domanda viva. È la seconda metà della distinzione, e da sola vale quanto lo
    scavo — una riga a 17/600 legge come una domanda anche su fondo diverso.
@@ -1676,9 +1803,14 @@ a {
   align-self: stretch;
 }
 
+/* `--bad-ink` e non `--bad`: il pieno sulla propria tinta sta a 3,85:1, sotto i 4,5 di §8, ed è
+   il residuo che la chiusura della voce di contrasto della Story 3.5 aveva lasciato fuori perché
+   guardava le sole pillole di verdetto. `--bad-ink` su `--bad-tint` misura 4,51:1. Il token nasce
+   con la 3.5 per le pillole, si allarga alla riga d'errore dell'intestazione con la 3.6, e da qui
+   copre il terzo posto che aveva lo stesso problema. */
 .error-box {
   background: var(--bad-tint);
-  color: var(--bad);
+  color: var(--bad-ink);
   border-radius: var(--r-lg);
   padding: 16px 20px;
   display: flex;
@@ -1688,10 +1820,12 @@ a {
 }
 
 /* Avviso, non errore: dice una cosa che vale la pena sapere e non impedisce niente (D14).
-   Ambra e non rosso, perché il rosso qui significherebbe che qualcosa è andato storto. */
+   Ambra e non rosso, perché il rosso qui significherebbe che qualcosa è andato storto.
+   `--warn-ink` per la stessa ragione di `.error-box` qui sopra: `--warn` sulla propria tinta sta
+   a 3,86:1, `--warn-ink` a 4,57:1. */
 .warn-box {
   background: var(--warn-tint);
-  color: var(--warn);
+  color: var(--warn-ink);
   border-radius: var(--r-lg);
   padding: 16px 20px;
 }
@@ -1764,6 +1898,34 @@ a {
 
   .sidebar-toggle {
     display: none;
+  }
+
+  /* I due stati richiusi non si chiudono allo stesso modo, e qui sta il perché (Story 5.2).
+     Da richiusa *per scelta* il piede sparisce, e la ragione scritta accanto a
+     `.sidebar--collapsed .sidebar__foot` regge perché `Esci` resta a un clic: si riapre la nav
+     col toggle. Sotto i 720 il toggle non c'è — è la riga qui sopra — quindi nascondere il piede
+     renderebbe l'uscita dalla sessione irraggiungibile su telefono e tablet, cioè un difetto
+     peggiore di quello che chiude.
+     Qui il pulsante si stringe invece di sparire. Misurato: la colonna a 56 con gli 8+8 della
+     `.sidebar` lascia 40, e i 12+12 del piede li riducevano a 16 — `Esci` chiedeva 62,1 e sforava
+     di 26,1 oltre il bordo della colonna. Senza il padding del piede e con 4 invece di 16 sul
+     pulsante viene 39 dentro 40: il testo non si taglia, perché la parola da sola misura 30,1 e
+     a stringersi è solo il contorno. */
+  /* `display` ridichiarato, e non è ridondante: `.sidebar--collapsed .sidebar__foot { display:
+     none }` sta fuori da questa media query e la classe arriva dal **cookie**, non dalla larghezza.
+     Senza questa riga, chi stringe la nav sul portatile e riapre l'app sul telefono si trova il
+     piede nascosto da lì e il toggle nascosto da qui, cioè nessun modo di uscire dalla sessione e
+     nessuno di riespandere la nav — il difetto che il commento qui sopra dichiara di evitare.
+     Trovato dalla revisione della Story 5.2. */
+  .sidebar--collapsed .sidebar__foot,
+  .sidebar__foot {
+    display: block;
+    padding: 0;
+  }
+
+  .sidebar__foot .btn {
+    padding: 0 4px;
+    width: 100%;
   }
 
   /* Il tooltip: la forma sta scritta una volta sola sopra (`.nav__item::after`). Qui la media

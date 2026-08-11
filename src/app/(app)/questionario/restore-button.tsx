@@ -28,7 +28,7 @@ export function RestoreButton({ archiveId, label }: { archiveId: string; label: 
       <button
         type="button"
         className="btn btn--secondary"
-        disabled={pending}
+        aria-busy={pending}
         aria-label={`Ripristina ${label}`}
         onClick={submit}
       >

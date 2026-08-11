@@ -54,7 +54,15 @@ export function BlockCard({
         blockId={block.id}
         title={block.title}
         mode={mode}
-        actions={<MoveButtons kind="block" id={block.id} isFirst={isFirst} isLast={isLast} />}
+        actions={
+          <MoveButtons
+            kind="block"
+            id={block.id}
+            name={block.title}
+            isFirst={isFirst}
+            isLast={isLast}
+          />
+        }
         // Solo sul blocco vuoto, che è la stessa condizione che la 0017 verifica dentro la
         // transazione: il blocco non porta dati suoi, porta le domande, e svuotarlo è il passo
         // che si fa prima. Mostrarlo sempre vorrebbe dire un pulsante che rifiuta quasi sempre.
@@ -98,7 +106,7 @@ export function BlockCard({
 
       {/* Un solo punto di montaggio che serve tutti e due i rami, in fondo alla card, dove la
           domanda nuova nascerà — stessa regola del pulsante unico di `Aggiungi blocco`. */}
-      <NewQuestionForm blockId={block.id} />
+      <NewQuestionForm blockId={block.id} blockTitle={block.title} />
     </section>
   )
 }

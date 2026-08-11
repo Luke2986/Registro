@@ -99,10 +99,13 @@ export function BlockTitleForm({
           <div className="card__actions">{actions}</div>
         ) : (
           <div className="card__actions card__actions--grid">
+            {/* Stessa ragione del `Modifica` della domanda: otto «Rinomina» identici non si
+                distinguono in un elenco di pulsanti, e il titolo del blocco è ciò che li separa. */}
             <button
               type="button"
               ref={renameButton}
               className="btn btn--quiet"
+              aria-label={`Rinomina il blocco «${title}»`}
               onClick={() => setRenaming(true)}
             >
               Rinomina
@@ -149,10 +152,13 @@ export function BlockTitleForm({
       ) : null}
 
       <div className="field__actions">
-        <button type="submit" className="btn btn--primary" disabled={pending}>
+        <button type="submit" className="btn btn--primary" aria-busy={pending}>
           {pending ? 'Salvataggio…' : 'Salva'}
         </button>
-        {/* Riportare il campo al valore di prima è reversibile, quindi nessuna conferma. */}
+        {/* Riportare il campo al valore di prima è reversibile, quindi nessuna conferma. `disabled`
+            e non `aria-busy`, dalla revisione della 5.2: annullare non è un'azione in volo, e
+            premuto durante la scrittura riporta il campo al titolo vecchio mentre il server scrive
+            quello nuovo. */}
         <button
           type="button"
           className="btn btn--secondary"

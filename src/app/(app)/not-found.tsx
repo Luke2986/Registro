@@ -6,7 +6,9 @@ import Link from 'next/link'
  */
 export default function NotFound() {
   return (
-    <>
+    // Nessuna classe di sezione, per la stessa ragione di `error.tsx`: il 404 non appartiene a
+    // nessuna rotta.
+    <main className="main">
       <header className="page-header">
         <h1 className="page-title">Non c’è</h1>
       </header>
@@ -19,6 +21,6 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
-    </>
+    </main>
   )
 }

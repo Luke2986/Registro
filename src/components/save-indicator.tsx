@@ -35,18 +35,25 @@ export function SaveIndicator({ state, onRetry }: { state: SaveState; onRetry: (
   // La riga c'è sempre, anche vuota: è una zona che si annuncia da sola quando cambia, e
   // funziona solo se esiste nel documento già prima del cambiamento. Vuota tiene anche il
   // suo spazio, così quando l'indicatore compare il campo sotto non salta.
+  //
+  // **`aria-live="polite"` sul solo testo, e il `Riprova` fuori (Story 5.2).** Prima era un
+  // `role="status"` sull'intera riga, cioè una regione live che conteneva anche il pulsante: a
+  // ogni fallimento il lettore di schermo riannunciava pure lui, e un pulsante è un controllo,
+  // non un annuncio. `aria-live` dichiarato invece di implicito perché qui i cambi sono
+  // frequenti e non urgenti, e `polite` è la scelta che li mette in coda invece di
+  // interromperci sopra.
   return (
-    <p className={`data save-indicator${MODIFIER[state.kind]}`} role="status">
-      {/* Prima del primo salvataggio non c'è un'ora da dire, quindi non si dice niente. */}
-      {state.kind === 'saving' ? 'Salvataggio…' : null}
-      {state.kind === 'saved' ? `Salvato alle ${formatClockTime(state.at)}` : null}
+    <p className={`data save-indicator${MODIFIER[state.kind]}`}>
+      <span aria-live="polite">
+        {/* Prima del primo salvataggio non c'è un'ora da dire, quindi non si dice niente. */}
+        {state.kind === 'saving' ? 'Salvataggio…' : null}
+        {state.kind === 'saved' ? `Salvato alle ${formatClockTime(state.at)}` : null}
+        {state.kind === 'failed' ? 'Non salvato, riprovo' : null}
+      </span>
       {state.kind === 'failed' ? (
-        <>
-          Non salvato, riprovo
-          <button type="button" className="save-indicator__retry" onClick={onRetry}>
-            Riprova
-          </button>
-        </>
+        <button type="button" className="save-indicator__retry" onClick={onRetry}>
+          Riprova
+        </button>
       ) : null}
     </p>
   )

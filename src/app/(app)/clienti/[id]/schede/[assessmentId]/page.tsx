@@ -18,6 +18,13 @@ import { VerdictCard } from './verdict-card'
  */
 const ANSWER_COLUMNS = 'id, block_title, question_text, help_text, answer_type, options, content'
 
+/**
+ * L'id della parola dello stato di compilazione: la nomina `CompletionButton` con
+ * `aria-describedby`. Fisso e non derivato dall'assessmentId perché la parola è una sola per
+ * pagina, e un id derivato sarebbe una precauzione contro un caso che non esiste.
+ */
+const COMPLETION_STATUS_ID = 'stato-compilazione'
+
 export default async function AssessmentPage({
   params,
 }: {
@@ -105,7 +112,10 @@ export default async function AssessmentPage({
   }
 
   return (
-    <>
+    // `section--prequalifica` e non `section--clienti`, benché la rotta stia sotto `/clienti`:
+    // la sezione **visiva** di questa schermata è la prequalifica, ed è quello che l'alone di
+    // `.input:focus` diceva già da sola prima che esistesse un token per dirlo.
+    <main className="main section--prequalifica">
       {/* L'innesto arriva come oggetto e non come elenco, e non è nullabile: verificato sul tipo
           generato il 9 agosto 2026, `{ name: string }`. Nessun `?.` e nessun ripiego, che qui
           sarebbero un ramo morto. */}
@@ -165,7 +175,7 @@ export default async function AssessmentPage({
           />
         </SaveBoundary>
       )}
-    </>
+    </main>
   )
 }
 
@@ -218,12 +228,31 @@ function AssessmentHeader({
               verdetto (UX-DR2, regola 5). */}
           {completionStatus === undefined || assessmentId === undefined ? null : (
             <>
-              <span className="meta">{completionStatus}</span>
-              <CompletionButton assessmentId={assessmentId} completionStatus={completionStatus} />
+              {/* `aria-live` sulla parola, e il pulsante la nomina con `aria-describedby`
+                  (Story 5.2). Il fallimento era già annunciato da un `role="alert"`, la riuscita
+                  da niente: chi non vede lo schermo premeva e non sapeva cosa fosse cambiato.
+                  Nessun testo nuovo — la parola c'era già — e la zona esiste nel documento prima
+                  del cambiamento, che è la condizione perché un annuncio parta. */}
+              <span className="meta" id={COMPLETION_STATUS_ID} aria-live="polite">
+                {completionStatus}
+              </span>
+              <CompletionButton
+                assessmentId={assessmentId}
+                completionStatus={completionStatus}
+                statusId={COMPLETION_STATUS_ID}
+              />
               {/* Un `<a>` e mai `<Link>`: una navigazione lato client non scarica niente, e il
                   comando sembrerebbe rotto senza dare nessun errore. Nessun `download`: nel ramo
-                  d'errore trasformerebbe un messaggio in un file scaricato. */}
-              <a href={`/clienti/${clientId}/schede/${assessmentId}/esporta`} className="btn btn--secondary">
+                  d'errore trasformerebbe un messaggio in un file scaricato.
+                  Vestito da pulsante ma è un collegamento, e la Story 5.2 lo **conferma** invece di
+                  trasformarlo: il titolo e il nome accessibile dicono cosa succede premendo, che è
+                  la cosa che mancava — non il tipo di elemento. */}
+              <a
+                href={`/clienti/${clientId}/schede/${assessmentId}/esporta`}
+                className="btn btn--secondary"
+                title="Scarica il file markdown"
+                aria-label="Esporta la scheda in markdown"
+              >
                 Esporta
               </a>
             </>
@@ -234,9 +263,11 @@ function AssessmentHeader({
   )
 }
 
+// Il landmark è qui perché questo componente è un ritorno anticipato della pagina: v. la gemella
+// `ClientError` nella scheda cliente.
 function AssessmentError({ clientId, assessmentId }: { clientId: string; assessmentId: string }) {
   return (
-    <>
+    <main className="main section--prequalifica">
       <AssessmentHeader clientId={clientId} />
       <div className="card">
         <ErrorState
@@ -244,6 +275,6 @@ function AssessmentError({ clientId, assessmentId }: { clientId: string; assessm
           retryHref={`/clienti/${clientId}/schede/${assessmentId}`}
         />
       </div>
-    </>
+    </main>
   )
 }

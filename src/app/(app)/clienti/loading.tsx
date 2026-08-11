@@ -14,7 +14,7 @@ const FIELDS = ['nome', 'stato', 'tag']
  */
 export default function ClientsLoading() {
   return (
-    <>
+    <main className="main section--clienti">
       <header className="page-header">
         <h1 className="page-title">Clienti</h1>
       </header>
@@ -67,6 +67,6 @@ export default function ClientsLoading() {
           ))}
         </div>
       </div>
-    </>
+    </main>
   )
 }

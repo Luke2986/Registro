@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 import { useWrite } from '@/lib/use-write'
 
 import { setQuestionActive } from './question-active-actions'
@@ -20,20 +22,32 @@ const QUESTION_NOT_REACTIVATED = 'La domanda non è stata riattivata. Riprova fr
  * Component non sarebbe serializzabile.
  *
  * Niente onSuccess: la rivalidazione fa girare la parola `attiva`/`non attiva` e l'etichetta
- * del pulsante, e non c'è nessun campo da riallineare. Il costo noto — durante il volo il
- * pulsante si spegne e il fuoco cade sul body — è la famiglia di quirk già rimandata alla
- * Story 5.2, annotata nel ledger.
+ * del pulsante, e non c'è nessun campo da riallineare. Durante il volo il pulsante non si spegne
+ * più — `aria-busy` lo annuncia e lo lascia focalizzabile — e il secondo clic lo assorbe
+ * `useWrite` (Story 5.2).
  */
 export function QuestionActiveButton({
   questionId,
+  questionText,
   isActive,
 }: {
   questionId: string
+  /** Solo per il nome accessibile: a schermo la domanda è già scritta accanto al pulsante. */
+  questionText: string
   isActive: boolean
 }) {
-  const { pending, error, write } = useWrite(
+  const { pending, error, clearError, write } = useWrite(
     isActive ? QUESTION_NOT_DEACTIVATED : QUESTION_NOT_REACTIVATED,
   )
+
+  // Questo pulsante non ha un campo di cui azzerare l'errore, quindi lo azzera sul cambio della
+  // prop che l'azione muove: senza, un errore sopravvive alla rivalidazione e resta a schermo
+  // finché non si ripreme. `clearError` fuori dalle dipendenze di proposito — è una funzione
+  // nuova a ogni render, e metterla lì farebbe girare l'effetto per sempre.
+  useEffect(() => {
+    clearError()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive])
 
   const submit = () => {
     const payload = new FormData()
@@ -46,7 +60,13 @@ export function QuestionActiveButton({
 
   return (
     <>
-      <button type="button" className="btn btn--quiet" disabled={pending} onClick={submit}>
+      <button
+        type="button"
+        className="btn btn--quiet"
+        aria-busy={pending}
+        aria-label={`${isActive ? 'Disattiva' : 'Riattiva'} la domanda «${questionText}»`}
+        onClick={submit}
+      >
         {isActive ? 'Disattiva' : 'Riattiva'}
       </button>
       {error ? (

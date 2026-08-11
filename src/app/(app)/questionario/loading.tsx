@@ -24,7 +24,7 @@ const QUESTIONS = [1, 2, 3]
  */
 export default function QuestionnaireLoading() {
   return (
-    <>
+    <main className="main section--questionario">
       <header className="page-header">
         <h1 className="page-title">Questionario</h1>
       </header>
@@ -47,6 +47,6 @@ export default function QuestionnaireLoading() {
           </ul>
         </section>
       ))}
-    </>
+    </main>
   )
 }

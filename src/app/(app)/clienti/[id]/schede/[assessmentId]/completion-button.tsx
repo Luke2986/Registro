@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 import { COMPLETION_CLOSED, nextCompletionStatus } from '@/lib/completion-status'
 import { useWrite } from '@/lib/use-write'
 
@@ -29,16 +31,26 @@ const ASSESSMENT_NOT_REOPENED = 'La scheda non è stata riportata in bozza. Ripr
  * costruito nel componente server non sarebbe serializzabile.
  *
  * Niente `onSuccess` e niente stato ottimistico: la rivalidazione fa girare la parola dello stato e
- * l'etichetta del pulsante, e non c'è nessun campo da riallineare. Il costo noto — durante il volo
- * il pulsante si spegne e il fuoco cade sul body — è la famiglia di quirk già rimandata alla Story
- * 5.2, e non si corregge qui.
+ * l'etichetta del pulsante, e non c'è nessun campo da riallineare. Durante il volo il pulsante non
+ * si spegne più — `aria-busy` lo annuncia e lo lascia focalizzabile — e il secondo clic lo assorbe
+ * `useWrite` (Story 5.2).
+ *
+ * **La riuscita si sente, non solo il fallimento (Story 5.2).** Il fallimento era già un
+ * `role="alert"`; la riuscita non aveva niente, e l'unico segnale del nuovo stato era l'etichetta
+ * di un pulsante e una parola nuda accanto. Ora quella parola è una zona `aria-live` in
+ * `page.tsx` e questo pulsante la nomina con `aria-describedby`: chi non vede lo schermo sente
+ * cosa è cambiato, e sa che è questo pulsante a cambiarla. Nessun testo nuovo a schermo — la
+ * parola c'era già — è una relazione dichiarata.
  */
 export function CompletionButton({
   assessmentId,
   completionStatus,
+  statusId,
 }: {
   assessmentId: string
   completionStatus: string
+  /** L'elemento che porta la parola dello stato, in `page.tsx`: il pulsante lo nomina. */
+  statusId: string
 }) {
   // La proprietà resta `string` perché `AssessmentRow['completion_status']` è `string` nei tipi
   // generati dallo schema, e quei tipi non si modificano a mano.
@@ -50,7 +62,21 @@ export function CompletionButton({
   const next = nextCompletionStatus(completionStatus)
   const closing = next === COMPLETION_CLOSED
 
-  const { pending, error, write } = useWrite(closing ? ASSESSMENT_NOT_CLOSED : ASSESSMENT_NOT_REOPENED)
+  const { pending, error, clearError, write } = useWrite(
+    closing ? ASSESSMENT_NOT_CLOSED : ASSESSMENT_NOT_REOPENED,
+  )
+
+  // Lo stato è girato: l'errore parlava del tentativo di prima, e il messaggio nomina la
+  // destinazione — «La scheda non è stata chiusa» resterebbe sotto un pulsante che ora dice
+  // `Riporta in bozza`, cioè una frase falsa. Gemello di `QuestionActiveButton` (Story 5.2).
+  useEffect(() => {
+    clearError()
+    // Solo al cambio di stato: `clearError` è una funzione nuova a ogni render — `useWrite` la
+    // restituisce senza memoizzarla — e metterla fra le dipendenze farebbe girare l'effetto per
+    // sempre. Corretto dalla revisione della 5.2: qui c'era scritto «è stabile», e il gemello
+    // `QuestionActiveButton` diceva già il contrario.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completionStatus])
 
   const submit = () => {
     const payload = new FormData()
@@ -64,7 +90,13 @@ export function CompletionButton({
 
   return (
     <>
-      <button type="button" className="btn btn--secondary" disabled={pending} onClick={submit}>
+      <button
+        type="button"
+        className="btn btn--secondary"
+        aria-busy={pending}
+        aria-describedby={statusId}
+        onClick={submit}
+      >
         {closing ? 'Chiudi la scheda' : 'Riporta in bozza'}
       </button>
       {error ? (

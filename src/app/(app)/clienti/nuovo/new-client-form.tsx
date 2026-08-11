@@ -32,7 +32,12 @@ export function NewClientForm() {
     .join(' ')
 
   return (
-    <form action={formAction} className="form">
+    // La guardia sul doppio invio, dalla revisione della Story 5.2: `useActionState` mette in coda
+    // le azioni invece di rifiutarle, e con `aria-busy` al posto di `disabled` il pulsante resta
+    // premibile. Il caso è il secondo `Salva`, quello che conferma un nome doppione: lì
+    // `duplicate_of` è già valorizzato, quindi due invii saltano entrambi il controllo e creano
+    // due clienti identici.
+    <form action={(data) => (pending ? undefined : formAction(data))} className="form">
       {/* Rimanda indietro il nome su cui l'avviso è già stato dato: cambiandolo, l'avviso torna. */}
       <input type="hidden" name="duplicate_of" value={state.duplicateOf ?? ''} />
 
@@ -73,7 +78,7 @@ export function NewClientForm() {
       ) : null}
 
       <div className="form__actions">
-        <button type="submit" className="btn btn--primary" disabled={pending}>
+        <button type="submit" className="btn btn--primary" aria-busy={pending}>
           {pending ? 'Salvataggio…' : 'Salva'}
         </button>
         <Link href="/clienti" className="btn btn--secondary">

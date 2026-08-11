@@ -151,7 +151,7 @@ export function ClientFieldForm({
           campo è cambiato. */}
       {dirty ? (
         <div className="field__actions">
-          <button type="submit" className="btn btn--primary" disabled={pending} onMouseDown={keepFocus}>
+          <button type="submit" className="btn btn--primary" aria-busy={pending} onMouseDown={keepFocus}>
             {pending ? 'Salvataggio…' : 'Salva'}
           </button>
           {/* Riportare il campo al valore di prima è reversibile, quindi nessuna conferma. */}

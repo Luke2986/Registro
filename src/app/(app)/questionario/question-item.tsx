@@ -76,23 +76,33 @@ export function QuestionItem({
                 <MoveButtons
                   kind="question"
                   id={question.id}
+                  name={question.text}
                   isFirst={isFirst}
                   isLast={isLast}
                 />
               </div>
             ) : (
               <div className="question__actions question__actions--grid">
+                {/* Il nome accessibile porta la domanda, la parola visibile no: ventitré
+                    «Modifica» identici sono quello che sente chi naviga per elenco di pulsanti,
+                    e nell'elenco il testo della domanda è l'unica cosa che li distingue. A
+                    schermo la parola resta sola, perché lì la domanda è già scritta accanto. */}
                 <button
                   type="button"
                   ref={editButton}
                   className="btn btn--quiet"
+                  aria-label={`Modifica la domanda «${question.text}»`}
                   onClick={() => setEditing(true)}
                 >
                   Modifica
                 </button>
                 {/* Anche sulle domande spente, dove dice `Riattiva`: nessuno stato blocca
                     nessuna azione (D14). */}
-                <QuestionActiveButton questionId={question.id} isActive={question.is_active} />
+                <QuestionActiveButton
+                  questionId={question.id}
+                  questionText={question.text}
+                  isActive={question.is_active}
+                />
                 {/* `Elimina` e `Disattiva` non sono due modi di dire la stessa cosa e convivono
                     di proposito: la prima toglie una domanda che non è mai servita, la seconda la
                     ritira dalle schede nuove lasciando leggibili le vecchie. Appena una scheda la

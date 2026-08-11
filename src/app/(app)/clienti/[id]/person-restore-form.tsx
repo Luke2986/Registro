@@ -32,7 +32,7 @@ export function PersonRestoreForm({ archiveId, name }: { archiveId: string; name
           type="button"
           className="btn btn--secondary"
           aria-label={`Ripristina ${name}`}
-          disabled={pending}
+          aria-busy={pending}
           onClick={restore}
         >
           {pending ? 'Ripristino…' : 'Ripristina'}

@@ -21,8 +21,13 @@ const UNREACHABLE = 'La domanda non è stata salvata: il server non ha risposto.
  * Passa da `useWrite` e non da `useActionState`: un rifiuto della promessa risalirebbe al
  * confine d'errore, che sostituisce l'intera schermata. `element.reset()` solo dopo un
  * successo, così una domanda rifiutata resta dov'è insieme al suo errore.
+ *
+ * **Il titolo del blocco serve al nome accessibile (Story 5.2).** Otto istanze, otto pulsanti
+ * chiamati «Aggiungi domanda»: chi naviga per elenco di pulsanti ne sentiva otto identici e non
+ * poteva sapere a quale blocco appartenessero. È lo stesso difetto delle ventitré «Modifica», e
+ * si chiude allo stesso modo: la parola a schermo resta quella, cambia solo cosa si sente.
  */
-export function NewQuestionForm({ blockId }: { blockId: string }) {
+export function NewQuestionForm({ blockId, blockTitle }: { blockId: string; blockTitle: string }) {
   const [adding, setAdding] = useState(false)
   const [returning, setReturning] = useState(false)
 
@@ -69,6 +74,7 @@ export function NewQuestionForm({ blockId }: { blockId: string }) {
         type="button"
         ref={addButton}
         className="btn btn--quiet block-add-question"
+        aria-label={`Aggiungi domanda al blocco «${blockTitle}»`}
         onClick={() => setAdding(true)}
       >
         Aggiungi domanda
@@ -124,12 +130,15 @@ export function NewQuestionForm({ blockId }: { blockId: string }) {
           Tipo di risposta
         </label>
 
+        {/* `aria-controls` solo quando il campo esiste davvero: puntare a un id assente sarebbe
+            una relazione dichiarata e falsa. */}
         <select
           id={typeId}
           name="answer_type"
           className="input select"
           value={answerType}
           disabled={pending}
+          aria-controls={answerType === 'scelta_singola' ? optionsId : undefined}
           onChange={(event) => {
             // La guardia e non un `as`: il valore di un select è string per il DOM, ma qui
             // può essere solo uno dei quattro, perché le option vengono da ANSWER_TYPES.
@@ -150,6 +159,19 @@ export function NewQuestionForm({ blockId }: { blockId: string }) {
           ))}
         </select>
       </div>
+
+      {/* La zona che dice a voce che un campo è comparso. Sta **fuori** dal ramo condizionale di
+          proposito: una regione `aria-live` annuncia solo se esiste nel documento già prima del
+          cambiamento, e una nata insieme al campo non annuncerebbe la propria comparsa.
+          Non occupa spazio — `.visually-hidden` è fuori dal flusso — quindi non aggiunge stacchi
+          alla colonna del modulo. */}
+      <p className="visually-hidden" aria-live="polite">
+        {answerType === 'scelta_singola'
+          ? 'Aggiunto il campo: opzioni, una per riga.'
+          : options.trim() !== ''
+            ? 'Tolto il campo opzioni.'
+            : ''}
+      </p>
 
       {/* Reso solo per la scelta singola: il campo compare e scompare con il tipo, ma il
           valore resta in stato e ricompare tornando sulla scelta singola. Quando è nascosto
@@ -182,9 +204,11 @@ export function NewQuestionForm({ blockId }: { blockId: string }) {
 
       {/* Qui `Salva` è primario: dentro il modulo è l'unica azione. */}
       <div className="form__actions">
-        <button type="submit" className="btn btn--primary" disabled={pending}>
+        <button type="submit" className="btn btn--primary" aria-busy={pending}>
           {pending ? 'Salvataggio…' : 'Salva'}
         </button>
+        {/* `disabled` e non `aria-busy`, dalla revisione della 5.2: annullare non è un'azione in
+            volo, e premuto durante la scrittura smonta il modulo senza fermarla. */}
         <button type="button" className="btn btn--secondary" disabled={pending} onClick={close}>
           Annulla
         </button>

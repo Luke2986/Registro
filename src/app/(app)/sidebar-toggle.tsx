@@ -31,6 +31,11 @@ export function SidebarToggle({ defaultCollapsed }: { defaultCollapsed: boolean 
   const [pending, startTransition] = useTransition()
 
   function onClick() {
+    // La guardia che prima era `disabled={pending}`: dalla Story 5.2 il pulsante resta premibile
+    // per non scaricare il fuoco sul body, quindi il secondo clic va fermato qui. `pending` è
+    // quello del render corrente, e `onClick` si ricrea a ogni render: nessuna ref serve.
+    if (pending) return
+
     const next = !collapsed
     setCollapsed(next)
     startTransition(async () => {
@@ -44,7 +49,7 @@ export function SidebarToggle({ defaultCollapsed }: { defaultCollapsed: boolean 
       type="button"
       className="sidebar-toggle"
       onClick={onClick}
-      disabled={pending}
+      aria-busy={pending}
       aria-expanded={!collapsed}
       aria-controls="app-nav"
       aria-label={collapsed ? 'Espandi la navigazione' : 'Richiudi la navigazione'}
