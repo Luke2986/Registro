@@ -33,12 +33,16 @@ export default async function ClientsPage({
   const filters = parseClientFilters(await searchParams)
 
   // Innesto normale e mai `assessments!inner(...)`: con !inner diventa un join interno e fa
-  // sparire dall'elenco ogni cliente senza schede, che oggi sono tutti. La sicurezza a livello
-  // di riga vale anche sulle righe innestate: assessments_owner_all filtra le schede altrui
-  // dentro la stessa richiesta, senza controlli da riscrivere qui.
+  // sparire dall'elenco ogni cliente senza schede. La sicurezza a livello di riga vale anche
+  // sulle righe innestate: assessments_owner_all filtra le schede altrui dentro la stessa
+  // richiesta, senza controlli da riscrivere qui.
+  //
+  // Mai `answers(...)`, in nessuna forma: `database.md` §3 dichiara che l'elenco non può copiare
+  // il calcolo dell'avanzamento della scheda cliente. Le quattro colonne della 4.2 stanno invece
+  // dentro il confine: un valore vincolato e tre chiavi d'ordine, non il contenuto delle risposte.
   let query = supabase
     .from('clients')
-    .select('id, name, status, tags, updated_at, assessments(updated_at)')
+    .select('id, name, status, tags, updated_at, assessments(updated_at, call_date, created_at, id, verdict)')
 
   // I tre filtri stanno nella query e mai sull'array già letto, e non è un dettaglio di
   // prestazioni: PostgREST restituisce una finestra di righe, non tutte, quindi filtrare dopo
@@ -55,8 +59,6 @@ export default async function ClientsPage({
   if (filters.status) query = query.eq('status', filters.status)
   if (filters.tag) query = query.contains('tags', [filters.tag])
 
-  const { data, error } = await query.order('updated_at', { ascending: false })
-
   // I tag da offrire si leggono a parte e senza filtri. Ricavarli da `data` è la trappola di
   // questo punto: scelto un tag, l'elenco si restringe, il menu si ricostruirebbe sui soli tag
   // rimasti e da lì non si potrebbe più scegliere un tag diverso. Il filtro si chiuderebbe
@@ -64,9 +66,13 @@ export default async function ClientsPage({
   // espone `unnest`. Con `.order`, perché senza, al tetto di righe la finestra non è scelta da
   // nessun criterio e il menu cambierebbe da un caricamento all'altro.
   const tagQuery = supabase.from('clients').select('tags')
-  const { data: tagRows, error: tagsError } = await tagQuery.order('updated_at', {
-    ascending: false,
-  })
+
+  // Insieme e non in serie: le due letture non si scambiano niente, e la latenza si sommava sulla
+  // schermata che si apre più spesso. I due rami d'errore restano diversi apposta (v. sotto).
+  const [{ data, error }, { data: tagRows, error: tagsError }] = await Promise.all([
+    query.order('updated_at', { ascending: false }),
+    tagQuery.order('updated_at', { ascending: false }),
+  ])
 
   if (tagsError) {
     // Solo codice e messaggio: `details` conterrebbe valori delle righe (kb-0.md §3). Un filtro

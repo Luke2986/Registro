@@ -202,9 +202,13 @@ a {
   padding: 0 12px;
 }
 
+/* `min-width: 0` perché `.main` è una cella di griglia: senza, la sua larghezza minima è il
+   contenuto più largo che porta, e una tabella larga allargava la pagina invece di scorrere
+   dentro `.table-scroll` (misurato a 375px: 593 prima, 375 dopo). */
 .main {
   padding: 40px;
   max-width: 1120px;
+  min-width: 0;
 }
 
 .page-header {
@@ -396,6 +400,12 @@ a {
 
 /* elenco: tabella senza griglia */
 
+/* La tabella cede scorrendo invece di comprimere le colonne. Un nome suo e mai `overflow` su
+   `.card`, che è la card di ogni schermata. Funziona solo con `min-width: 0` su `.main`. */
+.table-scroll {
+  overflow-x: auto;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -443,6 +453,8 @@ a {
 
 /* pillole di stato */
 
+/* `nowrap` perché `height` è fissa: un'etichetta che va a capo non fa crescere la pillola, esce
+   da sotto. `sì condizionato` lo faceva a 375px. */
 .pill {
   display: inline-flex;
   align-items: center;
@@ -452,6 +464,7 @@ a {
   border-radius: var(--r-full);
   font-size: 12px;
   font-weight: 500;
+  white-space: nowrap;
   background: var(--neutral-tint);
   color: var(--ink-muted);
 }

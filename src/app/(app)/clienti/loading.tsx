@@ -41,23 +41,31 @@ export default function ClientsLoading() {
           <div className="skeleton" style={{ flexShrink: 0, width: 88, height: 40 }} />
         </div>
 
-        {ROWS.map((row) => (
-          <div
-            key={row}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr',
-              gap: 16,
-              alignItems: 'center',
-              height: 56,
-            }}
-          >
-            <div className="skeleton" style={{ width: '60%' }} />
-            <div className="skeleton" style={{ width: 72 }} />
-            <div className="skeleton" style={{ width: 96 }} />
-            <div className="skeleton" style={{ width: 64 }} />
-          </div>
-        ))}
+        {/* Cinque tracce come le colonne, altezza 56 come `.table td`. Il quinto rettangolo è 68,
+            misurato sulle pillole rese: la più corta viene 34, la più lunga 104,2.
+
+            `.table-scroll` è lo stesso contenitore della tabella: a 375px la riga chiede 364 e ne
+            restano 295, quindi senza traboccherebbe dove il contenuto invece scorre. */}
+        <div className="table-scroll">
+          {ROWS.map((row) => (
+            <div
+              key={row}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
+                gap: 16,
+                alignItems: 'center',
+                height: 56,
+              }}
+            >
+              <div className="skeleton" style={{ width: '60%' }} />
+              <div className="skeleton" style={{ width: 72 }} />
+              <div className="skeleton" style={{ width: 96 }} />
+              <div className="skeleton" style={{ width: 64 }} />
+              <div className="skeleton" style={{ width: 68 }} />
+            </div>
+          ))}
+        </div>
       </div>
     </>
   )

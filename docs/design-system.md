@@ -177,6 +177,8 @@ Fondo `--surface`, raggio `--r-xl`, ombra `--sh-1`, padding 24. Nessun bordo: la
 
 Tabella senza griglia: righe separate da 1px `--line`, altezza 56, passaggio del mouse su `--surface-sunken`. Colonne nell'ordine nome, stato, tag, ultima attività, esito.
 
+**Quando le cinque colonne non ci stanno, la tabella cede scorrendo e non comprimendo** (Story 4.2, 11 agosto 2026): un contenitore con un nome suo, `overflow-x: auto`, mai `overflow` sulla card, che è la card di ogni schermata. Perché funzioni serve `min-width: 0` su `.main`, che è una cella di griglia e senza quello prende come larghezza minima il contenuto più largo che porta — cioè allarga la pagina invece di lasciar scorrere il contenitore. Sono le due regole misurate a 375px, dove la pagina resta 375 e la tabella scorre dentro i propri 295; la seconda vale per ogni schermata e ne è stata misurata una sola, e il residuo è a ledger con ripresa alla Story 5.2. Il contenitore porta `tabindex` e un nome accessibile, o da tastiera non si raggiunge quello che nasconde.
+
 Il nome a `--t-body` peso 500, tutto il resto a `--t-meta` o `--t-data`. Le date in mono e in forma relativa entro la settimana ("3 giorni fa"), poi assoluta.
 
 ### Pillola di stato e di verdetto

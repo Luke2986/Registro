@@ -1,5 +1,5 @@
 # generated: 02-08-2026 18:53
-# last_updated: 10-08-2026
+# last_updated: 11-08-2026
 # project: Registro
 # project_key: NOKEY
 # tracking_system: file-system
@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 02-08-2026 18:53
-last_updated: 10-08-2026
+last_updated: 11-08-2026
 project: Registro
 project_key: NOKEY
 tracking_system: file-system
@@ -79,7 +79,7 @@ development_status:
 
   epic-4: in-progress
   4-1-vedere-a-che-punto-e-ogni-scheda: done
-  4-2-vedere-l-esito-nell-elenco-clienti: backlog
+  4-2-vedere-l-esito-nell-elenco-clienti: review
   4-3-esportare-una-scheda-in-markdown: backlog
   epic-4-retrospective: optional
 
