@@ -1210,8 +1210,10 @@ a {
 }
 
 /* La riga che spiega il cestino sta sopra la prima voce, e `.question:first-child` azzera il
-   proprio margine: senza questo, testo e prima voce si toccano. */
-.card > .meta + .questions {
+   proprio margine: senza questo, testo e prima voce si toccano. Vale identico per il cestino
+   delle persone, che è lo stesso caso su `.people`. */
+.card > .meta + .questions,
+.card > .meta + .people {
   margin-top: 16px;
 }
 

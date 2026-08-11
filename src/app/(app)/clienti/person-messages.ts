@@ -38,3 +38,6 @@ export const PRIMARY_CLEARED_ONLY =
 export const PERSON_NOT_REMOVED = 'La persona non è stata eliminata. Riprova fra un momento.'
 export const CLIENT_GONE = 'Questa scheda non è più disponibile. Torna all’elenco.'
 export const PERSON_GONE = 'Questa persona non è più disponibile. Ricarica la pagina.'
+
+export const PERSON_NOT_RESTORED = 'La persona non è stata ripristinata. Riprova fra un momento.'
+export const ARCHIVE_GONE = 'Questa voce del cestino non è più disponibile. Ricarica la pagina.'

@@ -122,6 +122,10 @@ Il totale è il numero di domande presenti in quella scheda quando è stata comp
 
 Da qui si crea una scheda nuova.
 
+**Anche le persone hanno il loro cestino, dall'11 agosto 2026.** `Elimina` su una persona non cancella: la mette in un **Cestino** che compare sotto l'elenco delle persone e solo quando c'è qualcosa dentro, con un `Ripristina` che la rimette dov'era — i suoi campi, i suoi ruoli, il contrassegno di contatto principale se nel frattempo nessun altro l'ha preso. **E se era l'interlocutore di una scheda, torna a esserlo**: è la parte che conta, perché una scheda che perde chi è stato intervistato perde un'informazione che non sta scritta da nessun'altra parte. Solo dove la scheda non ne ha ricevuto un altro nel frattempo: quella sarebbe una scelta più recente, e il ripristino non la rovescia.
+
+Con questo il software non ha più nessuna cancellazione senza ritorno.
+
 ### Compilazione della scheda
 
 La schermata su cui si lavora durante la call, quindi progettata per quello: blocchi in sequenza verticale, campo di risposta ampio, testo di aiuto visibile sotto la domanda, nessun passaggio obbligato fra i blocchi.

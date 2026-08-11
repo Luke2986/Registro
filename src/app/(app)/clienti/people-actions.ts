@@ -8,7 +8,14 @@ import { PERSON_FIELDS, type PersonPatch } from '@/lib/person-fields'
 import { openSession } from '@/lib/supabase/session'
 import { isUuid } from '@/lib/uuid'
 
-import { CLIENT_GONE, PERSON_GONE, PERSON_NOT_REMOVED, PERSON_NOT_SAVED } from './person-messages'
+import {
+  ARCHIVE_GONE,
+  CLIENT_GONE,
+  PERSON_GONE,
+  PERSON_NOT_REMOVED,
+  PERSON_NOT_RESTORED,
+  PERSON_NOT_SAVED,
+} from './person-messages'
 
 /**
  * Una persona si aggiunge e si toglie: le due scritture che cambiano quante persone ci sono.
@@ -91,7 +98,12 @@ export type DeletePersonState = { error?: string }
  * personali del sistema, e senza questa azione una persona aggiunta per sbaglio resterebbe per
  * sempre — lo stesso argomento con cui D22 ha aperto la rinomina del nome del cliente.
  *
- * La riga la filtra la policy people_owner_all.
+ * Dalla 0021 la riga passa dal cestino, e la cancellazione non è più in TypeScript: è dentro
+ * `delete_person`, perché archiviare e cancellare devono riuscire o fallire insieme, e perché le
+ * schede di cui la persona era interlocutore vanno lette **prima** che `interviewee_id` cada in
+ * `set null` — dopo non c'è più niente da leggere. Nessun `delete` su `people` da qui.
+ *
+ * La riga la filtra la policy people_owner_all, dentro la funzione come fuori.
  */
 export async function deletePerson(
   _previous: DeletePersonState,
@@ -108,21 +120,96 @@ export async function deletePerson(
     return { error: PERSON_NOT_REMOVED }
   }
 
-  const { data, error } = await session.supabase
+  // La rpc risponde un esito e non la riga, quindi il cliente da rivalidare si legge prima. Non
+  // arriva dal browser di proposito: un `client_id` di parte servirebbe solo a far rivalidare una
+  // pagina altrui, che è innocuo ma è comunque un valore non verificato usato per decidere.
+  const person = await session.supabase
     .from('people')
-    .delete()
-    .eq('id', personId)
     .select('client_id')
+    .eq('id', personId)
     .maybeSingle()
 
-  if (error) {
-    console.error('deletePerson: delete rifiutato', { code: error.code, message: error.message })
+  if (person.error) {
+    console.error('deletePerson: lettura della persona fallita', {
+      code: person.error.code,
+      message: person.error.message,
+    })
     return { error: PERSON_NOT_REMOVED }
   }
 
-  if (!data) return { error: PERSON_GONE }
+  if (!person.data) return { error: PERSON_GONE }
 
-  revalidatePath(`/clienti/${data.client_id}`)
+  const { data, error } = await session.supabase.rpc('delete_person', { p_person_id: personId })
+
+  if (error) {
+    console.error('deletePerson: rpc rifiutata', { code: error.code, message: error.message })
+    return { error: PERSON_NOT_REMOVED }
+  }
+
+  // Confronto esaustivo e nessun ramo predefinito che valga «riuscito»: una funzione riscritta
+  // male risponderebbe un esito nuovo, e leggerlo come un successo toglierebbe la persona dallo
+  // schermo senza toglierla dal database.
+  if (data !== 'deleted') return { error: PERSON_GONE }
+
+  revalidatePath(`/clienti/${person.data.client_id}`)
+
+  return {}
+}
+
+export type RestorePersonState = { error?: string }
+
+/**
+ * Il ritorno dal cestino, con `restore_row` che è la stessa funzione del questionario: il ramo
+ * lo sceglie `source_table` della riga archiviata, non il chiamante. Qui c'è solo la mappatura
+ * degli esiti e la pagina da rivalidare, che è quella del cliente e non `/questionario`.
+ *
+ * `parent_gone` vuol dire che il cliente non c'è più: la persona non ha dove tornare, e la frase
+ * è quella che il resto della scheda usa già per lo stesso caso.
+ */
+export async function restorePerson(
+  _previous: RestorePersonState,
+  formData: FormData,
+): Promise<RestorePersonState> {
+  const session = await openSession('restorePerson')
+
+  if (!session.ok) return { error: session.error }
+
+  const archiveId = formData.get('archive_id')
+
+  if (!isUuid(archiveId)) {
+    console.error('restorePerson: richiesta rifiutata')
+    return { error: PERSON_NOT_RESTORED }
+  }
+
+  // Come in deletePerson, e per lo stesso motivo: il cliente da rivalidare si legge, non si
+  // riceve. Per una persona archiviata `parent_id` **è** il cliente.
+  const archived = await session.supabase
+    .from('archived_rows')
+    .select('parent_id')
+    .eq('id', archiveId)
+    .maybeSingle()
+
+  if (archived.error) {
+    console.error('restorePerson: lettura del cestino fallita', {
+      code: archived.error.code,
+      message: archived.error.message,
+    })
+    return { error: PERSON_NOT_RESTORED }
+  }
+
+  if (!archived.data) return { error: ARCHIVE_GONE }
+
+  const { data, error } = await session.supabase.rpc('restore_row', { p_archive_id: archiveId })
+
+  if (error) {
+    console.error('restorePerson: rpc rifiutata', { code: error.code, message: error.message })
+    return { error: PERSON_NOT_RESTORED }
+  }
+
+  if (data === 'parent_gone') return { error: CLIENT_GONE }
+  if (data !== 'restored') return { error: ARCHIVE_GONE }
+
+  revalidatePath(`/clienti/${archived.data.parent_id}`)
 
   return {}
 }

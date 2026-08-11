@@ -181,24 +181,32 @@ Il guardiano `in_use` **resta**, e va detto perché ora sembra ridondante: non p
 create table archived_rows (
   id            uuid primary key default gen_random_uuid(),
   owner_id      uuid not null references auth.users(id) on delete cascade,  -- 0020
-  source_table  text not null check (source_table in ('questions','question_blocks')),
+  source_table  text not null check (source_table in ('questions','question_blocks','people')),  -- 0021
   row_id        uuid not null,
   label         text not null,   -- come si riconosce nel cestino, senza aprire il payload
-  parent_id     uuid not null,   -- il blocco per una domanda, il questionario per un blocco
-  payload       jsonb not null,  -- to_jsonb(riga)
+  parent_id     uuid not null,   -- il blocco per una domanda, il questionario per un blocco,
+                                 -- il cliente per una persona
+  payload       jsonb not null,  -- to_jsonb(riga), più `interviewee_of` per una persona
   archived_at   timestamptz not null default now()
 );
 ```
 
 Tre scelte che non si deducono guardandola:
 
-- **Una tabella sola con un `jsonb`, non due gemelle di `questions` e `question_blocks`.** Due copie di uno schema divergono alla prima colonna aggiunta, e una colonna dimenticata nella copia sarebbe un dato perso proprio nella tabella che esiste per non perderne. `to_jsonb(riga)` si adegua da solo.
+- **Una tabella sola con un `jsonb`, non due gemelle di `questions` e `question_blocks`.** Due copie di uno schema divergono alla prima colonna aggiunta, e una colonna dimenticata nella copia sarebbe un dato perso proprio nella tabella che esiste per non perderne. `to_jsonb(riga)` si adegua da solo, ed è il motivo per cui la 0021 ha potuto aggiungere una terza sorgente cambiando un `check` e nient'altro.
 - **`owner_id` proprio, non risalito al questionario** come fanno `question_blocks` e `questions` nella §6. Qui la riga di origine può non esistere più — è il punto della tabella — quindi non c'è niente da cui risalire, e il proprietario si scrive.
 - **Nessuna chiave esterna verso le tabelle del questionario**, per la stessa ragione. Conseguenza sull'applicazione: `archived_rows` non è innestabile in una select di `questionnaires`, quindi la pagina del questionario la legge in una query sua. Verso `auth.users` invece il vincolo c'è, ed è arrivato tardi — la 0018 l'aveva scordato e la 0020 lo aggiunge: la policy della §6 impedisce di scrivere un proprietario *altrui*, il vincolo impedisce di scriverne uno che non esiste affatto, e il `cascade` fa sparire il cestino insieme all'utente come già succede alle altre cinque tabelle con un `owner_id` proprio.
 
-`parent_id` è il solo caso che il cestino non risolve da solo: una domanda il cui blocco è stato cancellato dopo di lei risponde `parent_gone`, e l'interfaccia dice di ripristinare prima il blocco. Senza quel ramo sarebbe una violazione di chiave esterna, cioè un errore illeggibile.
+`parent_id` è il solo caso che il cestino non risolve da solo: una domanda il cui blocco è stato cancellato dopo di lei risponde `parent_gone`, e l'interfaccia dice di ripristinare prima il blocco. Senza quel ramo sarebbe una violazione di chiave esterna, cioè un errore illeggibile. Per una persona il genitore è il cliente, che con `on delete cascade` porta via anche le sue persone: `parent_gone` lì vuol dire che il cliente non c'è più, e non c'è niente da ripristinare prima.
 
-**Cosa il cestino non copre, ed è l'unico posto che resta:** `deletePerson` (`src/app/(app)/clienti/people-actions.ts`) cancella una persona per davvero, con un `delete` di PostgREST, e si porta dietro `assessments.interviewee_id` in `set null`. È l'ultima cancellazione irreversibile del software.
+~~**Cosa il cestino non copre, ed è l'unico posto che resta:** `deletePerson` cancella una persona per davvero.~~ **Chiuso l'11 agosto 2026 con la 0021: il cestino copre anche le persone**, e con loro non resta nessuna cancellazione irreversibile nel software. `deletePerson` non contiene più nessun `delete`: chiama `delete_person`, che archivia e cancella nella stessa transazione.
+
+Due cose che la 0021 fa e le due funzioni del questionario no:
+
+- **Non c'è nessun `in_use`.** Una domanda dentro una scheda si rifiuta perché ha una via d'uscita migliore, `Disattiva`. Una persona non ne ha nessuna: rifiutare vorrebbe dire che una persona sbagliata, una volta usata come interlocutore, resta lì per sempre.
+- **Il legame si ricuce al ritorno**, ed è quello che rende il punto qui sopra sostenibile. `assessments.interviewee_id` cade in `set null` come `answers.question_id`, ma qui **si sa quali righe rimettere a posto**: prima di cancellare, `delete_person` legge le schede di cui la persona era interlocutore e ne scrive gli id dentro `payload`, sotto la chiave `interviewee_of` — che non è una colonna di `people`, e regge perché `jsonb_populate_record` scarta le chiavi che non trovano una colonna. `restore_row` le rimette, ma **solo dove `interviewee_id` è ancora nullo**: se nel frattempo la scheda ne ha ricevuto un altro, quella è una scelta più recente e il ripristino non la rovescia. Per la stessa ragione una persona che era `is_primary` torna senza contrassegno se nel frattempo un altro ha preso il posto, invece di far fallire il ripristino contro `people_one_primary_per_client_idx`.
+
+`label` per una persona è nome e cognome, e resta **vuota** quando non ce n'è nessuno dei due: nessun campo di `people` è obbligatorio (D13), e «Persona senza nome» è una parola dell'interfaccia — sta in `personDisplayName`, non nel database.
 
 ### assessments
 
@@ -414,6 +422,7 @@ supabase/migrations/
   0018_archive.sql          -- il cestino: si archivia invece di cancellare, e si ripristina
   0019_archive_row_reads.sql -- le tre letture di riga intera della 0018, nella forma che funziona
   0020_archived_rows_owner_fk.sql -- il vincolo verso auth.users che la 0018 aveva scordato
+  0021_archive_people.sql   -- il cestino copre anche le persone, e il ritorno ricuce l'interlocutore
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```

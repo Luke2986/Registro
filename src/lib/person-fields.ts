@@ -65,5 +65,12 @@ export function personDisplayName(person: { first_name: string | null; last_name
     .filter((part) => part.length > 0)
     .join(' ')
 
-  return name.length === 0 ? 'Persona senza nome' : name
+  return name.length === 0 ? PERSON_UNNAMED : name
 }
+
+/**
+ * Il ripiego, esportato perché serve anche al cestino, che di una persona archiviata ha
+ * l'etichetta già composta e non le due colonne: `delete_person` la scrive vuota quando non c'è
+ * nome, perché nel database una frase italiana rivolta a chi guarda lo schermo sarebbe fuori posto.
+ */
+export const PERSON_UNNAMED = 'Persona senza nome'

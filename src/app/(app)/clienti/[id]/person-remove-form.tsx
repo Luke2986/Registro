@@ -13,9 +13,10 @@ const UNREACHABLE = 'La persona non è stata eliminata: il server non ha rispost
  * `Elimina` in due tempi, dentro la riga stessa. Nessuna finestra modale: il progetto non ne ha
  * una e introdurla è un pezzo di interfaccia che nessuna AC chiede.
  *
- * La conferma è obbligatoria e non è la stessa scelta dei tag: togliere un tag è reversibile in
- * due secondi, eliminare una persona no (kb-0.md §6). Il verbo cambia apposta — `Togli` per un
- * tag, `Elimina` per una persona — e resta lo stesso dal pulsante alla conferma.
+ * La conferma resta anche ora che dalla 0021 la persona finisce nel cestino: il ritorno sta in
+ * un'altra card, e in un elenco di persone che si somigliano un tocco sbagliato si fa senza
+ * accorgersene. Il verbo cambia apposta rispetto ai tag — `Togli` per un tag, `Elimina` per una
+ * persona — e resta lo stesso dal pulsante alla conferma.
  *
  * I due tempi scambiano un pulsante con due, quindi React smonta quello appena premuto e il
  * fuoco cadrebbe sul corpo della pagina: si sposta a mano, avanti sulla conferma e indietro su
@@ -64,7 +65,7 @@ export function PersonRemoveForm({
           starebbe nella card e la pagina scorrerebbe di lato. */}
       {asking ? (
         <p className="meta" id={questionId}>
-          Elimini {name}? Non si recupera.
+          Elimini {name}? Finisce nel cestino.
         </p>
       ) : null}
 

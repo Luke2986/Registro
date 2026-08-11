@@ -99,9 +99,13 @@ export default async function QuestionnairePage() {
   // `label` e `source_table`, ed è la ragione per cui quelle due colonne esistono fuori dal jsonb.
   // Un errore qui non porta la pagina sullo stato d'errore: il questionario è leggibile lo stesso,
   // e sostituirlo con un guasto perché il cestino non risponde sarebbe sproporzionato.
+  // `in` sulle due sorgenti del questionario e non tutta la tabella: dalla 0021 il cestino
+  // raccoglie anche le persone, che tornano dalla scheda del loro cliente e qui sarebbero righe
+  // senza contesto, con un `Ripristina` che rivalida la pagina sbagliata.
   const { data: archived, error: archivedError } = await supabase
     .from('archived_rows')
     .select('id, source_table, label, archived_at')
+    .in('source_table', ['questions', 'question_blocks'])
     .order('archived_at', { ascending: false })
 
   if (archivedError) {

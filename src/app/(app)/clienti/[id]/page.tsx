@@ -11,6 +11,7 @@ import { isUuid } from '@/lib/uuid'
 import { AssessmentsCard } from './assessments-card'
 import { ClientCard } from './client-card'
 import { PeopleCard } from './people-card'
+import { PersonTrashCard } from './person-trash-card'
 
 const COLUMNS =
   'id, name, status, tags, sector, website, city, province, address, source_channel, revenue, employees, business_goals, notes'
@@ -92,6 +93,25 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
     console.error('ClientPage: persone non lette', { code: peopleError.code, message: peopleError.message })
   }
 
+  // Il cestino di **questo** cliente: `parent_id` di una persona archiviata è il suo cliente. In
+  // una query sua e non innestata in `clients`, perché `archived_rows` non ha una chiave esterna
+  // verso le tabelle di origine — la riga di origine può non esistere più, che è il punto della
+  // tabella (database.md §3). `payload` non si legge: contiene la riga intera, quindi email e
+  // telefono, e da qui finirebbe nel payload spedito al browser (kb-0.md §4).
+  const { data: archivedPeople, error: archivedError } = await supabase
+    .from('archived_rows')
+    .select('id, label, archived_at')
+    .eq('source_table', 'people')
+    .eq('parent_id', id)
+    .order('archived_at', { ascending: false })
+
+  if (archivedError) {
+    console.error('ClientPage: cestino non letto', {
+      code: archivedError.code,
+      message: archivedError.message,
+    })
+  }
+
   // `.eq('client_id', id)` è correttezza e non sicurezza, come per le persone. I criteri dopo
   // `call_date` non sono decorativi: `call_date` è una *data*, quindi due schede dello stesso
   // giorno pareggerebbero, e `created_at` da solo non è unico per costruzione. `id` chiude:
@@ -151,6 +171,12 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           cose. `people` a null è «non si è caricato», che la card distingue da «non ce ne
           sono»: va in errore solo lei, e l'anagrafica sopra resta usabile. */}
       <PeopleCard clientId={data.id} people={people} />
+      {/* Subito sotto le persone e non in fondo alla pagina: è accanto a quello da cui la riga è
+          uscita. Non compare quando è vuoto — lo stato vuoto del cestino è l'assenza — ma compare
+          quando la lettura è fallita, perché lì «vuoto» non si sa. */}
+      {archivedPeople === null || archivedPeople.length > 0 ? (
+        <PersonTrashCard clientId={data.id} rows={archivedPeople} />
+      ) : null}
       {/* Dopo le persone, perché l'ordine della pagina è quello del lavoro: le persone si
           registrano prima della call, le schede dopo. `people` serve qui due volte, al selettore
           dell'interlocutore e al nome nella riga, e arriva dalla lettura che è già stata fatta.

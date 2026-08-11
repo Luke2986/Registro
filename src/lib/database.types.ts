@@ -423,6 +423,7 @@ export type Database = {
     }
     Functions: {
       delete_block: { Args: { p_block_id: string }; Returns: string }
+      delete_person: { Args: { p_person_id: string }; Returns: string }
       delete_question: { Args: { p_question_id: string }; Returns: string }
       move_block: {
         Args: { p_block_id: string; p_direction: string }
