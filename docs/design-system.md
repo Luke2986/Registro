@@ -197,6 +197,24 @@ Altezza 22, raggio `--r-full`, padding orizzontale 10, testo `--t-meta` peso 500
 
 Come nei riferimenti: raggio `--r-sm`, fondo in tinta chiara, cifra in mono peso 500. Usato per contare le persone o le schede.
 
+### Cestino
+
+**Nato l'11 agosto 2026, e nasce da un difetto:** i due cestini — quello del questionario e quello delle persone — riusavano `.card` con dentro `.question`, cioè fondo bianco, `--sh-1` e voce a `--t-heading`. Una riga eliminata era resa con gli stessi identici valori di una domanda viva, e distingueva solo la parola sul pulsante. La schermata del questionario aveva quindi tre gradi di vita — attiva, non attiva, eliminata — e due trattamenti, con il salto più grosso non disegnato affatto.
+
+**Il cestino scava invece di galleggiare.** Fondo `--surface-sunken`, nessuna ombra, stesso raggio `--r-xl`, e 40 di stacco sopra invece dei 24 fra due card sorelle: il salto non è fra due card, è fra il questionario e ciò che ne è uscito. Misurati con la formula WCAG, `--surface` su `--bg` sta a 1,12:1 e `--surface-sunken` su `--bg` sta anch'esso a **1,12:1**: lo scavo si legge quanto il rilievo, in direzione opposta. È il motivo per cui la distinzione si fa con la superficie e non con il colore — i colori di sezione vivono nella navigazione e i semantici significano un esito (§2), mentre una voce eliminata non è né una sezione né un esito. **Nessun token nuovo.**
+
+Tre conseguenze che il fondo più scuro impone, e che non si deducono:
+
+- Il separatore sale a `--line-strong`, perché `--line` su `--surface-sunken` sta a 1,11:1, cioè non si vede. A 1,27:1 resta appena più tenue di `--line` su bianco (1,39:1), che per un cestino va bene.
+- Il badge si inverte a `--surface`: il suo fondo è `--surface-sunken`, che qui sarebbe scavato su scavato.
+- Il conteggio è `--ink-muted` e non `--ink-faint`, che su `--surface-sunken` sta a 2,98:1.
+
+**La voce non è il titolo di niente:** `--t-body` peso 500, non il `--t-heading` della domanda viva. È la seconda metà della distinzione e da sola vale quanto lo scavo — una riga a 17/600 legge come una domanda anche su un fondo diverso. L'inchiostro invece resta pieno: dentro una zona già scavata il testo è la sola cosa da leggere, e smorzarlo due volte lo renderebbe faticoso proprio a chi cerca cosa recuperare.
+
+**Richiuso di default, con un `<details>` nativo.** Il cestino vuoto non compare affatto, quindi una riga chiusa col suo numero è già la prova che dentro c'è qualcosa; da chiuso costa una riga in fondo a una pagina di ventitré domande. Il browser porta `aria-expanded`, l'invio e la barra spaziatrice da sé, e i due chiamanti restano Server Component. Il sommario è alto 64, sopra i 44 che §8 chiede sul tocco, e il fuoco ridichiara `--r-xl` perché l'alone globale porta `--r-sm`, che dentro un angolo da 24 resterebbe tagliato.
+
+**Una sola eccezione, ed è lo stato d'errore** del cestino delle persone: lì compare come card aperta, non come guscio richiuso. Un errore dietro un clic è un errore che nessuno legge, e il numero che il sommario mostra non esiste — non si sa quante righe ci siano, è proprio quello che è mancato.
+
 ### Campo di risposta
 
 L'elemento su cui si passa più tempo, quindi il più curato. Fondo `--surface`, bordo 1px `--line`, raggio `--r-md`, padding 12 16, testo `--t-body`. Cresce in altezza con il contenuto, minimo tre righe. Al focus: bordo `--sec-prequalifica` e alone di 3px nella sua tinta chiara, mai l'anello azzurro predefinito del browser.

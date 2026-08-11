@@ -1410,6 +1410,129 @@ a {
   border-top: 1px solid var(--line);
 }
 
+/* cestino: condiviso fra il questionario e la scheda cliente */
+
+/* Il cestino **scava invece di galleggiare**, ed è tutta la proposta in una riga. Fino all'11
+   agosto 2026 riusava `.card` con dentro `.question`: fondo bianco, `--sh-1`, e la voce a
+   `--t-heading` come una domanda viva. Distingueva solo la parola sul pulsante, e la pagina
+   finiva per avere tre gradi di vita — attiva, non attiva, eliminata — e due trattamenti.
+   Misurato con la formula WCAG: `--surface` su `--bg` sta a 1,12:1 e `--surface-sunken` su `--bg`
+   sta anch'esso a 1,12:1. Lo scavo si legge quanto il rilievo, in direzione opposta, e non serve
+   nessun token nuovo — che è il motivo per cui questa è la strada e non il colore: i colori di
+   sezione vivono nella navigazione e i semantici significano un esito (design-system.md §2),
+   mentre una voce eliminata non è né una sezione né un esito. */
+.trash {
+  background: var(--surface-sunken);
+  border-radius: var(--r-xl);
+  /* Non `.card + .card`, che vale 24 fra due card sorelle: qui il salto non è fra due card, è
+     fra il questionario e ciò che ne è uscito. Il valore è quello della scala. */
+  margin-top: 40px;
+}
+
+/* `<details>` nativo e non uno stato React: il cestino vuoto non esiste affatto e il cestino
+   pieno è raro, quindi da chiuso deve costare una riga in fondo a una pagina di ventitré
+   domande. Il browser porta `aria-expanded` e il tasto invio da sé, e i due componenti restano
+   Server Component. */
+.trash__summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px;
+  border-radius: var(--r-xl);
+  cursor: pointer;
+  /* Le due righe insieme tolgono il triangolo nativo: `list-style` copre Firefox e i browser
+     Chromium recenti, lo pseudo-elemento copre Safari, che ancora non guarda la prima. */
+  list-style: none;
+}
+
+.trash__summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Il fuoco globale porta `--r-sm`, che dentro un angolo da 24 lascerebbe l'alone tagliato. */
+.trash__summary:focus-visible {
+  border-radius: var(--r-xl);
+}
+
+.trash__chevron {
+  color: var(--ink-muted);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.trash[open] .trash__chevron {
+  transform: rotate(90deg);
+}
+
+/* Gli stessi tre valori di `.card__title`, in `--ink-muted`: il cestino è una destinazione
+   secondaria e il suo titolo non deve contendere il posto ai titoli dei blocchi. Misurato,
+   6,15:1 su `--surface-sunken`. */
+.trash__title {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+/* `--ink-muted` e non `--ink-faint`, che su `--surface-sunken` sta a 2,98:1: qui il fondo è più
+   scuro che altrove, e il grigio che basta su bianco non basta più. */
+.trash__count {
+  color: var(--ink-muted);
+}
+
+.trash__body {
+  padding: 0 24px 24px;
+}
+
+/* La frase che spiega il cestino sta sopra la prima voce, come nelle card: il gemello di
+   `.card > .meta + .questions`, su un contenitore che non è una card. */
+.trash__body > .meta + .questions,
+.trash__body > .meta + .people {
+  margin-top: 16px;
+}
+
+/* `--line` su `--surface-sunken` sta a 1,11:1, cioè non si vede: il separatore sale di un passo
+   e resta a 1,27:1, appena più tenue di `--line` su bianco (1,39:1). Più tenue va bene — è un
+   cestino. */
+.trash .question,
+.trash .person {
+  border-top-color: var(--line-strong);
+}
+
+/* `.person` respira per la scheda cliente, dove porta la griglia dei campi e i ruoli. Nel cestino
+   porta due righe, e la spaziatura di là lascerebbe due voci lontane come due sezioni. I valori
+   sono quelli di `.question`, che nel cestino è la riga gemella. */
+.trash .person {
+  gap: 8px;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.trash .people .person:first-child {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* `.badge` ha `--surface-sunken` come fondo: qui sarebbe scavato su scavato, cioè niente. */
+.trash .badge {
+  background: var(--surface);
+}
+
+/* La voce del cestino **non è il titolo di niente**: `--t-body` peso 500 invece del `--t-heading`
+   che porta la domanda viva. È la seconda metà della distinzione, e da sola vale quanto lo
+   scavo — una riga a 17/600 legge come una domanda anche su fondo diverso.
+   Nessun colore dichiarato, quindi `--ink` pieno: dentro una zona già scavata il testo è la sola
+   cosa da leggere, e smorzarlo una seconda volta lo renderebbe faticoso proprio a chi sta
+   cercando cosa recuperare. Superficie e peso portano la gerarchia; l'inchiostro no. */
+.trash__label {
+  font-size: 15px;
+  line-height: 24px;
+  font-weight: 500;
+  margin: 0;
+  /* Stessa ragione di `.question__text`: a 375 un token senza spazi più largo della card
+     uscirebbe di lato. Il nome di una persona non ne ha, il titolo di un blocco sì. */
+  overflow-wrap: anywhere;
+}
+
 /* i quattro stati di ogni schermata */
 
 .empty {
