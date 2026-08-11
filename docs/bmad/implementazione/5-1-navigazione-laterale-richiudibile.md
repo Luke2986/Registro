@@ -4,7 +4,7 @@ baseline_commit: d523a4f
 
 # Story 5.1: Navigazione laterale richiudibile
 
-Status: review
+Status: done
 
 Epic: 5 — Rifinitura dell'interfaccia
 Data di creazione: 11 agosto 2026
@@ -438,17 +438,17 @@ Questa story non è la passata di accessibilità — è la 5.2. Ma tre cose vann
 
 Le caselle qui sotto le mette Luca dopo la revisione del codice, non l'implementazione. Sono la prova che AC1-AC4 valgono con un browser vero, non solo con una riproduzione statica.
 
-- [ ] La nav parte espansa al primo accesso senza cookie
-- [ ] Un clic sul toggle la richiude, e il cookie compare in DevTools con `nav_collapsed=1`
-- [ ] Un ricaricamento della pagina la ritrova richiusa (AC1)
-- [ ] Da richiusa, il passaggio del mouse su `Clienti` fa comparire un suggerimento nero con «Clienti» in bianco (AC2)
-- [ ] Da richiusa, la voce della sezione corrente ha fondo `--surface-sunken`, l'icona nel colore della sezione, e la barra verticale a sinistra (AC3)
-- [ ] A 375px la nav è forzata a icone e il toggle è invisibile (AC4)
-- [ ] A 320px la pagina non scorre di lato (verifica di sanità oltre l'AC)
-- [ ] La transizione fra espanso e richiuso non produce salti del contenuto sotto
-- [ ] Con `prefers-reduced-motion: reduce` attiva nel sistema operativo, la transizione è istantanea
-- [ ] Il pulsante toggle ha un alone di focus visibile con Tab
-- [ ] `SignOutButton` resta in fondo alla sidebar in entrambi gli stati e resta cliccabile
+- [x] La nav parte espansa al primo accesso senza cookie
+- [x] Un clic sul toggle la richiude, e il cookie compare in DevTools con `nav_collapsed=1`
+- [x] Un ricaricamento della pagina la ritrova richiusa (AC1)
+- [x] Da richiusa, il passaggio del mouse su `Clienti` fa comparire un suggerimento nero con «Clienti» in bianco (AC2)
+- [x] Da richiusa, la voce della sezione corrente ha fondo `--surface-sunken`, l'icona nel colore della sezione, e la barra verticale a sinistra (AC3)
+- [x] A 375px la nav è forzata a icone e il toggle è invisibile (AC4)
+- [x] A 320px la pagina non scorre di lato (verifica di sanità oltre l'AC)
+- [x] La transizione fra espanso e richiuso non produce salti del contenuto sotto
+- [x] Con `prefers-reduced-motion: reduce` attiva nel sistema operativo, la transizione è istantanea
+- [x] Il pulsante toggle ha un alone di focus visibile con Tab
+- [x] `SignOutButton` resta in fondo alla sidebar in entrambi gli stati e resta cliccabile
 
 ## Dev Agent Record
 
