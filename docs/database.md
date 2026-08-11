@@ -180,7 +180,7 @@ Il guardiano `in_use` **resta**, e va detto perché ora sembra ridondante: non p
 ```sql
 create table archived_rows (
   id            uuid primary key default gen_random_uuid(),
-  owner_id      uuid not null,
+  owner_id      uuid not null references auth.users(id) on delete cascade,  -- 0020
   source_table  text not null check (source_table in ('questions','question_blocks')),
   row_id        uuid not null,
   label         text not null,   -- come si riconosce nel cestino, senza aprire il payload
@@ -194,7 +194,7 @@ Tre scelte che non si deducono guardandola:
 
 - **Una tabella sola con un `jsonb`, non due gemelle di `questions` e `question_blocks`.** Due copie di uno schema divergono alla prima colonna aggiunta, e una colonna dimenticata nella copia sarebbe un dato perso proprio nella tabella che esiste per non perderne. `to_jsonb(riga)` si adegua da solo.
 - **`owner_id` proprio, non risalito al questionario** come fanno `question_blocks` e `questions` nella §6. Qui la riga di origine può non esistere più — è il punto della tabella — quindi non c'è niente da cui risalire, e il proprietario si scrive.
-- **Nessuna chiave esterna verso le altre tabelle**, per la stessa ragione. Conseguenza sull'applicazione: `archived_rows` non è innestabile in una select di `questionnaires`, quindi la pagina del questionario la legge in una query sua.
+- **Nessuna chiave esterna verso le tabelle del questionario**, per la stessa ragione. Conseguenza sull'applicazione: `archived_rows` non è innestabile in una select di `questionnaires`, quindi la pagina del questionario la legge in una query sua. Verso `auth.users` invece il vincolo c'è, ed è arrivato tardi — la 0018 l'aveva scordato e la 0020 lo aggiunge: la policy della §6 impedisce di scrivere un proprietario *altrui*, il vincolo impedisce di scriverne uno che non esiste affatto, e il `cascade` fa sparire il cestino insieme all'utente come già succede alle altre cinque tabelle con un `owner_id` proprio.
 
 `parent_id` è il solo caso che il cestino non risolve da solo: una domanda il cui blocco è stato cancellato dopo di lei risponde `parent_gone`, e l'interfaccia dice di ripristinare prima il blocco. Senza quel ramo sarebbe una violazione di chiave esterna, cioè un errore illeggibile.
 
@@ -413,6 +413,7 @@ supabase/migrations/
   0017_delete_without_history.sql -- si cancella solo dove non c'è storia da perdere
   0018_archive.sql          -- il cestino: si archivia invece di cancellare, e si ripristina
   0019_archive_row_reads.sql -- le tre letture di riga intera della 0018, nella forma che funziona
+  0020_archived_rows_owner_fk.sql -- il vincolo verso auth.users che la 0018 aveva scordato
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```
@@ -469,3 +470,19 @@ Da tenere presente adesso per non doversi contorcere dopo, senza costruirlo ora:
 - `audits` e `audit_entries`, con la provenienza su ogni voce (D5).
 - `documents`, con riferimento al file nello storage e collegamento al cliente (D12).
 - Nessuna di queste tabelle modifica quelle esistenti: si agganciano a `clients` e basta.
+
+---
+
+## 10. Copia di sicurezza
+
+Il progetto sta sul **piano free di Supabase, che non fa nessun backup**: né automatico né scaricabile. Non è una dimenticanza da correggere in fretta, è la condizione in cui il software gira, e finché resta così l'unica copia è quella che si prende a mano. Il cestino della §3 protegge da un `Elimina` premuto per sbaglio; questa sezione protegge da tutto il resto, che è la parte più grande.
+
+`npm run backup` esegue `scripts/backup.sh` e scrive un `registro-AAAA-MM-GG-hhmm.sql` in `~/Documents/Registro-backup`, **fuori dal repository**: il file contiene dati veri di clienti, e una cartella dentro il repo sarebbe a un `git add -f` di distanza da GitHub. La stringa di connessione sta in `.env.backup.local`, coperto dalla regola `.env*.local` del `.gitignore`, e lo script non la stampa mai — contiene la password del database.
+
+Tre cose che non si deducono guardandolo:
+
+- **La porta 6543 non funziona.** È il transaction pooler, e `pg_dump` non ci lavora. Serve il session pooler sulla 5432, oppure la connessione diretta se la linea ha IPv6.
+- **`pg_dump` non è nel PATH**, su questa macchina non c'è affatto e non c'è nemmeno Homebrew per installarlo in un comando. Lo script lo cerca dove sta di solito su macOS — dentro Postgres.app, dentro `libpq` di Homebrew che è keg-only — e se non lo trova dice come procurarselo invece di fallire e basta.
+- **Il dump copre `public` e non `auth`.** Ripristinare sullo *stesso* progetto funziona, perché l'utente è ancora lì. Su un progetto *nuovo* va prima ricreato l'utente con lo stesso `id`, altrimenti i sei vincoli `owner_id → auth.users(id)` rifiutano ogni riga: sono su `clients`, `people`, `questionnaires`, `assessments`, `answers` e `archived_rows`. Vale la pena saperlo prima, perché è il momento in cui si scopre è il peggiore.
+
+Il giorno che il progetto passasse a Pro, i backup giornalieri arrivano da soli e questo script diventa la copia in più invece dell'unica.
