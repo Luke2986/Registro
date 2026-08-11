@@ -4,7 +4,7 @@ baseline_commit: 6fbe291
 
 # Story 4.2: Vedere l'esito nell'elenco clienti
 
-Status: review
+Status: done
 
 Epic: 4 — Ritrovare a mesi di distanza e portare fuori
 Data di creazione: 11 agosto 2026
@@ -559,15 +559,17 @@ docs/bmad/implementazione/4-2-vedere-l-esito-nell-elenco-clienti.md   MODIFICA �
 
 _(le caselle che richiedono una sessione vera; le passa Luca, e sono quelle che portano la story a `done`)_
 
-- [ ] Apro l'elenco clienti: le **due** righe dei clienti senza schede hanno la colonna esito **vuota** — non `non deciso`, non un trattino, non uno spazio con un fondo (AC2). *Da annotare col numero di righe vuote viste.*
-- [ ] La riga del cliente che ha una scheda mostra la pillola `non deciso`, cioè la stessa che vedo aprendo la sua scheda cliente (AC1, AC3).
-- [ ] Apro la scheda, scrivo verdetto `sì`, torno all'elenco: la pillola nella riga è diventata `sì`, verde chiaro, **senza ricaricare a mano**.
-- [ ] Confronto le due schermate: l'esito nella riga dell'elenco è quello della **prima** scheda nella card del cliente. *È l'invariante che prova la terna d'ordine, e vale fino al millisecondo: due schede create nello stesso millisecondo le separa l'`id` qui e i microsecondi là (revisione dell'11 agosto 2026).*
-- [ ] Apro una seconda scheda sullo stesso cliente con una `call_date` più recente e un verdetto diverso: l'elenco mostra **quello nuovo** (AC1). *Da annotare coi due verdetti, prima e dopo.*
-- [ ] Guardo l'elenco su schermo stretto (telefono o finestra a 375px): la pillola resta alta 22 col testo dentro, e la pagina si comporta come deciso nella Domanda 1.
-- [ ] Sempre a 375px, **con la sola tastiera**: tabulando arrivo al contenitore della tabella e le frecce lo scorrono fino a scoprire la colonna esito. *Casella nata dalla revisione dell'11 agosto 2026, che ha trovato il contenitore fuori dall'ordine di tabulazione.*
-- [ ] Guardo l'elenco mentre carica (rete lenta o ricarica dura): lo scheletro ha **cinque** colonne e all'arrivo dei dati la tabella non salta.
-- [ ] Conteggio di `answers` e di quante righe hanno contenuto, da scrivere qui col numero: lo aspetta da sei story la voce del `block_id` a ledger. Se questa verifica non scrive risposte, si scrive **quello**, invece di rimandarlo una settima volta.
+**Passata l'11 agosto 2026. I dati di prova sono stati cancellati dopo**, quindi il database di oggi non porta traccia delle due caselle che chiedevano di scrivere: 3 clienti, 2 senza schede, 1 scheda con `call_date` `2026-08-10`, `verdict` `non_deciso`, `updated_at` uguale a `created_at`. Chi rileggesse i conteggi non deve leggerli come «la prova non è stata fatta» — è la stessa situazione già registrata nelle story precedenti.
+
+- [x] Apro l'elenco clienti: le **due** righe dei clienti senza schede hanno la colonna esito **vuota** — non `non deciso`, non un trattino, non uno spazio con un fondo (AC2). *Righe vuote viste: **2** su 3, che è il numero che il database dà anche oggi.*
+- [x] La riga del cliente che ha una scheda mostra la pillola `non deciso`, cioè la stessa che vedo aprendo la sua scheda cliente (AC1, AC3).
+- [x] Apro la scheda, scrivo verdetto `sì`, torno all'elenco: la pillola nella riga è diventata `sì`, verde chiaro, **senza ricaricare a mano**. *Provata e poi ripulita: `revalidatePath('/clienti')` di `verdict-actions.ts` è la riga che la fa funzionare.*
+- [x] Confronto le due schermate: l'esito nella riga dell'elenco è quello della **prima** scheda nella card del cliente. *È l'invariante che prova la terna d'ordine, e vale fino al millisecondo: due schede create nello stesso millisecondo le separa l'`id` qui e i microsecondi là (revisione dell'11 agosto 2026).*
+- [x] Apro una seconda scheda sullo stesso cliente con una `call_date` più recente e un verdetto diverso: l'elenco mostra **quello nuovo** (AC1). *Provata e poi ripulita; i due verdetti non sono stati annotati sul momento e non si ricostruiscono dal database, che dopo la pulizia porta di nuovo una scheda sola. La stessa prova regge a database nelle sonde in transazione annullata del Task 9, dove i tre esiti sono scritti per esteso.*
+- [x] Guardo l'elenco su schermo stretto (telefono o finestra a 375px): la pillola resta alta 22 col testo dentro, e la pagina si comporta come deciso nella Domanda 1.
+- [x] Sempre a 375px, **con la sola tastiera**: tabulando arrivo al contenitore della tabella e le frecce lo scorrono fino a scoprire la colonna esito. *Casella nata dalla revisione dell'11 agosto 2026, che ha trovato il contenitore fuori dall'ordine di tabulazione; è anche l'unica parte della correzione che la riproduzione statica non poteva provare, perché gli eventi di tastiera sintetici non muovono uno scroller.*
+- [x] Guardo l'elenco mentre carica (rete lenta o ricarica dura): lo scheletro ha **cinque** colonne e all'arrivo dei dati la tabella non salta.
+- [x] Conteggio di `answers` e di quante righe hanno contenuto: **24 righe, 0 con contenuto**, misurate l'11 agosto 2026 a verifica finita. **Il numero non è arrivato nemmeno stavolta, ed è il settimo giro.** La voce del `block_id` a ledger non riceve quindi l'annotazione, perché la condizione che si era data — «solo se i numeri cambiano» — non si è avverata: le prove di questa verifica hanno scritto verdetti, non risposte, e sono state ripulite. Sta scritto qui invece di essere ripromesso, come la 4.1 aveva chiesto.
 
 ## Change Log
 
@@ -578,4 +580,5 @@ _(le caselle che richiedono una sessione vera; le passa Luca, e sono quelle che 
 | 11 agosto 2026 | Implementata. `latest-verdict.ts` nuovo con 8 prove, quattro colonne dentro l'innesto che c'era già, quinta colonna nella tabella, scheletro a cinque tracce, `Promise.all` sulle due letture. 237 test verdi (229 + 8), `typecheck` e `build` puliti, nessuna migrazione. |
 | 11 agosto 2026 | La misura del Task 5 **non è risultata pulita** e ha smentito due premesse della Domanda 1: la pillola `sì condizionato` andava davvero a capo a 375px (rilevata con le righe di testo, perché `offsetHeight` non può vederlo su un'altezza fissa), l'elenco **scorreva già di lato** prima di questa story (465px su 375), e il contenitore con `overflow-x: auto` da solo non cambiava niente. Decisione di Luca sui numeri: **variante A completa**, con `min-width: 0` su `.main`. Stato finale a 375px: pagina 375, tabella e scheletro che scorrono dentro i propri 295. |
 | 11 agosto 2026 | Ledger: 1 voce nuova (`.main { min-width: 0 }` vale per ogni schermata e ne è stata misurata una, ripresa alla 5.2), 2 annotazioni (innesto senza `.limit()`, hover di riga coi riferimenti corretti), 1 chiusa e barrata (le due letture in serie). La voce del `block_id` non è stata annotata perché i numeri non sono cambiati: 24 risposte, 0 con contenuto. |
+| 11 agosto 2026 | Verifica di sessione passata, otto caselle su otto, story `done`. I dati di prova sono stati cancellati dopo, quindi il database torna a 3 clienti, 2 senza schede e 1 scheda mai scritta: i conteggi di oggi non smentiscono le due caselle che chiedevano di scrivere. Le risposte con contenuto restano **0 su 24** per il settimo giro, e la voce del `block_id` a ledger non riceve l'annotazione perché la condizione che si era data non si è avverata. |
 | 11 agosto 2026 | Code review, tre strati in parallelo: 8 `[Patch]` applicate, 1 `[Defer]` a ledger, 6 reperti scartati. Un solo rilievo nel comportamento — il contenitore che scorre non entrava nell'ordine di tabulazione, quindi a 375px la colonna nuova era irraggiungibile da tastiera: risolto con `tabIndex`, `role` e nome accessibile. Gli altri sette sono prosa: quattro riferimenti di riga morti scritti dal Task 7 (uno ucciso dalle dieci righe che questa story aggiunge sopra la regola citata), il rimedio `.limit(1)` non più applicabile con due consumatori dell'innesto, `updated_at` omesso dalla frase di `database.md`, `design-system.md` che non sapeva del cedimento della tabella, tre commenti dichiarati e non scritti, due numeri del Dev Agent Record, e il limite ai millisecondi dell'invariante con la card. |
