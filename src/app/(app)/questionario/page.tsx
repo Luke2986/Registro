@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 
 import { BlockCard } from './block-card'
 import { NewBlockForm } from './new-block-form'
+import { TrashCard } from './trash-card'
 
 export default async function QuestionnairePage() {
   const supabase = await createClient()
@@ -92,6 +93,24 @@ export default async function QuestionnairePage() {
   // `noUncheckedIndexedAccess` è attivo, quindi `data[0]` è già `T | undefined`.
   const questionnaire = data?.[0] ?? null
 
+  // Il cestino, in una lettura sua: `archived_rows` non ha nessuna chiave esterna verso le altre
+  // tabelle — di proposito, perché la riga di origine non esiste più — quindi non è innestabile e
+  // non c'è modo di prenderla con la query qui sopra. `payload` non si legge: l'elenco vive di
+  // `label` e `source_table`, ed è la ragione per cui quelle due colonne esistono fuori dal jsonb.
+  // Un errore qui non porta la pagina sullo stato d'errore: il questionario è leggibile lo stesso,
+  // e sostituirlo con un guasto perché il cestino non risponde sarebbe sproporzionato.
+  const { data: archived, error: archivedError } = await supabase
+    .from('archived_rows')
+    .select('id, source_table, label, archived_at')
+    .order('archived_at', { ascending: false })
+
+  if (archivedError) {
+    console.error('QuestionnairePage: cestino non letto', {
+      code: archivedError.code,
+      message: archivedError.message,
+    })
+  }
+
   // I due rami stanno su due variabili diverse e non si collassano in un `!data`: un `!data` da
   // solo direbbe «il questionario non è caricato» anche quando il database non ha risposto, cioè
   // una bugia rassicurante nel momento in cui serve la verità.
@@ -157,6 +176,11 @@ export default async function QuestionnairePage() {
           </div>
         </>
       )}
+
+      {/* Fuori dai rami: il cestino si mostra anche quando il questionario non si è caricato, che
+          è proprio il momento in cui uno potrebbe cercarlo. Assente quando è vuoto — il perché
+          sta in trash-card.tsx. */}
+      {archived && archived.length > 0 ? <TrashCard rows={archived} /> : null}
     </>
   )
 }

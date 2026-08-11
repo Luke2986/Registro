@@ -171,6 +171,35 @@ Sono funzioni e non due `delete` da PostgREST perché **il database non sa rifiu
 
 Una finestra sopravvive ed è dichiarata invece che chiusa, in testa alla migrazione: una scheda aperta fra il controllo e il `delete` porta la propria riga a `question_id` null. La risposta resta leggibile con la sua copia del testo, che è lo stato che questa sezione descrive da sempre come previsto.
 
+**Corretto l'11 agosto 2026, con la 0018: non si cancella affatto, si archivia.** La regola della 0017 era giusta e insufficiente — «non c'è storia da perdere» vale per il database, non per chi ha appena premuto il pulsante sbagliato — e `masterplan.md` §5 lo diceva già come principio: «niente si cancella davvero». Le due funzioni scrivono ora la riga in `archived_rows` prima di toglierla, e `restore_row` la rimette dov'era **con il suo id**, che è l'unica forma in cui un ripristino è un ritorno e non una copia.
+
+Il guardiano `in_use` **resta**, e va detto perché ora sembra ridondante: non protegge dall'irrecuperabilità, protegge il legame. `answers.question_id` cade in `set null` alla cancellazione, e nessun ripristino sa quali righe rimettere a posto — quindi una domanda che una scheda contiene continua a non potersi togliere, e la via resta `Disattiva`.
+
+### archived_rows
+
+```sql
+create table archived_rows (
+  id            uuid primary key default gen_random_uuid(),
+  owner_id      uuid not null,
+  source_table  text not null check (source_table in ('questions','question_blocks')),
+  row_id        uuid not null,
+  label         text not null,   -- come si riconosce nel cestino, senza aprire il payload
+  parent_id     uuid not null,   -- il blocco per una domanda, il questionario per un blocco
+  payload       jsonb not null,  -- to_jsonb(riga)
+  archived_at   timestamptz not null default now()
+);
+```
+
+Tre scelte che non si deducono guardandola:
+
+- **Una tabella sola con un `jsonb`, non due gemelle di `questions` e `question_blocks`.** Due copie di uno schema divergono alla prima colonna aggiunta, e una colonna dimenticata nella copia sarebbe un dato perso proprio nella tabella che esiste per non perderne. `to_jsonb(riga)` si adegua da solo.
+- **`owner_id` proprio, non risalito al questionario** come fanno `question_blocks` e `questions` nella §6. Qui la riga di origine può non esistere più — è il punto della tabella — quindi non c'è niente da cui risalire, e il proprietario si scrive.
+- **Nessuna chiave esterna verso le altre tabelle**, per la stessa ragione. Conseguenza sull'applicazione: `archived_rows` non è innestabile in una select di `questionnaires`, quindi la pagina del questionario la legge in una query sua.
+
+`parent_id` è il solo caso che il cestino non risolve da solo: una domanda il cui blocco è stato cancellato dopo di lei risponde `parent_gone`, e l'interfaccia dice di ripristinare prima il blocco. Senza quel ramo sarebbe una violazione di chiave esterna, cioè un errore illeggibile.
+
+**Cosa il cestino non copre, ed è l'unico posto che resta:** `deletePerson` (`src/app/(app)/clienti/people-actions.ts`) cancella una persona per davvero, con un `delete` di PostgREST, e si porta dietro `assessments.interviewee_id` in `set null`. È l'ultima cancellazione irreversibile del software.
+
 ### assessments
 
 ```sql
@@ -382,6 +411,8 @@ supabase/migrations/
   0015_answer_question_copy.sql  -- la risposta copia anche tipo, opzioni e aiuto
   0016_answers_touch_assessment.sql -- salvare una risposta sveglia la sua scheda
   0017_delete_without_history.sql -- si cancella solo dove non c'è storia da perdere
+  0018_archive.sql          -- il cestino: si archivia invece di cancellare, e si ripristina
+  0019_archive_row_reads.sql -- le tre letture di riga intera della 0018, nella forma che funziona
 supabase/migrations.test.ts   -- il controllo delle dichiarazioni, gira con npm test
 supabase/seed.sql             -- questionario iniziale, mai in produzione con dati finti
 ```

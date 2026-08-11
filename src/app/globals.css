@@ -1209,6 +1209,12 @@ a {
   margin-top: 0;
 }
 
+/* La riga che spiega il cestino sta sopra la prima voce, e `.question:first-child` azzera il
+   proprio margine: senza questo, testo e prima voce si toccano. */
+.card > .meta + .questions {
+  margin-top: 16px;
+}
+
 /* Testo e `Modifica` sulla stessa riga, come `.card__header` allinea titolo e `Rinomina`: la
    domanda è il «titolo» della sua voce. `flex-start` e non `center`: il testo va a capo già
    a 1280 sulle domande lunghe, e il pulsante deve restare in alto, non galleggiare a metà. */

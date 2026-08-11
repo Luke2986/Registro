@@ -6,13 +6,19 @@ import { openSession } from '@/lib/supabase/session'
 import { isUuid } from '@/lib/uuid'
 
 /**
- * Le due cancellazioni: una domanda mai finita in una scheda, un blocco senza domande. Due
- * azioni nello stesso file perché sono gemelle riga per riga, come le due di move-actions.ts.
+ * Le due cancellazioni e il ritorno: una domanda mai finita in una scheda, un blocco senza
+ * domande, e il ripristino di una delle due dal cestino. Tre azioni nello stesso file perché
+ * hanno la stessa forma riga per riga, come le due di move-actions.ts.
  *
- * La regola non sta qui: sta nelle funzioni della 0017, perché il database non sa rifiutare da
- * solo né l'una né l'altra — `on delete cascade` sul blocco e `on delete set null` sulla
- * risposta riescono tutti e due in silenzio. Qui c'è solo la chiamata e la mappatura dei tre
+ * La regola non sta qui: sta nelle funzioni della 0018, perché il database non sa rifiutare da
+ * solo né l'una né l'altra cancellazione — `on delete cascade` sul blocco e `on delete set null`
+ * sulla risposta riescono tutti e due in silenzio. Qui c'è solo la chiamata e la mappatura degli
  * esiti, e nessun `delete` su `questions` o `question_blocks` in TypeScript, da nessuna parte.
+ *
+ * «Elimina» non è più «cancella»: la riga passa da `archived_rows`, quindi si ritrova. Quello che
+ * resta impossibile è cancellare una domanda che una scheda contiene, e non perché sarebbe
+ * irrecuperabile: perché il ripristino non ricucirebbe `answers.question_id`, che cade in
+ * `set null`. Il cestino è la rete per chi scrive il questionario, non un permesso sulle schede.
  */
 
 const QUESTION_NOT_DELETED = 'La domanda non è stata eliminata. Riprova fra un momento.'
@@ -24,6 +30,11 @@ const BLOCK_GONE = 'Questo blocco non è più disponibile. Ricarica la pagina.'
 // `Disattiva` per la domanda e svuotare il blocco per il blocco.
 const QUESTION_IN_USE = 'Questa domanda è già dentro una scheda. Si può solo disattivare.'
 const BLOCK_IN_USE = 'Questo blocco ha ancora delle domande. Elimina prima quelle.'
+
+const NOT_RESTORED = 'Non è stato ripristinato. Riprova fra un momento.'
+const ARCHIVE_GONE = 'Questa voce del cestino non è più disponibile. Ricarica la pagina.'
+// L'unico caso che il cestino non risolve da solo, e la frase dice il passo da fare.
+const PARENT_GONE = 'Il blocco che la conteneva non c’è più. Ripristina prima quello.'
 
 /**
  * Gli esiti della 0017. Il confronto è esaustivo e non c'è nessun ramo predefinito che valga
@@ -97,6 +108,40 @@ export async function deleteBlock(
 
   if (data === 'in_use') return { error: BLOCK_IN_USE }
   if (!isDeleted(data)) return { error: BLOCK_GONE }
+
+  revalidatePath('/questionario')
+
+  return {}
+}
+
+export type RestoreRowState = { error?: string }
+
+export async function restoreRow(
+  _previous: RestoreRowState,
+  formData: FormData,
+): Promise<RestoreRowState> {
+  const session = await openSession('restoreRow')
+
+  if (!session.ok) return { error: session.error }
+
+  const archiveId = formData.get('archive_id')
+
+  if (!isUuid(archiveId)) {
+    console.error('restoreRow: richiesta rifiutata')
+    return { error: NOT_RESTORED }
+  }
+
+  const { data, error } = await session.supabase.rpc('restore_row', {
+    p_archive_id: archiveId,
+  })
+
+  if (error) {
+    console.error('restoreRow: rpc rifiutata', { code: error.code, message: error.message })
+    return { error: NOT_RESTORED }
+  }
+
+  if (data === 'parent_gone') return { error: PARENT_GONE }
+  if (data !== 'restored') return { error: ARCHIVE_GONE }
 
   revalidatePath('/questionario')
 

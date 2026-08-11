@@ -17,6 +17,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      archived_rows: {
+        Row: {
+          archived_at: string
+          id: string
+          label: string
+          owner_id: string
+          parent_id: string
+          payload: Json
+          row_id: string
+          source_table: string
+        }
+        Insert: {
+          archived_at?: string
+          id?: string
+          label: string
+          owner_id: string
+          parent_id: string
+          payload: Json
+          row_id: string
+          source_table: string
+        }
+        Update: {
+          archived_at?: string
+          id?: string
+          label?: string
+          owner_id?: string
+          parent_id?: string
+          payload?: Json
+          row_id?: string
+          source_table?: string
+        }
+        Relationships: []
+      }
       answers: {
         Row: {
           answer_type: string
@@ -411,6 +444,7 @@ export type Database = {
         Args: { p_questionnaire_id: string }
         Returns: undefined
       }
+      restore_row: { Args: { p_archive_id: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never

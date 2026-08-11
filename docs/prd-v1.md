@@ -138,7 +138,11 @@ Elenco dei blocchi e delle domande, con riordino, modifica del testo, attivazion
 
 **L'ultima frase è precisata dall'11 agosto 2026, e va letta insieme a quello che la motiva.** La regola esiste per proteggere le schede vecchie: cancellare una domanda che una scheda contiene toglierebbe la domanda a cui una risposta risponde. Non dice niente invece su una domanda scritta per sbaglio due minuti fa, che nessuna scheda ha mai visto — e quella restava in un questionario che si rilegge a ogni call, senza nessun modo di toglierla.
 
-Da qui `Elimina`, che compare **solo** dove non c'è storia da perdere: su una domanda che nessuna scheda ha mai contenuto, e su un blocco senza domande. Appena una scheda contiene la domanda il pulsante sparisce e resta `Disattiva`, che è la risposta giusta per quel caso e continua a essere l'unica. Il pulsante sparisce invece di rifiutare perché la regola è del server ma dev'essere visibile prima di premere. `Elimina` chiede conferma e `Disattiva` no, ed è la differenza fra i due: `Riattiva` annulla la seconda, la prima non si annulla (`kb-0.md` §6). Come è imposta, e perché non basta un `delete`, sta in `database.md` §3.
+Da qui `Elimina`, che compare **solo** dove non c'è storia da perdere: su una domanda che nessuna scheda ha mai contenuto, e su un blocco senza domande. Appena una scheda contiene la domanda il pulsante sparisce e resta `Disattiva`, che è la risposta giusta per quel caso e continua a essere l'unica. Il pulsante sparisce invece di rifiutare perché la regola è del server ma dev'essere visibile prima di premere. Come è imposta, e perché non basta un `delete`, sta in `database.md` §3.
+
+**E `Elimina` non cancella: archivia.** Quello che togli finisce in un **Cestino**, in fondo alla stessa schermata, con un `Ripristina` accanto che lo rimette dov'era — identico, con il suo tipo, le sue opzioni, il suo «cosa serve capire» e il suo stato di attivazione. La card del cestino non compare quando è vuoto. La conferma su `Elimina` resta comunque, benché l'azione sia ora reversibile: il ritorno sta in un'altra parte della pagina, e in un elenco di ventitré righe simili un tocco sbagliato si fa senza accorgersene.
+
+**Quello che il cestino non tocca, ed è il punto che conta:** le risposte già date dai clienti non passano di lì e non si cancellano in nessun caso, perché ogni risposta porta la propria copia della domanda. Cambiare, disattivare o eliminare una domanda oggi non modifica una sola lettera di una scheda compilata un anno fa.
 
 ### Esportazione
 

@@ -96,12 +96,16 @@ export function DeleteButton({
 
   return (
     <>
-      {/* Il testo della cosa non entra nella frase, e non è per brevità: quasi ogni domanda
-          finisce già con `?`, e inlinearla dava «…dividete il lavoro?? Non si recupera.». Chi
-          non vede lo schermo non perde niente, perché l'identità sta nel nome accessibile dei
-          due pulsanti, che è lo stesso prima e dopo la conferma. */}
+      {/* «Finisce nel cestino» e non «non si recupera»: dalla 0018 si recupera, e una conferma
+          che minaccia una perdita che non avviene è la peggiore specie di avviso — insegna a non
+          fidarsi degli avvisi veri.
+
+          Il testo della cosa non entra nella frase, e non è per brevità: quasi ogni domanda
+          finisce già con `?`, e inlinearla dava «…dividete il lavoro?? Finisce nel cestino.».
+          Chi non vede lo schermo non perde niente, perché l'identità sta nel nome accessibile
+          dei due pulsanti, che è lo stesso prima e dopo la conferma. */}
       <p className="meta" id={questionId}>
-        Elimini {what}? Non si recupera.
+        Elimini {what}? Finisce nel cestino.
       </p>
       <button
         type="button"
