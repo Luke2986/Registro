@@ -4,9 +4,7 @@ Strumento personale per valutare e seguire i clienti: raccoglie in un unico post
 
 Non è un prodotto in vendita e non è un CRM. È il posto dove vive un metodo di lavoro.
 
-**Stato:** in costruzione, prima versione.
-**Utenti:** uno.
-**In rete:** https://registro-luke2986s-projects.vercel.app
+**Stato:** in costruzione, prima versione beta
 
 ---
 
